@@ -1,0 +1,3 @@
+tacitus89_gamesmod_main_controller:
+    pattern: /games
+    defaults: { _controller: tacitus.games.controller:display }

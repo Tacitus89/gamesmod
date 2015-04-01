@@ -57,9 +57,16 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 			array('config.add', array('game_topic_limit', 0)),
 			array('config.add', array('game_index_ext_stats', 0)),
 			
+			//TODO: Testen!!!
+			// Add permission
+			array('permission.add', array('u_masspm_game', true)),
+			// Set permissions
+			array('permission.permission_set', array('ROLE_ADMIN_FULL', 'u_masspm_game')),
+			
+			
 			//TODO: Module einbauen
 			//Set ACP-Module
-			/*
+			
 			array('module.add', array('acp', 'ACP_CAT_DOT_MODS', 'ACP_GAMES_INDEX')),
 			array('module.add', array(
 				'acp', 'ACP_GAMES_INDEX', array(
@@ -68,6 +75,7 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 				),
 			)),
 			//Set UCP-Module
+			/*
 			array('module.add', array('ucp', '', 'UCP_GAMES_INDEX')),
 			array('module.add', array(
 				'ucp', 'UCP_GAMES_INDEX', array(
@@ -76,12 +84,6 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 				),
 			)),
 			*/
-			
-			//TODO: Testen!!!
-			// Add permission
-			array('permission.add', array('u_masspm_game', true)),
-			// Set permissions
-			array('permission.permission_set', array('ROLE_ADMIN_FULL', 'u_masspm_game')),
 		);
 	}
 	

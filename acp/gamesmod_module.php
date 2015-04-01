@@ -1,10 +1,9 @@
 <?php
 /**
 *
-* Board Rules extension for the phpBB Forum Software package.
-*
-* @copyright (c) 2014 phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @package GamesMod
+* @copyright (c) 2015
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -13,22 +12,21 @@ namespace tacitus89\gamesmod\acp;
 class gamesmod_module
 {
 	public $u_action;
+	public $new_config;
 
 	function main($id, $mode)
 	{
 		global $phpbb_container, $request, $user;
 
 		// Add the board rules ACP lang file
-		$user->add_lang_ext('phpbb/boardrules', 'boardrules_acp');
+		$user->add_lang_ext('tacitus89/gamesmod', 'gamesmod_acp');
 
 		// Get an instance of the admin controller
-		$admin_controller = $phpbb_container->get('phpbb.boardrules.admin.controller');
+		$admin_controller = $phpbb_container->get('tacitus89.gamesmod.admin.controller');
 
 		// Requests
-		$action = $request->variable('action', '');
-		$language = $request->variable('language', 0);
-		$parent_id = $request->variable('parent_id', 0);
-		$rule_id = $request->variable('rule_id', 0);
+		$action	= request_var('action', '');
+		$submode = request_var('submode', '');
 
 		// Make the $u_action url available in the admin controller
 		$admin_controller->set_page_url($this->u_action);
@@ -36,30 +34,24 @@ class gamesmod_module
 		// Load the "settings" or "manage" module modes
 		switch($mode)
 		{
-			case 'settings':
+			case 'config':
 				// Load a template from adm/style for our ACP page
-				$this->tpl_name = 'boardrules_settings';
+				$this->tpl_name = 'acp_games_config';
 
 				// Set the page title for our ACP page
-				$this->page_title = $user->lang('ACP_BOARDRULES_SETTINGS');
-
-				// If the "Notify users" button was submitted
-				if ($request->is_set_post('action_send_notification'))
-				{
-					// Attempt to add/send notification
-					$admin_controller->send_notification($rule_id);
-				}
+				$this->page_title = $user->lang('ACP_GAMES_INDEX');
 
 				// Load the display options handle in the admin controller
 				$admin_controller->display_options();
 			break;
 
-			case 'manage':
+			case 'management':
+			/*
 				// Load a template from adm/style for our ACP page
-				$this->tpl_name = 'boardrules_manage';
+				$this->tpl_name = 'acp_games';
 
 				// Set the page title for our ACP page
-				$this->page_title = $user->lang('ACP_BOARDRULES_MANAGE');
+				$this->page_title = $user->lang('ACP_GAMES_INDEX');
 
 				// Perform any actions submitted by the user
 				switch($action)
@@ -113,6 +105,7 @@ class gamesmod_module
 				{
 					$admin_controller->display_rules($language, $parent_id);
 				}
+				*/
 			break;
 		}
 	}

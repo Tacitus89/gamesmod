@@ -1,0 +1,15 @@
+imports:
+    - { resource: tables.yml }
+
+services:
+    tacitus89.gamesmod.admin.controller:
+        class: tacitus89\gamesmod\controller\admin_controller
+        arguments:
+            - @config
+            - @dbal.conn
+            - @request
+            - @template
+            - @user
+            - @service_container
+            - %core.root_path%
+            - %core.php_ext%

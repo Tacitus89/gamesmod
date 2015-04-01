@@ -7,7 +7,7 @@
 *
 */
 
-namespace phpbb\gamesmod\acp;
+namespace tacitus89\gamesmod\acp;
 
 class gamesmod_info
 {

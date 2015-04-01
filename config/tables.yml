@@ -1,0 +1,2 @@
+parameters:
+    tacitus89.games.tables.games: %core.table_prefix%games
