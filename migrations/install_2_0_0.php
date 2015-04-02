@@ -92,14 +92,17 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 		return array(
 			'add_tables'	=> array(
 				$this->table_prefix . 'games' => array(
-					'COLUMNS'			=> array(
-						'id'			=> array('UINT', NULL, 'auto_increment'),
-						'name'			=> array('VCHAR:100', ''),
-						'description'	=> array('VCHAR:255', ''),
-						'image'			=> array('VCHAR:100', 0),
-						'parent'		=> array('UINT:5', 0),
+					'COLUMNS'				=> array(
+						'game_id'			=> array('UINT', NULL, 'auto_increment'),
+						'game_left_id'		=> array('UINT:5', 0),
+						'game_right_id'		=> array('UINT:5', 0),
+						'game_parent_id'	=> array('UINT:5', 0),
+						'game_title'		=> array('VCHAR:200', ''),
+						'game_description'	=> array('VCHAR:255', ''),
+						'game_image'		=> array('VCHAR:100', ''),
+						'game_parents'		=> array('VCHAR:100', ''),
 					),
-					'PRIMARY_KEY'	=> 'id',
+					'PRIMARY_KEY'	=> 'game_id',
 				),
 				$this->table_prefix . 'games_awarded' => array(
 					'COLUMNS'		=> array(
@@ -112,6 +115,7 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 					),
 					'PRIMARY_KEY'	=> 'id',	
 				),
+				/*
 				$this->table_prefix . 'games_cats' => array(
 					'COLUMNS'		=> array(
 						'id'		=> array('UINT', NULL, 'auto_increment'),
@@ -124,6 +128,7 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 						'order_id'		=> array('INDEX', 'order_id'),
 					)
 				),
+				*/
 			),
 			
 			'add_columns'	=> array(

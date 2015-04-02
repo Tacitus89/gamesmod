@@ -11,5 +11,33 @@ services:
             - @template
             - @user
             - @service_container
+            - @tacitus89.gamesmod.operator
             - %core.root_path%
             - %core.php_ext%
+
+    tacitus89.gamesmod.entity:
+        class: tacitus89\gamesmod\entity\game
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - @dbal.conn
+            - %tacitus89.gamesmod.tables.gamesmod%
+
+    tacitus89.gamesmod.operator:
+        class: tacitus89\gamesmod\operators\game
+        arguments:
+            - @service_container
+            - @tacitus89.gamesmod.nestedset_games
+
+    tacitus89.gamesmod.nestedset_games:
+        class: tacitus89\gamesmod\operators\nestedset_games
+        arguments:
+            - @dbal.conn
+            - @tacitus89.gamesmod.table_lock
+            - %tacitus89.gamesmod.tables.gamesmod%
+
+    tacitus89.gamesmod.table_lock:
+        class: phpbb\lock\db
+        arguments:
+            - gamesmod.table_lock.gamesmod_table
+            - @config
+            - @dbal.conn

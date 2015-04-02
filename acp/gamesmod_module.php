@@ -12,7 +12,6 @@ namespace tacitus89\gamesmod\acp;
 class gamesmod_module
 {
 	public $u_action;
-	public $new_config;
 
 	function main($id, $mode)
 	{
@@ -25,8 +24,9 @@ class gamesmod_module
 		$admin_controller = $phpbb_container->get('tacitus89.gamesmod.admin.controller');
 
 		// Requests
-		$action	= request_var('action', '');
-		$submode = request_var('submode', '');
+		$action	= $request->variable('action', '');
+		$game_id = $request->variable('game_id', 0);
+		$parent_id = $request->variable('parent_id', 0);
 
 		// Make the $u_action url available in the admin controller
 		$admin_controller->set_page_url($this->u_action);
@@ -46,66 +46,55 @@ class gamesmod_module
 			break;
 
 			case 'management':
-			/*
 				// Load a template from adm/style for our ACP page
 				$this->tpl_name = 'acp_games';
 
 				// Set the page title for our ACP page
 				$this->page_title = $user->lang('ACP_GAMES_INDEX');
-
+				
 				// Perform any actions submitted by the user
 				switch($action)
 				{
 					case 'add':
-						// Set the page title for our ACP page
-						$this->page_title = $user->lang('ACP_BOARDRULES_CREATE_RULE');
-
-						// Load the add rule handle in the admin controller
-						$admin_controller->add_rule($language, $parent_id);
-
+					
+						//$this->tpl_name = 'acp_games_new';
+						$this->page_title = $user->lang['ACP_GAMES_INDEX'];
+						
+						// Load the add game handle in the admin controller
+						$admin_controller->add_game($parent_id);
+						
 						// Return to stop execution of this script
 						return;
 					break;
 
 					case 'edit':
 						// Set the page title for our ACP page
-						$this->page_title = $user->lang('ACP_BOARDRULES_EDIT_RULE');
+						$this->page_title = $user->lang('ACP_GAMES_INDEX');
 
-						// Load the edit rule handle in the admin controller
-						$admin_controller->edit_rule($rule_id);
+						// Load the edit game handle in the admin controller
+						$admin_controller->edit_game($game_id);
 
 						// Return to stop execution of this script
 						return;
 					break;
 
 					case 'move_down':
-						// Move a rule down one position
-						$admin_controller->move_rule($rule_id, 'down');
+						// Move a game down one position
+						$admin_controller->move_game($game_id, 'down');
 					break;
 
 					case 'move_up':
-						// Move a rule up one position
-						$admin_controller->move_rule($rule_id, 'up');
+						// Move a game up one position
+						$admin_controller->move_game($game_id, 'up');
 					break;
 
 					case 'delete':
-						// Delete a rule
-						$admin_controller->delete_rule($rule_id);
+						// Delete a game
+						$admin_controller->delete_game($game_id);
 					break;
 				}
-
-				// Check if a language variable was submitted and display
-				// the rules for that language. If no language was submitted,
-				// display the language selection menu.
-				if (empty($language))
-				{
-					$admin_controller->display_language_selection();
-				}
-				else
-				{
-					$admin_controller->display_rules($language, $parent_id);
-				}
-				*/
+				
+				$admin_controller->display_games($parent_id);
 			break;
 		}
 	}

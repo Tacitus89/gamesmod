@@ -1,58 +1,134 @@
 <!-- INCLUDE overall_header.html -->
 
-<h1>{L_ACP_GAME_MGT_TITLE}</h1>
-<p>{L_ACP_GAME_MGT_DESC}</p>
-<table cellspacing="1">
-	<col class="row1" /><col class="row1" /><col class="row2" />
-<tbody>
-<tr>
-	<td class="row3" colspan="6">{L_ACP_GAMES_MGT_INDEX}</td>
-</tr>
-<!-- IF .games -->
-	<!-- BEGIN games -->
-		<tr>
-			<td style="width: 5%; text-align: center;">{games.GAME_IMAGE}</td>
-			<td><a href="{games.U_GAME}">{games.GAME_TITLE}</a></td>
-			<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
-				<!-- IF games.S_FIRST_ROW && not games.S_LAST_ROW -->
-					{ICON_MOVE_UP_DISABLED}
-					<a href="{games.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a>
-				<!-- ELSEIF not games.S_FIRST_ROW && not games.S_LAST_ROW-->
-					<a href="{games.U_MOVE_UP}">{ICON_MOVE_UP}</a> 
-					<a href="{games.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a> 
-				<!-- ELSEIF games.S_LAST_ROW && not games.S_FIRST_ROW -->
-					<a href="{games.U_MOVE_UP}">{ICON_MOVE_UP}</a>	
-					{ICON_MOVE_DOWN_DISABLED}
-				<!-- ELSE -->
-					{ICON_MOVE_UP_DISABLED}
-					{ICON_MOVE_DOWN_DISABLED}
-				<!-- ENDIF -->
-				<a href="{games.U_EDIT}">{ICON_EDIT}</a> 
-				<a href="{games.U_DELETE}">{ICON_DELETE}</a>
-			</td>
-		</tr>
-	<!-- END games -->
+<!-- IF S_ADD_GAME or S_EDIT_GAME -->
+
+	<script>
+		var form_name = 'add_edit_game';
+		var text_name = 'game_message';
+		var load_draft = false;
+		var upload = false;
+		var imageTag = false;
+	</script>
+	<script>
+		function ipreview(element)
+		{
+			$("#imagepreview").html('<img src="{ROOT_PATH}images/games/'+element.value+'" alt="" style="max-width: 60px; max-height: 60px;" />');
+		}
+	</script>
+
+	<a id="maincontent"></a>
+
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+	<!-- IF S_ADD_RULE -->
+		<h1>{L_ACP_BOARDRULES_CREATE_RULE} {L_COLON}{L_COLON} {RULE_TITLE}</h1>
+
+		<p>{L_ACP_BOARDRULES_CREATE_RULE_EXPLAIN}</p>
+	<!-- ELSE -->
+		<h1>{L_ACP_BOARDRULES_EDIT_RULE} {L_COLON}{L_COLON} {RULE_TITLE}</h1>
+
+		<p>{L_ACP_BOARDRULES_EDIT_RULE_EXPLAIN}</p>
+	<!-- ENDIF -->
+
+	<!-- IF S_ERROR -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+	<!-- ENDIF -->
+
+	<form id="add_edit_game" method="post" enctype="multipart/form-data" action="<!-- IF S_ADD_GAME -->{U_ADD_ACTION}<!-- ELSE -->{U_EDIT_ACTION}<!-- ENDIF -->">
+		<fieldset>
+			<legend>{L_ACP_GAME_SETTINGS}</legend>
+			<dl>
+				<dt><label for="game_parent">{L_ACP_GAME_PARENT}{L_COLON}</label></dt>
+				<dd><select id="game_parent" name="game_parent">
+					<option value="0">{L_ACP_GAME_NO_PARENT}</option>
+					<!-- BEGIN gamemenu -->
+						<option value="{gamemenu.GAME_ID}"<!-- IF gamemenu.S_GAME_PARENT --> selected="selected"<!-- ENDIF --><!-- IF gamemenu.S_DISABLED --> disabled="disabled" class="disabled-option"<!-- ENDIF -->>{gamemenu.GAME_TITLE}</option>
+					<!-- END gamemenu -->
+				</select></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_title">{L_ACP_GAME_TITLE}{L_COLON}</label><br /><span>{L_ACP_GAME_TITLE_EXPLAIN}</span></dt>
+				<dd><input class="text medium" type="text" id="game_title" name="game_title" value="{GAME_TITLE}" maxlength="200" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_description">{L_ACP_NAME_DESC}:</label></dt>
+				<dd><textarea id="game_description" name="game_description" rows="5" cols="45">{GAME_DESCRIPTION}</textarea></dd>
+			</dl>
+			<dl>
+				<dt><label>{L_ACP_IMAGE_TITLE}:</label></dt>
+				<dd><label><select name="game_image" onclick="ipreview(this);return false">{IMAGE_OPTIONS}</select></label>
+					<br /><span id="imagepreview">{GAME_IMAGE}</span>
+				</dd>
+			</dl>
+			<dl>
+				<dt><label for="uploadfile">{L_UPLOAD_GAME_FILE}:</label></dt>
+				<dd><input type="hidden" name="MAX_FILE_SIZE" value="{GAME_SIZE}" /><input type="file" name="uploadfile" id="uploadfile" class="inputbox autowidth" /></dd>
+			</dl>
+		</fieldset>
+
+		<fieldset class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			{S_FORM_TOKEN}
+		</fieldset>
+	</form>
+
 <!-- ELSE -->
-	<tr>
-		<td style="width: 5%; text-align: center;"><img src="images/file_conflict.gif" alt="{L_CAT}" /></td>
-		<td>{L_ACP_NO_CATS}</td>
-		<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
-			{ICON_MOVE_UP_DISABLED}
-			{ICON_MOVE_DOWN_DISABLED}
-			{ICON_EDIT_DISABLED}
-			{ICON_DELETE_DISABLED}
-		</td>
-	</tr>
+
+	<h1>{L_ACP_GAME_MGT_TITLE}</h1>
+
+	<p>{L_ACP_GAME_MGT_DESC}</p>
+
+	<!-- IF .breadcrumb -->
+	<p>
+		<strong>
+			<a href="{U_MAIN}">{L_ACP_GAMES_MGT_INDEX}</a>
+			<!-- BEGIN breadcrumb -->
+				 -&gt; <!-- IF not breadcrumb.S_CURRENT_LEVEL --><a href="{breadcrumb.U_GAME}"><!-- ENDIF -->{breadcrumb.GAME_TITLE}<!-- IF not breadcrumb.S_CURRENT_LEVEL --></a><!-- ENDIF -->
+			<!-- END breadcrumb -->
+		</strong>
+	</p>
+	<!-- ENDIF -->
+
+	<!-- IF .games -->
+		<table class="table1 forums">
+			<col class="row1" /><col class="row1" /><col class="row2" />
+			<tbody>
+				<!-- BEGIN games -->
+					<tr>
+						<td class="folder">
+							<!-- IF games.S_IS_CATEGORY --><img src="images/icon_subfolder.gif" alt="{L_ACP_GAMES_CATEGORY}" /><!-- ELSE --><img src="images/icon_folder.gif" alt="{L_ACP_GAMES}" /><!-- ENDIF -->
+						</td>
+						<td class="forum-desc">
+							<strong><a href="{games.U_GAME}">{games.GAME_TITLE}</a></strong>
+						</td>
+						<td class="actions">
+							<span class="up-disabled" style="display:none;">{ICON_MOVE_UP_DISABLED}</span>
+							<span class="up"><a href="{games.U_MOVE_UP}" data-ajax="row_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
+							<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
+							<span class="down"><a href="{games.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
+							<a href="{games.U_EDIT}">{ICON_EDIT}</a>
+							<a href="{games.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
+						</td>
+					</tr>
+				<!-- END games -->
+			</tbody>
+		</table>
+	<!-- ENDIF -->
+
+	<form id="rules" method="post" action="{U_ACTION}">
+
+	<fieldset class="quick">
+		{L_ACP_ADD_GAME}{L_COLON}
+		<input type="text" name="game_title" value="" maxlength="200" placeholder="{L_ACP_ADD_GAME}" />
+		<input class="button2" name="addgame" type="submit" value="{L_SUBMIT}" />
+		<input type="hidden" name="action" value="add" />
+		{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+	
 <!-- ENDIF -->
-</tbody>
-</table>
-<div class="clearfix">&nbsp;</div>
-<form id="module" method="post">
 
-<fieldset class="quick" style="float: left;">
-	<input type="text" name="game_catname" maxlength="30" /> 
-	<input class="button2" name="addcat" type="submit" value="{L_ACP_CREATE_CAT}" />
-</fieldset>
-
-</form>
 <!-- INCLUDE overall_footer.html -->

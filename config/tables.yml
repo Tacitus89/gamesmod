@@ -1,2 +1,2 @@
 parameters:
-    tacitus89.games.tables.games: %core.table_prefix%games
+    tacitus89.gamesmod.tables.gamesmod: %core.table_prefix%games
