@@ -13,7 +13,7 @@ namespace tacitus89\gamesmod\entity;
 /**
 * Entity for a single games_cat
 */
-class game implements game_interface
+class games_cat implements games_cat_interface
 {
 	/**
 	* Data for this entity
@@ -21,9 +21,8 @@ class game implements game_interface
 	* @var array
 	*	id
 	*	name
-	*	description
-	*	image
-	*	parent
+	*	dir
+	*	order_id
 	* @access protected
 	*/
 	protected $data;
@@ -36,20 +35,20 @@ class game implements game_interface
 	*
 	* @var string
 	*/
-	protected $games_table;
+	protected $games_cat_table;
 
 	/**
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface    $db              Database object
-	* @param string                               $games_table     Name of the table used to store game data
+	* @param string                               $games_cat_table     Name of the table used to store game data
 	* @return \tacitus89\gamesmod\entity\game
 	* @access public
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, $games_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, $games_cat_table)
 	{
 		$this->db = $db;
-		$this->games_table = $games_table;
+		$this->games_cat_table = $games_cat_table;
 	}
 
 	/**
@@ -63,7 +62,7 @@ class game implements game_interface
 	public function load($id)
 	{
 		$sql = 'SELECT *
-			FROM ' . $this->games_table . '
+			FROM ' . $this->games_cat_table . '
 			WHERE id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
 		$this->data = $this->db->sql_fetchrow($result);
@@ -98,11 +97,10 @@ class game implements game_interface
 		// All of our fields
 		$fields = array(
 			// column					=> data type (see settype())
-			'id'						=> 'integer',
-			'parent'					=> 'integer',
-			'name'						=> 'set_name', // call set_title()
-			'description'				=> 'string',
-			'image'						=> 'string',
+			'id'					=> 'integer',
+			'name'					=> 'set_name',
+			'dir'					=> 'string',
+			'order_id'				=> 'integer',
 		);
 
 		// Go through the basic fields and set them to our data array
@@ -134,7 +132,7 @@ class game implements game_interface
 		// Some fields must be unsigned (>= 0)
 		$validate_unsigned = array(
 			'id',
-			'parent',
+			'order_id',
 		);
 
 		foreach ($validate_unsigned as $field)
@@ -170,10 +168,10 @@ class game implements game_interface
 		unset($this->data['id']);
 
 		// Insert the game data to the database
-		$sql = 'INSERT INTO ' . $this->games_table . ' ' . $this->db->sql_build_array('INSERT', $this->data);
+		$sql = 'INSERT INTO ' . $this->games_cat_table . ' ' . $this->db->sql_build_array('INSERT', $this->data);
 		$this->db->sql_query($sql);
 
-		// Set the game_id using the id created by the SQL insert
+		// Set the id using the id created by the SQL insert
 		$this->data['id'] = (int) $this->db->sql_nextid();
 
 		return $this;
@@ -197,7 +195,7 @@ class game implements game_interface
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
-		$sql = 'UPDATE ' . $this->games_table . '
+		$sql = 'UPDATE ' . $this->games_cat_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', $this->data) . '
 			WHERE id = ' . $this->get_id();
 		$this->db->sql_query($sql);
@@ -240,8 +238,8 @@ class game implements game_interface
 		// Enforce a string
 		$name = (string) $name;
 
-		// We limit the name length to 200 characters
-		if (truncate_string($name, 200) != $name)
+		// We limit the name length to 30 characters
+		if (truncate_string($name, 30) != $name)
 		{
 			throw new \tacitus89\gamesmod\exception\unexpected_value(array('name', 'TOO_LONG'));
 		}
@@ -253,109 +251,73 @@ class game implements game_interface
 	}
 	
 	/**
-	* Get description
+	* Get dir
 	*
-	* @return string description
+	* @return string dir
 	* @access public
 	*/
-	public function get_description()
+	public function get_dir()
 	{
-		return (isset($this->data['description'])) ? (string) $this->data['description'] : '';
+		return (isset($this->data['dir'])) ? (string) $this->data['dir'] : '';
 	}
 
 	/**
-	* Set description
+	* Set dir
 	*
-	* @param string $description
+	* @param string $dir
 	* @return game_interface $this object for chaining calls; load()->set()->save()
 	* @access public
 	* @throws \tacitus89\gamesmod\exception\unexpected_value
 	*/
-	public function set_description($description)
+	public function set_dir($dir)
 	{
 		// Enforce a string
-		$description = (string) $description;
+		$dir = (string) $dir;
 
-		// We limit the description length to 255 characters
-		if (truncate_string($description, 255) != $description)
+		// We limit the dir length to 30 characters
+		if (truncate_string($dir, 30) != $dir)
 		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('description', 'TOO_LONG'));
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('dir', 'TOO_LONG'));
 		}
 
-		// Set the description on our data array
-		$this->data['description'] = $description;
-
-		return $this;
-	}
-	
-	/**
-	* Get image
-	*
-	* @return string image
-	* @access public
-	*/
-	public function get_image()
-	{
-		return (isset($this->data['image'])) ? (string) $this->data['image'] : '';
-	}
-
-	/**
-	* Set image
-	*
-	* @param string $image
-	* @return game_interface $this object for chaining calls; load()->set()->save()
-	* @access public
-	* @throws \tacitus89\gamesmod\exception\unexpected_value
-	*/
-	public function set_image($image)
-	{
-		// Enforce a string
-		$image = (string) $image;
-
-		// We limit the image length to 200 characters
-		if (truncate_string($image, 200) != $image)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('image', 'TOO_LONG'));
-		}
-
-		// Set the image on our data array
-		$this->data['image'] = $image;
+		// Set the dir on our data array
+		$this->data['dir'] = $dir;
 
 		return $this;
 	}
 
 	/**
-	* Get the parent identifier
+	* Get the order_id identifier
 	*
-	* @return int parent identifier
+	* @return int order_id identifier
 	* @access public
 	*/
-	public function get_parent()
+	public function get_order_id()
 	{
-		return (isset($this->data['parent'])) ? (int) $this->data['parent'] : 0;
+		return (isset($this->data['order_id'])) ? (int) $this->data['order_id'] : 0;
 	}
 	
 	/**
-	* Set parent
+	* Set order_id
 	*
-	* @param integer $parent
+	* @param integer $order_id
 	* @return game_interface $this object for chaining calls; load()->set()->save()
 	* @access public
 	* @throws \tacitus89\gamesmod\exception\unexpected_value
 	*/
-	public function set_parent($parent)
+	public function set_order_id($order_id)
 	{
 		// Enforce a integer
-		$parent = (integer) $parent;
+		$order_id = (integer) $order_id;
 
 		// If the data is less than 0, it's not unsigned and we'll throw an exception
-		if ($parent < 0)
+		if ($order_id < 0)
 		{
-			throw new \tacitus89\gamesmod\exception\out_of_bounds($parent);
+			throw new \tacitus89\gamesmod\exception\out_of_bounds($order_id);
 		}
 
-		// Set the parent on our data array
-		$this->data['parent'] = $parent;
+		// Set the order_id on our data array
+		$this->data['order_id'] = $order_id;
 
 		return $this;
 	}

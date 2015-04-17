@@ -18,7 +18,7 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 	{
 		return isset($this->config['games_version']) && version_compare($this->config['games_version'], $this->games_version, '>=');
 	}
-
+	
 	static public function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\dev');
@@ -75,15 +75,13 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 				),
 			)),
 			//Set UCP-Module
-			/*
-			array('module.add', array('ucp', '', 'UCP_GAMES_INDEX')),
+			array('module.add', array('ucp', false, 'UCP_GAMES_INDEX')),
 			array('module.add', array(
 				'ucp', 'UCP_GAMES_INDEX', array(
 					'module_basename'	=> '\tacitus89\gamesmod\ucp\gamesmod_module',
 					'modes'				=> array('index', 'add'),
 				),
 			)),
-			*/
 		);
 	}
 	
@@ -92,17 +90,14 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 		return array(
 			'add_tables'	=> array(
 				$this->table_prefix . 'games' => array(
-					'COLUMNS'				=> array(
-						'game_id'			=> array('UINT', NULL, 'auto_increment'),
-						'game_left_id'		=> array('UINT:5', 0),
-						'game_right_id'		=> array('UINT:5', 0),
-						'game_parent_id'	=> array('UINT:5', 0),
-						'game_title'		=> array('VCHAR:200', ''),
-						'game_description'	=> array('VCHAR:255', ''),
-						'game_image'		=> array('VCHAR:100', ''),
-						'game_parents'		=> array('VCHAR:100', ''),
+					'COLUMNS'			=> array(
+						'id'		=> array('UINT', NULL, 'auto_increment'),
+						'name'			=> array('VCHAR:200', ''),
+						'description'	=> array('VCHAR:255', ''),
+						'image'			=> array('VCHAR:100', ''),
+						'parent'		=> array('UINT:5', 0),
 					),
-					'PRIMARY_KEY'	=> 'game_id',
+					'PRIMARY_KEY'		=> 'id',
 				),
 				$this->table_prefix . 'games_awarded' => array(
 					'COLUMNS'		=> array(
@@ -117,6 +112,19 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 				),
 				/*
 				$this->table_prefix . 'games_cats' => array(
+					'COLUMNS'			=> array(
+						'cat_id'		=> array('UINT', NULL, 'auto_increment'),
+						'left_id'		=> array('UINT:5', 0),
+						'right_id'		=> array('UINT:5', 0),
+						'parent_id'		=> array('UINT:5', 0),
+						'title'			=> array('VCHAR:200', ''),
+						'description'	=> array('VCHAR:255', ''),
+						'image'			=> array('VCHAR:100', ''),
+						'parents'		=> array('VCHAR:100', ''),
+					),
+					'PRIMARY_KEY'		=> 'cat_id',
+				),*/
+				$this->table_prefix . 'games_cats' => array(
 					'COLUMNS'		=> array(
 						'id'		=> array('UINT', NULL, 'auto_increment'),
 						'name'		=> array('VCHAR:30', ''),
@@ -128,7 +136,6 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 						'order_id'		=> array('INDEX', 'order_id'),
 					)
 				),
-				*/
 			),
 			
 			'add_columns'	=> array(

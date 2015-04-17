@@ -11,9 +11,9 @@
 namespace tacitus89\gamesmod\entity;
 
 /**
-* Entity for a single games_cat
+* Entity for a single owned_game
 */
-class game implements game_interface
+class owned_game implements game_interface
 {
 	/**
 	* Data for this entity
@@ -24,12 +24,18 @@ class game implements game_interface
 	*	description
 	*	image
 	*	parent
+	*	play
+	*	share
+	*	share_id
 	* @access protected
 	*/
 	protected $data;
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+	
+	/** @var \phpbb\user */
+	protected $user;
 
 	/**
 	* The database table the games are stored in
@@ -37,6 +43,13 @@ class game implements game_interface
 	* @var string
 	*/
 	protected $games_table;
+	
+	/**
+	* The database table the games are stored in
+	*
+	* @var string
+	*/
+	protected $games_awarded_table;
 
 	/**
 	* Constructor
@@ -46,10 +59,12 @@ class game implements game_interface
 	* @return \tacitus89\gamesmod\entity\game
 	* @access public
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, $games_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, \phpbb\user $user, $games_table, $games_awarded_table)
 	{
 		$this->db = $db;
+		$this->user = $user;
 		$this->games_table = $games_table;
+		$this->games_awarded_table = $games_awarded_table;
 	}
 
 	/**
@@ -62,9 +77,11 @@ class game implements game_interface
 	*/
 	public function load($id)
 	{
-		$sql = 'SELECT *
-			FROM ' . $this->games_table . '
-			WHERE id = ' . (int) $id;
+		$sql = 'SELECT g.id, g.name, g.description, g.image, ga.play, ga.share, ga.share_id
+			FROM ' . $this->games_table . ' g
+			LEFT JOIN '. $this->games_awarded_table .' ga
+			WHERE game_id = ' . (int) $id .'
+			AND user_id = '. $this->user->data['user_id'];
 		$result = $this->db->sql_query($sql);
 		$this->data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -103,6 +120,9 @@ class game implements game_interface
 			'name'						=> 'set_name', // call set_title()
 			'description'				=> 'string',
 			'image'						=> 'string',
+			'play'						=> 'integer',
+			'share'						=> 'integer',
+			'share_id'					=> 'integer',
 		);
 
 		// Go through the basic fields and set them to our data array
@@ -135,6 +155,9 @@ class game implements game_interface
 		$validate_unsigned = array(
 			'id',
 			'parent',
+			'play',
+			'share',
+			'share_id',
 		);
 
 		foreach ($validate_unsigned as $field)
@@ -150,58 +173,24 @@ class game implements game_interface
 	}
 
 	/**
-	* Insert the game for the first time
-	*
-	* Will throw an exception if the game was already inserted (call save() instead)
+	* Do nothing
 	*
 	* @return game_interface $this object for chaining calls; load()->set()->save()
 	* @access public
-	* @throws \tacitus89\gamesmod\exception\out_of_bounds
 	*/
 	public function insert()
 	{
-		if (!empty($this->data['id']))
-		{
-			// The game already exists
-			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
-		}
-
-		// Make extra sure there is no id set
-		unset($this->data['id']);
-
-		// Insert the game data to the database
-		$sql = 'INSERT INTO ' . $this->games_table . ' ' . $this->db->sql_build_array('INSERT', $this->data);
-		$this->db->sql_query($sql);
-
-		// Set the game_id using the id created by the SQL insert
-		$this->data['id'] = (int) $this->db->sql_nextid();
-
 		return $this;
 	}
 
 	/**
-	* Save the current settings to the database
+	* Do nothing
 	*
-	* This must be called before closing or any changes will not be saved!
-	* If adding a game (saving for the first time), you must call insert() or an exeception will be thrown
 	*
-	* @return game_interface $this object for chaining calls; load()->set()->save()
 	* @access public
-	* @throws \tacitus89\gamesmod\exception\out_of_bounds
 	*/
 	public function save()
 	{
-		if (empty($this->data['id']))
-		{
-			// The game does not exist
-			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
-		}
-
-		$sql = 'UPDATE ' . $this->games_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $this->data) . '
-			WHERE id = ' . $this->get_id();
-		$this->db->sql_query($sql);
-
 		return $this;
 	}
 
@@ -356,6 +345,124 @@ class game implements game_interface
 
 		// Set the parent on our data array
 		$this->data['parent'] = $parent;
+
+		return $this;
+	}
+	
+	/**
+	* Get the play bit
+	*
+	* @return int play integer
+	* @access public
+	*/
+	public function get_play()
+	{
+		return (isset($this->data['play'])) ? (int) $this->data['play'] : 0;
+	}
+	
+	/**
+	* Set play bit
+	*
+	* @param integer $bit
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_play($bit)
+	{
+		// Enforce a integer
+		$bit = (integer) $bit;
+		//it must be 0 or 1
+		if($bit > 0)
+		{
+			$bit = 1;
+		}
+
+		// If the data is less than 0, it's not unsigned and we'll throw an exception
+		if ($bit < 0)
+		{
+			throw new \tacitus89\gamesmod\exception\out_of_bounds($bit);
+		}
+
+		// Set the play on our data array
+		$this->data['play'] = $bit;
+
+		return $this;
+	}
+	
+	/**
+	* Get the share bit
+	*
+	* @return int share integer
+	* @access public
+	*/
+	public function get_share()
+	{
+		return (isset($this->data['share'])) ? (int) $this->data['share'] : 0;
+	}
+	
+	/**
+	* Set share bit
+	*
+	* @param integer $bit
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_share($bit)
+	{
+		// Enforce a integer
+		$bit = (integer) $bit;
+		//it must be 0 or 1
+		if($bit > 0)
+		{
+			$bit = 1;
+		}
+
+		// If the data is less than 0, it's not unsigned and we'll throw an exception
+		if ($bit < 0)
+		{
+			throw new \tacitus89\gamesmod\exception\out_of_bounds($bit);
+		}
+
+		// Set the share on our data array
+		$this->data['share'] = $bit;
+
+		return $this;
+	}
+	
+	/**
+	* Get the share_id
+	*
+	* @return int share integer
+	* @access public
+	*/
+	public function get_share_id()
+	{
+		return (isset($this->data['share'])) ? (int) $this->data['share'] : 0;
+	}
+	
+	/**
+	* Set share_id
+	*
+	* @param integer $share_id
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_share_id($share_id)
+	{
+		// Enforce a integer
+		$share_id = (integer) $share_id;
+
+		// If the data is less than 0, it's not unsigned and we'll throw an exception
+		if ($bit < 0)
+		{
+			throw new \tacitus89\gamesmod\exception\out_of_bounds($share_id);
+		}
+
+		// Set the share on our data array
+		$this->data['share_id'] = $share_id;
 
 		return $this;
 	}

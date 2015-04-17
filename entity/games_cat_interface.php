@@ -15,7 +15,7 @@ namespace tacitus89\gamesmod\entity;
 *
 * This describes all of the methods we'll have for a single game
 */
-interface game_interface
+interface games_cat_interface
 {
 	/**
 	* Load the data from the database for this game
@@ -91,56 +91,38 @@ interface game_interface
 	public function set_name($name);
 
 	/**
-	* Get description
+	* Get dir
 	*
-	* @return string description
+	* @return string dir
 	* @access public
 	*/
-	public function get_description();
+	public function get_dir();
 	
 	/**
-	* Set description
+	* Set dir
 	*
-	* @param string $description
+	* @param string $dir
 	* @return game_interface $this object for chaining calls; load()->set()->save()
 	* @access public
 	* @throws \tacitus89\gamesmod\exception\unexpected_value
 	*/
-	public function set_description($description);
+	public function set_dir($dir);
 	
 	/**
-	* Get image
+	* Get the order_id identifier
 	*
-	* @return string image
+	* @return int order_id identifier
 	* @access public
 	*/
-	public function get_image();
+	public function get_order_id();
 	
 	/**
-	* Set image
+	* Set order_id
 	*
-	* @param string $image
+	* @param integer $order_id
 	* @return game_interface $this object for chaining calls; load()->set()->save()
 	* @access public
 	* @throws \tacitus89\gamesmod\exception\unexpected_value
 	*/
-	public function set_image($image);
-	
-	/**
-	* Get the parent identifier
-	*
-	* @return int parent identifier
-	* @access public
-	*/
-	public function get_parent();
-
-	/**
-	* Set parent
-	*
-	* @param integer $parent
-	* @return game_interface $this object for chaining calls; load()->set()->save()
-	* @access public
-	* @throws \tacitus89\gamesmod\exception\unexpected_value
-	*/
-	public function set_parent($parent);
+	public function set_order_id($order_id);
 }

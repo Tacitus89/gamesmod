@@ -1,0 +1,31 @@
+<!--version $Id: portal_games_side.html 481 2009-08-07 23:16:32Z grumpybum$ //-->
+
+{$LR_BLOCK_H_L}<!-- IF $S_BLOCK_ICON --><img src="{T_THEME_PATH}/images/icon_game.gif" width="16px" height="16px" alt=""/>&nbsp;<!-- ENDIF -->{L_GAMES}{$LR_BLOCK_H_R}
+<table class="tablebg" cellspacing="1" width="100%">
+	<tr class="row1">
+		<td>
+			<!-- IF S_PORTAL_POPULAR_SIDE -->
+			<span style="float:left;"><strong>{L_GAMES_POPULAR}</strong></span><br style="clear:both" />
+				<!-- BEGIN popular_side-->
+					<span style="float:left;">{popular_side.GAME_IMG}</span>
+					<span style="float:left;padding-left:10px; padding-top:4px;"><a href="{popular_side.U_GAME}">{popular_side.GAME_NAME}</a></span><br style="clear:both" />
+				<!-- END popular_side -->
+			<!-- ENDIF -->
+			<!-- IF S_PORTAL_RECENT_SIDE -->
+			<span style="float:left;"><strong>{L_GAMES_RECENT}</strong></span><br style="clear:both" />
+				<!-- BEGIN recent_side-->
+					<span style="float:left;">{recent_side.GAME_IMG}</span>
+					<span style="float:left;padding-left:10px; padding-top:4px;"><a href="{recent_side.U_GAME}">{recent_side.GAME_NAME}</a></span><br style="clear:both" />
+				<!-- END recent_side -->
+			<!-- ENDIF -->
+			<!-- IF S_PORTAL_PLAY_SIDE -->
+			<span style="float:left;"><strong>{L_GAME_PLAY}</strong></span><br style="clear:both" />
+				<!-- BEGIN play_side-->
+					<span style="float:left;">{play_side.GAME_IMG}</span>
+					<span style="float:left;padding-left:10px; padding-top:4px;"><a href="{play_side.U_GAME}">{play_side.GAME_NAME}</a></span><br style="clear:both" />
+				<!-- END play_side -->
+			<!-- ENDIF -->
+		</td>
+	</tr>
+</table>
+{$LR_BLOCK_F_L}{$LR_BLOCK_F_R}

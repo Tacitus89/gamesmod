@@ -21,6 +21,9 @@ class admin_controller implements admin_interface
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+	
+	/* @var \phpbb\pagination */
+	protected $pagination;
 
 	/** @var \phpbb\request\request */
 	protected $request;
@@ -34,11 +37,11 @@ class admin_controller implements admin_interface
 	/** @var ContainerInterface */
 	protected $container;
 	
-	/** @var \tacitus89\gamesmod\operators\game */
-	protected $game_operator;
-
-	/** @var \phpbb\includes\functions_upload */
-	protected $upload;
+	/** @var \tacitus89\gamesmod\operators\games */
+	protected $games_operator;
+	
+	/** @var \tacitus89\gamesmod\operators\games_cat */
+	protected $games_cat_operator;
 	
 	/** @var string phpBB root path */
 	protected $root_path;
@@ -58,21 +61,23 @@ class admin_controller implements admin_interface
 	* @param \phpbb\template\template             $template        Template object
 	* @param \phpbb\user                          $user            User object
 	* @param ContainerInterface                   $container       Service container interface
-	* @param \tacitus89\games\operators\game      $game_operator   game operator object
+	* @param \tacitus89\games\operators\games_cat  $games_cat_operator   games_cat operator object
 	* @param string                               $root_path       phpBB root path
 	* @param string                               $php_ext         phpEx
 	* @return \tacitus89\gamesmod\controller\admin_controller
 	* @access public
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, ContainerInterface $container, \tacitus89\gamesmod\operators\game $game_operator, $root_path, $php_ext)
+	public function __construct(\phpbb\config\config $config, \phpbb\db\driver\driver_interface $db, \phpbb\pagination $pagination, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, ContainerInterface $container, \tacitus89\gamesmod\operators\games $games_operator, \tacitus89\gamesmod\operators\games_cat $games_cat_operator, $root_path, $php_ext)
 	{
 		$this->config = $config;
 		$this->db = $db;
+		$this->pagination = $pagination;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
 		$this->container = $container;
-		$this->game_operator = $game_operator;
+		$this->games_operator = $games_operator;
+		$this->games_cat_operator = $games_cat_operator;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
 	}
@@ -192,66 +197,152 @@ class admin_controller implements admin_interface
 	}
 	
 	/**
-	* Display the games
+	* Display the games_cat
 	*
-	* @param int $parent_id Category to display games from; default: 0
 	* @return null
 	* @access public
 	*/
-	public function display_games($parent_id = 0)
+	public function display_games_cats()
 	{
-		// Grab all the games
-		$entities = $this->game_operator->get_games($parent_id);
+		// Grab all the games_cat
+		$entities = $this->games_cat_operator->get_games_cat();
+		
+		// Process each game entity for display
+		foreach ($entities as $entity)
+		{
+			// Set output block vars for display in the template
+			$this->template->assign_block_vars('game_cats', array(
+				'NAME'		=> $entity->get_name(),
 
-		// Initialize a variable to hold the right_id value
-		$last_right_id = 0;
+				'S_IS_CATEGORY'		=> true,
+
+				'U_DELETE'			=> "{$this->u_action}&amp;action=delete_cat&amp;parent_id=" . $entity->get_id(),
+				'U_EDIT'			=> "{$this->u_action}&amp;action=edit_cat&amp;parent_id=" . $entity->get_id(),
+				'U_MOVE_DOWN'		=> "{$this->u_action}&amp;action=move_cat_down&amp;parent_id=" . $entity->get_id() . '&amp;hash=' . generate_link_hash('down' . $entity->get_id()),
+				'U_MOVE_UP'			=> "{$this->u_action}&amp;action=move_cat_up&amp;parent_id=" . $entity->get_id() . '&amp;hash=' . generate_link_hash('up' . $entity->get_id()),
+				'U_GAME'			=> "{$this->u_action}&amp;action=view_games&amp;parent_id=" . $entity->get_id(),
+			));
+
+		}
+		
+		// Add form key
+		add_form_key('add_edit_game_cat');
+
+		// Set output vars for display in the template
+		$this->template->assign_vars(array(
+			'U_ACTION'		=> "{$this->u_action}",
+			'U_ADD_GAME'	=> "{$this->u_action}&amp;action=add_cat",
+			'U_MAIN'		=> "{$this->u_action}",
+		));
+	}
+	
+	/**
+	* Display the games
+	*
+	* @param int $parent_id Category to display games from
+	* @return null
+	* @access public
+	*/
+	public function display_games($parent_id)
+	{
+		$start = $this->request->variable('start', 0);
+		
+		// Grab all the games
+		$entities = $this->games_operator->get_games($parent_id, $start, $this->config['games_pagination']);
 
 		// Process each game entity for display
 		foreach ($entities as $entity)
 		{
-			if ($entity->get_left_id() < $last_right_id)
-			{
-				continue; // The current game is a child of a previous game, do not display it
-			}
-
 			// Set output block vars for display in the template
 			$this->template->assign_block_vars('games', array(
-				'GAME_TITLE'		=> $entity->get_title(),
-
-				'S_IS_CATEGORY'		=> ($entity->get_right_id() - $entity->get_left_id() > 1) ? true : false,
-
-				'U_DELETE'			=> "{$this->u_action}&amp;action=delete&amp;game_id=" . $entity->get_id(),
-				'U_EDIT'			=> "{$this->u_action}&amp;action=edit&amp;game_id=" . $entity->get_id(),
-				'U_MOVE_DOWN'		=> "{$this->u_action}&amp;action=move_down&amp;game_id=" . $entity->get_id() . '&amp;hash=' . generate_link_hash('down' . $entity->get_id()),
-				'U_MOVE_UP'			=> "{$this->u_action}&amp;action=move_up&amp;game_id=" . $entity->get_id() . '&amp;hash=' . generate_link_hash('up' . $entity->get_id()),
-				'U_GAME'			=> "{$this->u_action}&amp;parent_id=" . $entity->get_id(),
-			));
-
-			// Store the current right_id value
-			$last_right_id = $entity->get_right_id();
-		}
-
-		// Prepare game breadcrumb path navigation
-		$entities = $this->game_operator->get_game_parents($parent_id);
-
-		// Process each game entity for breadcrumb display
-		foreach ($entities as $entity)
-		{
-			// Set output block vars for display in the template
-			$this->template->assign_block_vars('breadcrumb', array(
-				'GAME_TITLE'		=> $entity->get_title(),
-
-				'S_CURRENT_LEVEL'	=> ($entity->get_id() == $parent_id) ? true : false,
-
+				'GAME_NAME'		=> $entity->get_name(),
+		
+				'U_IMAGE'			=> ($entity->get_image() != '')? '' . $this->root_path . 'images/games/' . $entity->get_image() . '' : '',
+				'U_DELETE'			=> "{$this->u_action}&amp;action=delete_game&amp;game_id=" . $entity->get_id(),
+				'U_EDIT'			=> "{$this->u_action}&amp;action=edit_game&amp;game_id=" . $entity->get_id(),
 				'U_GAME'			=> "{$this->u_action}&amp;parent_id=" . $entity->get_id(),
 			));
 		}
 
+		//number of games
+		$total_games = $this->games_operator->get_number_games($parent_id);
+		
+		//Generation pagination
+		$this->pagination->generate_template_pagination("{$this->u_action}&amp;action=view_games&amp;parent_id={$parent_id}", 'pagination', 'start', $total_games, $this->config['games_pagination'], $start);
+		
+		// Add form key
+		add_form_key('add_edit_game');
+		
+		// Set output block vars for display in the template
+		//Get CAT Name
+		$entity = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
+		$this->template->assign_block_vars('breadcrumb', array(
+			'GAME_CAT'		=> $entity->get_name(),
+
+			'S_CURRENT_LEVEL'	=> ($entity->get_id() == $parent_id) ? true : false,
+
+			'U_GAME'			=> "{$this->u_action}&amp;parent_id=" . $entity->get_id(),
+		));
+		
 		// Set output vars for display in the template
 		$this->template->assign_vars(array(
+			'TOTAL_GAMES'	=> $total_games,
 			'U_ACTION'		=> "{$this->u_action}&amp;parent_id={$parent_id}",
-			'U_ADD_GAME'	=> "{$this->u_action}&amp;parent_id={$parent_id}&amp;action=add",
+			'U_ADD_GAME'	=> "{$this->u_action}&amp;parent_id={$parent_id}&amp;action=add_game",
 			'U_MAIN'		=> "{$this->u_action}&amp;parent_id=0",
+		));
+	}
+	
+	/**
+	* Add a game_cat
+	*
+	* @return null
+	* @access public
+	*/
+	public function add_game_cat()
+	{
+		// Get form's POST actions (submit or preview)
+		$submit = $this->request->is_set_post('submit');
+		
+		// Initiate a game entity
+		$entity = $this->container->get('tacitus89.gamesmod.entity.games_cat');
+		$entity->set_name($this->request->variable('game_cat_name', '', true));
+		
+		// Create an array to collect errors that will be output to the user
+		$errors = array();
+
+		// If the form has been submitted
+		if ($submit)
+		{
+			// Test if the form is valid
+			if (!check_form_key('add_edit_game_cat'))
+			{
+				$errors[] = $this->user->lang('FORM_INVALID');
+			}
+			
+			// Do not allow an empty game title
+			if ($entity->get_name() == '')
+			{
+				$errors[] = $this->user->lang['ACP_CAT_ADD_FAIL'];
+			}
+		}
+		
+		// Insert or update game
+		if ($submit && empty($errors))
+		{
+			// Add a new game entity to the database
+			$this->games_cat_operator->add_games_cat($entity);
+
+			// Show user confirmation of the added game and provide link back to the previous page
+			trigger_error($this->user->lang('ACP_CAT_ADD_GOOD') . adm_back_link("{$this->u_action}"));
+		}
+		
+		// Set output vars for display in the template
+		$this->template->assign_vars(array(
+			'S_ERROR'			=> (sizeof($errors)) ? true : false,
+			'ERROR_MSG'			=> (sizeof($errors)) ? implode('<br />', $errors) : '',
+
+			'GAME_TITLE'		=> $entity->get_name(),
 		));
 	}
 	
@@ -268,16 +359,17 @@ class admin_controller implements admin_interface
 		add_form_key('add_edit_game');
 
 		// Initiate a game entity
-		$entity = $this->container->get('tacitus89.gamesmod.entity');
+		$entity = $this->container->get('tacitus89.gamesmod.entity.game');
 
 		// Build game parent pull down menu
 		$this->build_parent_select_menu($entity, $parent_id, $mode = 'add');
 
 		// Collect the form data
 		$data = array(
-			'game_parent_id'	=> $this->request->variable('game_parent', $parent_id),
-			'game_title'		=> $this->request->variable('game_title', '', true),
-			'game_description'	=> $this->request->variable('game_description', '', true),
+			'parent'		=> $this->request->variable('game_parent', $parent_id),
+			'name'			=> $this->request->variable('game_name', '', true),
+			'description'	=> $this->request->variable('game_description', '', true),
+			'image'			=> $this->request->variable('game_image', '', true),
 		);
 
 		// Process the new game
@@ -287,8 +379,73 @@ class admin_controller implements admin_interface
 		$this->template->assign_vars(array(
 			'S_ADD_GAME'		=> true,
 
-			'U_ADD_ACTION'		=> "{$this->u_action}&amp;parent_id={$parent_id}&amp;action=add",
-			'U_BACK'			=> "{$this->u_action}&amp;parent_id={$parent_id}",
+			'U_ADD_ACTION'		=> "{$this->u_action}&amp;parent_id={$parent_id}&amp;action=add_game",
+			'U_BACK'			=> "{$this->u_action}&amp;action=view_games&amp;parent_id={$parent_id}",
+		));
+	}
+	
+	/**
+	* Edit a game_cat
+	*
+	* @param int $parent_id The game_cat identifier to edit
+	* @return null
+	* @access public
+	*/
+	public function edit_game_cat($parent_id)
+	{
+		// Add form key
+		add_form_key('add_edit_game_cat');
+		
+		// Get form's POST actions submit
+		$submit = $this->request->is_set_post('submit');
+
+		// Initiate and load the game entity
+		$entity = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
+
+		// Collect the form data
+		$data = array(
+			'game_cat_name'	=> $this->request->variable('game_cat_name', $entity->get_name()),
+		);
+		
+		$entity->set_name($data['game_cat_name']);
+		
+		// Create an array to collect errors that will be output to the user
+		$errors = array();
+
+		// If the form has been submitted
+		if ($submit)
+		{
+			// Test if the form is valid
+			if (!check_form_key('add_edit_game_cat'))
+			{
+				$errors[] = $this->user->lang('FORM_INVALID');
+			}
+			
+			// Do not allow an empty game title
+			if ($entity->get_name() == '')
+			{
+				$errors[] = $this->user->lang['ACP_CAT_ADD_FAIL'];
+			}
+		}
+		
+		// Insert or update game
+		if ($submit && empty($errors))
+		{
+			// Save the edited game entity to the database
+			$entity->save();
+
+			// Show user confirmation of the saved game and provide link back to the previous page
+			trigger_error($this->user->lang['ACP_CAT_EDIT_GOOD'] . adm_back_link("{$this->u_action}"));
+		}
+
+		// Set output vars for display in the template
+		$this->template->assign_vars(array(
+			'S_EDIT_GAME_CAT'	=> true,
+			
+			'GAME_CAT_NAME'		=> $entity->get_name(),
+
+			'U_EDIT_ACTION'		=> "{$this->u_action}&amp;parent_id={$parent_id}&amp;action=edit_cat",
+			'U_BACK'			=> "{$this->u_action}",
 		));
 	}
 	
@@ -305,17 +462,17 @@ class admin_controller implements admin_interface
 		add_form_key('add_edit_game');
 
 		// Initiate and load the game entity
-		$entity = $this->container->get('tacitus89.gamesmod.entity')->load($game_id);
+		$entity = $this->container->get('tacitus89.gamesmod.entity.game')->load($game_id);
 
 		// Build game parent pull down menu
 		$this->build_parent_select_menu($entity);
 
 		// Collect the form data
 		$data = array(
-			'game_parent_id'	=> $this->request->variable('game_parent', $entity->get_parent_id()),
-			'game_title'		=> $this->request->variable('game_title', $entity->get_title(), true),
-			'game_description'	=> $this->request->variable('game_description', $entity->get_description(), true),
-			'game_image'		=> $this->request->variable('game_image', $entity->get_image(), true),
+			'parent'		=> $this->request->variable('game_parent', $entity->get_parent()),
+			'name'			=> $this->request->variable('game_name', $entity->get_name(), true),
+			'description'	=> $this->request->variable('game_description', $entity->get_description(), true),
+			'image'			=> $this->request->variable('game_image', $entity->get_image(), true),
 		);
 
 		// Process the edited game
@@ -324,10 +481,9 @@ class admin_controller implements admin_interface
 		// Set output vars for display in the template
 		$this->template->assign_vars(array(
 			'S_EDIT_GAME'		=> true,
-			'S_IS_CATEGORY'		=> ($entity->get_right_id() - $entity->get_left_id() > 1) ? true : false,
 
-			'U_EDIT_ACTION'		=> "{$this->u_action}&amp;game_id={$game_id}&amp;action=edit",
-			'U_BACK'			=> "{$this->u_action}&amp;parent_id={$entity->get_parent_id()}",
+			'U_EDIT_ACTION'		=> "{$this->u_action}&amp;game_id={$game_id}&amp;action=edit_game",
+			'U_BACK'			=> "{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}",
 		));
 	}
 	
@@ -346,45 +502,13 @@ class admin_controller implements admin_interface
 
 		// Create an array to collect errors that will be output to the user
 		$errors = array();
-
-		//Image Upload?
-		$uploadfile = $this->request->file('uploadfile');
-		if($uploadfile)
-		{
-			if (!class_exists('\fileupload'))
-			{
-				include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
-			}
-			$upload = new \fileupload('GAME_', array('jpg', 'jpeg', 'gif', 'png'), 80000, 0, 0, 0, 0, explode('|', $config['mime_triggers']));
-			$file = $upload->form_upload('uploadfile');
-			$file->clean_filename('real', '', '');
-			$destination = 'images/games';
-			if( !is_dir($this->root_path . $destination) )
-			{
-				mkdir($this->root_path . $destination, 0644);
-				//TODO: if failed?
-			}
-			$data['game_image'] = $file->realname;
-
-			// Move file and overwrite any existing image
-			$file->move_file($destination, true);
-			
-			if (sizeof($file->error))
-			{
-				$file->remove();
-				trigger_error(implode('<br />', $file->error));
-			}
-			else
-			{
-				@chmod($this->root_path . $destination . '/' . $data['game_image'], 0644);
-			}
-		}
 		
 		// Grab the form's game data fields
 		$game_fields = array(
-			'title'			=> $data['game_title'],
-			'description'	=> $data['game_description'],
-			'image'			=> $data['game_image'],
+			'name'			=> $data['name'],
+			'description'	=> $data['description'],
+			'image'			=> $data['image'],
+			'parent'		=> $data['parent'],
 		);
 		
 		// Set the game's data in the entity
@@ -413,8 +537,41 @@ class admin_controller implements admin_interface
 				$errors[] = $this->user->lang('FORM_INVALID');
 			}
 
+			//Image Upload
+			$uploadfile = $this->request->file('uploadfile');
+			if($uploadfile['name'] != '')
+			{
+				if (!class_exists('\fileupload'))
+				{
+					include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
+				}
+				$upload = new \fileupload('GAME_', array('jpg', 'jpeg', 'gif', 'png'), 80000, 0, 0, 0, 0, explode('|', $config['mime_triggers']));
+				$file = $upload->form_upload('uploadfile');
+				$file->clean_filename('real', '', '');
+				$destination = 'images/games';
+				if( !is_dir($this->root_path . $destination) )
+				{
+					mkdir($this->root_path . $destination, 0644);
+					//TODO: if failed?
+				}
+				$data['image'] = $file->realname;
+
+				// Move file and overwrite any existing image
+				$file->move_file($destination, true);
+				
+				if (sizeof($file->error))
+				{
+					$file->remove();
+					trigger_error(implode('<br />', $file->error));
+				}
+				else
+				{
+					@chmod($this->root_path . $destination . '/' . $data['image'], 0644);
+				}
+			}
+
 			// Do not allow an empty game title
-			if ($entity->get_title() == '')
+			if ($entity->get_name() == '')
 			{
 				$errors[] = $this->user->lang('ACP_GAME_TITLE_EMPTY');
 			}
@@ -429,21 +586,22 @@ class admin_controller implements admin_interface
 				$entity->save();
 
 				// Change game parent
+				/*
 				if (isset($data['game_parent_id']) && ($data['game_parent_id'] != $entity->get_parent_id()))
 				{
-					$this->game_operator->change_parent($entity->get_id(), $data['game_parent_id']);
-				}
+					$this->games_cat_operator->change_parent($entity->get_id(), $data['game_parent_id']);
+				}*/
 
 				// Show user confirmation of the saved game and provide link back to the previous page
-				trigger_error($this->user->lang('ACP_GAME_EDITED') . adm_back_link("{$this->u_action}&amp;parent_id={$entity->get_parent_id()}"));
+				trigger_error($this->user->lang('ACP_GAME_EDITED') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}"));
 			}
 			else
 			{
 				// Add a new game entity to the database
-				$this->game_operator->add_game($entity, $data['game_parent_id']);
+				$this->games_operator->add_game($entity);
 
 				// Show user confirmation of the added game and provide link back to the previous page
-				trigger_error($this->user->lang('ACP_GAME_ADDED') . adm_back_link("{$this->u_action}&amp;parent_id={$data['game_parent_id']}"));
+				trigger_error($this->user->lang('ACP_GAME_ADDED') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$data['parent']}"));
 			}
 		}
 		
@@ -465,7 +623,9 @@ class admin_controller implements admin_interface
 		natsort($dirfile);
 		foreach ($dirfile as $key => $value)
 		{
-			$options .= '<option value="' . $value . '">' . $value . '</option>';
+			$options .= '<option value="' . $value . '" ';
+			$options .= ($value == $entity->get_image())? 'selected="selected"':'';
+			$options .= '>' . $value . '</option>';
 		}
 		
 		// Set output vars for display in the template
@@ -473,11 +633,48 @@ class admin_controller implements admin_interface
 			'S_ERROR'			=> (sizeof($errors)) ? true : false,
 			'ERROR_MSG'			=> (sizeof($errors)) ? implode('<br />', $errors) : '',
 
-			'GAME_TITLE'		=> $entity->get_title(),
+			'GAME_NAME'			=> $entity->get_name(),
 			'GAME_DESCRIPTION'	=> $entity->get_description(),
 			'IMAGE_OPTIONS'		=> $options,
-			'GAME_IMAGE'		=> '<img src="' . $this->root_path . 'images/games/' . $entity->get_image() . '" title="' . $entity->get_title() . '" style="max-width: 60px;"/>',
+			'GAME_IMAGE'		=> ($entity->get_image() != '')? '' . $this->root_path . 'images/games/' . $entity->get_image() . '' : '',
 		));
+	}
+	
+	/**
+	* Delete a game_cat
+	*
+	* @param int $parent_id The game identifier to delete
+	* @return null
+	* @access public
+	*/
+	public function delete_game_cat($parent_id)
+	{
+		//TODO: Deletes with choices
+		// Initiate and load the game entity
+		$entity = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
+
+		// Use a confirmation box routine when deleting a game
+		if (confirm_box(true))
+		{
+			// Delete the game on confirmation
+			$this->games_cat_operator->delete_games_cat($parent_id);
+
+			//Show user confirmation of the deleted game and provide link back to the previous page
+			trigger_error($this->user->lang('ACP_CAT_DELETE_GOOD') . adm_back_link("{$this->u_action}"));
+		}
+		else
+		{
+			// Request confirmation from the user to delete the game
+			confirm_box(false, $this->user->lang('ACP_CAT_DELETE_CONFIRM'), build_hidden_fields(array(
+				'mode' => 'management',
+				'action' => 'delete_cat',
+				'parent_id' => $parent_id,
+			)));
+
+			// Use a redirect to take the user back to the previous page
+			// if the user chose not delete the game from the confirmation page.
+			redirect("{$this->u_action}");
+		}
 	}
 	
 	/**
@@ -490,51 +687,50 @@ class admin_controller implements admin_interface
 	public function delete_game($game_id)
 	{
 		// Initiate and load the game entity
-		$entity = $this->container->get('tacitus89.gamesmod.entity')->load($game_id);
+		$entity = $this->container->get('tacitus89.gamesmod.entity.game')->load($game_id);
 
 		// Use a confirmation box routine when deleting a game
 		if (confirm_box(true))
 		{
 			// Delete the game on confirmation
-			$this->game_operator->delete_game($game_id);
+			$this->games_operator->delete_game($game_id);
 
 			// Show user confirmation of the deleted game and provide link back to the previous page
-			trigger_error($this->user->lang('ACP_GAME_DELETED') . adm_back_link("{$this->u_action}&amp;parent_id={$entity->get_parent_id()}"));
+			trigger_error($this->user->lang('ACP_GAME_DELETE_GOOD') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}"));
 		}
 		else
 		{
 			// Request confirmation from the user to delete the game
-			confirm_box(false, $this->user->lang('ACP_DELETE_RULE_CONFIRM'), build_hidden_fields(array(
+			confirm_box(false, $this->user->lang('ACP_CONFIRM_MSG_1'), build_hidden_fields(array(
 				'mode' => 'management',
-				'action' => 'delete',
+				'action' => 'delete_game',
 				'game_id' => $game_id,
 			)));
 
 			// Use a redirect to take the user back to the previous page
 			// if the user chose not delete the game from the confirmation page.
-			redirect("{$this->u_action}&amp;parent_id={$entity->get_parent_id()}");
+			redirect("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}");
 		}
 	}
 	
 	/**
-	* Move a game up/down
+	* Move a game_cat up/down
 	*
-	* @param int $game_id The game identifier to move
+	* @param int $parent_id The game identifier to move
 	* @param string $direction The direction (up|down)
-	* @param int $amount The number of places to move the game
 	* @return null
 	* @access public
 	*/
-	public function move_game($game_id, $direction, $amount = 1)
+	public function move_game_cat($parent_id, $direction)
 	{
 		// If the link hash is invalid, stop and show an error message to the user
-		if (!check_link_hash($this->request->variable('hash', ''), $direction . $game_id))
+		if (!check_link_hash($this->request->variable('hash', ''), $direction . $parent_id))
 		{
 			trigger_error($this->user->lang('FORM_INVALID') . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Move the game
-		$this->game_operator->move($game_id, $direction, $amount);
+		$this->games_cat_operator->move($parent_id, $direction);
 
 		// Send a JSON response if an AJAX request was used
 		if ($this->request->is_ajax())
@@ -544,10 +740,10 @@ class admin_controller implements admin_interface
 		}
 
 		// Initiate and load the game entity for no AJAX request
-		$entity = $this->container->get('tacitus89.gamesmod.entity')->load($game_id);
+		$entity = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
 
 		// Use a redirect to reload the current page
-		redirect("{$this->u_action}&amp;parent_id={$entity->get_parent_id()}");
+		redirect("{$this->u_action}");
 	}
 	
 	/**
@@ -573,36 +769,19 @@ class admin_controller implements admin_interface
 	*/
 	protected function build_parent_select_menu($entity, $parent_id = 0, $mode = 'edit')
 	{
-		$parent_id = ($mode == 'edit') ? $entity->get_parent_id() : $parent_id;
+		$parent_id = ($mode == 'edit') ? $entity->get_parent() : $parent_id;
 
 		// Prepare game pull-down field
-		$game_menu_items = $this->game_operator->get_games();
-
-		$padding = '';
-		$padding_store = array();
-		$right = 0;
+		$game_menu_items = $this->games_cat_operator->get_games_cat();
 
 		// Process each game menu item for pull-down
 		foreach ($game_menu_items as $game_menu_item)
 		{
-			if ($game_menu_item->get_left_id() < $right)
-			{
-				$padding .= '&nbsp;&nbsp;';
-				$padding_store[$game_menu_item->get_parent_id()] = $padding;
-			}
-			else if ($game_menu_item->get_left_id() > $right + 1)
-			{
-				$padding = (isset($padding_store[$game_menu_item->get_parent_id()])) ? $padding_store[$game_menu_item->get_parent_id()] : '';
-			}
-
-			$right = $game_menu_item->get_right_id();
-
 			// Set output block vars for display in the template
 			$this->template->assign_block_vars('gamemenu', array(
 				'GAME_ID'			=> $game_menu_item->get_id(),
-				'GAME_TITLE'		=> $padding . $game_menu_item->get_title(),
+				'GAME_TITLE'		=> $game_menu_item->get_name(),
 
-				'S_DISABLED'		=> ($mode == 'edit' && (($game_menu_item->get_left_id() > $entity->get_left_id()) && ($game_menu_item->get_right_id() < $entity->get_right_id()) || ($game_menu_item->get_id() == $entity->get_id()))) ? true : false,
 				'S_GAME_PARENT'		=> ($game_menu_item->get_id() == $parent_id) ? true : false,
 			));
 		}

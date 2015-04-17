@@ -1,0 +1,57 @@
+
+/* Game Icon images
+---------------------------------------- */
+.icon-game {
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+	background-image: none;
+	padding: 1px 0 0 20px;
+}
+.icon-game	{ background-image: url("./images/icon_game.gif"); }
+.rtl .icon-game {
+	background-position: 100% 50%;
+	padding: 1px 20px 0 0;
+}
+.game-play-add, .game-play-add a, .game-play-delete, .game-play-delete a, .game-share-add, .game-share-add a, .game-share-delete, .game-share-delete a{
+	background-position: top left;
+	background-repeat: no-repeat;
+	background-color: transparent;
+}
+ul.profile-icons li.game-play-add, ul.profile-icons li.game-play-delete, ul.profile-icons li.game-share-add, ul.profile-icons li.game-share-delete{
+	height:16px;
+	width:16px;
+}
+
+.post-buttons {
+	float: left;
+	list-style: none;
+	margin-top: 2px;
+}
+
+.post-buttons .icon-button {
+	padding: 0 5px;
+	margin: 0 3px;
+}
+
+.icon-button:before {
+	background: transparent 0 0 no-repeat;
+	content: '';
+	display: inline-block;
+	float: right;
+	height: 16px;
+	margin: 1px 0 0 0;
+	width: 16px;
+}
+
+.share-add-icon:before, .share-delete-icon:before, .play-add-icon:before, .play-delete-icon:before  { 
+	background-position: 0 0;
+}
+
+.share-add-icon:hover:before, .share-delete-icon:hover:before, .play-add-icon:hover:before, .play-delete-icon:hover:before {
+	background-position: 0 100%;
+}
+
+.share-add-icon:before  { background-image: url("./images/game_share_add.gif"); }
+.share-delete-icon:before  { background-image: url("./images/game_share_delete.gif"); }
+.play-add-icon:before  { background-image: url("./images/game_play_add.gif"); }
+.play-delete-icon:before  { background-image: url("./images/game_play_delete.gif"); }

@@ -25,12 +25,29 @@ interface admin_interface
 	public function display_options();
 	
 	/**
-	* Display the games in cat for this extension
+	* Display the games_cat
 	*
 	* @return null
 	* @access public
 	*/
-	public function display_games();
+	public function display_games_cats();
+	
+	/**
+	* Display the games in cat for this extension
+	*
+	* @param int $parent_id Category to display games from; default: 0
+	* @return null
+	* @access public
+	*/
+	public function display_games($parent_id);
+	
+	/**
+	* Add a game_cat
+	*
+	* @return null
+	* @access public
+	*/
+	public function add_game_cat();
 	
 	/**
 	* Add a game
@@ -42,6 +59,15 @@ interface admin_interface
 	public function add_game($parent_id = 0);
 	
 	/**
+	* Edit a game_cat
+	*
+	* @param int $parent_id The game_cat identifier to edit
+	* @return null
+	* @access public
+	*/
+	public function edit_game_cat($parent_id);
+	
+	/**
 	* Edit a game
 	*
 	* @param int $game_id The game identifier to edit
@@ -49,6 +75,15 @@ interface admin_interface
 	* @access public
 	*/
 	public function edit_game($game_id);
+	
+	/**
+	* Delete a game_cat
+	*
+	* @param int $parent_id The game identifier to delete
+	* @return null
+	* @access public
+	*/
+	public function delete_game_cat($parent_id);
 	
 	/**
 	* Delete a game
@@ -60,15 +95,14 @@ interface admin_interface
 	public function delete_game($game_id);
 	
 	/**
-	* Move a game up/down
+	* Move a game_cat up/down
 	*
-	* @param int $game_id The game identifier to move
+	* @param int $parent_id The game identifier to move
 	* @param string $direction The direction (up|down)
-	* @param int $amount The number of places to move the game
 	* @return null
 	* @access public
 	*/
-	public function move_game($game_id, $direction, $amount = 1);
+	public function move_game_cat($parent_id, $direction);
 	
 	/**
 	* Set page url

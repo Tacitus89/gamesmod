@@ -1,64 +1,97 @@
 <!-- INCLUDE overall_header.html -->
 
-<h1>{L_ACP_GAMES} [{CAT_TITLE}]</h1>
-<p>{L_ACP_GAMES_DESC}</p>
+<!-- IF S_EDIT_GAME_CAT -->
 
-<form id="module" method="post">
+	<a id="maincontent"></a>
 
-<fieldset class="quick" style="float: left;">
-	<input type="text" name="game_name" maxlength="30" /> 
-	<input class="button2" name="addgame" type="submit" value="{L_ACP_CREATE_GAME}" />
-</fieldset>
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+	
+	<h1>{L_ACP_GAME_TITLE_CAT}</h1>
+	<p>{L_ACP_GAME_TEXT_CAT}</p>
 
-</form>
-<div class="clearfix">&nbsp;</div>
-<br />
-<!-- IF games -->
-<table cellspacing="1">
-	<col class="row3" /><col class="row4" /><col class="row3" />
-<tbody>
-	<tr>
-		<td class="row2" colspan="1"><a href="{U_GAMES_INDEX}">{L_ACP_GAMES_MGT_INDEX}</a> -&gt; {CAT_TITLE}</td>
-		<td class="row2" colspan="2" style="text-align: right;"><!-- IF PAGINATION --><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE -->{PAGE_NUMBER}<!-- ENDIF --></td>
-	</tr>
+	<!-- IF S_ERROR -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+	<!-- ENDIF -->
 
-	<!-- BEGIN games -->
-		<tr>
-			<td style="width: 25%; text-align: center;">{games.GAME_IMAGE}</td>
-			<td style="padding-left: 15px;">{games.GAME_TITLE}</td>
-			<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
-				<a href="{games.U_EDIT}">{ICON_EDIT}</a> 
-				<a href="{games.U_DELETE}">{ICON_DELETE}</a>
-			</td>
-		</tr>
-	<!-- END games -->
-	</tbody>
-</table>
+	<form id="{GAME_ACTION}" method="post" action="{U_EDIT_ACTION}">
+		<fieldset>
+			<legend>{L_ACP_GAME_LEGEND_CAT}</legend>
+			<dl>
+				<dt><label for="game_cat_name">{L_ACP_NAME_TITLE_CAT}{L_COLON}</label></dt>
+				<dd><input class="text medium" type="text" id="game_cat_name" name="game_cat_name" value="{GAME_CAT_NAME}" maxlength="200" /></dd>
+			</dl>
+		</fieldset>
+
+		<fieldset class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			{S_FORM_TOKEN}
+		</fieldset>
+	</form>
+
 <!-- ELSE -->
-<table cellspacing="1">
-	<col class="row3" /><col class="row4" /><col class="row3" />
-<tbody>
-	<tr>
-		<td class="row3" colspan="3"><a href="{U_GAMES_INDEX}">{L_ACP_GAMES_MGT_INDEX}</a> -&gt; {CAT_TITLE}</td>
-	</tr>
-	<tr>
-		<td style="width: 5%; text-align: center;"><img src="images/file_conflict.gif" alt="{L_CAT}" /></td>
-		<td>{L_ACP_NO_GAMES}</td>
-		<td style="width:90px; white-space: nowrap; text-align: right; vertical-align: middle;">
-			{ICON_EDIT_DISABLED}
-			{ICON_DELETE_DISABLED}
-		</td>
-	</tr>
+
+	<!-- IF S_ERROR -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+	<!-- ENDIF -->
+
+	<h1>{L_ACP_GAME_MGT_TITLE}</h1>
+
+	<p>{L_ACP_GAME_MGT_DESC}</p>
+
+	<table class="table1 forums">
+		<col class="row1" /><col class="row1" /><col class="row2" />
+			<tbody>
+			<!-- IF .game_cats -->
+				<!-- BEGIN game_cats -->
+					<tr>
+						<td class="folder">
+							<img src="images/icon_subfolder.gif" alt="{L_ACP_GAMES_CATEGORY}" />
+						</td>
+						<td class="forum-desc">
+							<strong><a href="{game_cats.U_GAME}">{game_cats.NAME}</a></strong>
+						</td>
+						<td class="actions">
+							<span class="up-disabled" style="display:none;">{ICON_MOVE_UP_DISABLED}</span>
+							<span class="up"><a href="{game_cats.U_MOVE_UP}" data-ajax="row_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
+							<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
+							<span class="down"><a href="{game_cats.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
+							<a href="{game_cats.U_EDIT}">{ICON_EDIT}</a>
+							<a href="{game_cats.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
+						</td>
+					</tr>
+				<!-- END game_cats -->
+			<!-- ELSE -->
+				<tr>
+					<td class="folder"><img src="images/file_conflict.gif" alt="{L_CAT}" /></td>
+					<td class="forum-desc">{L_ACP_NO_CATS}</td>
+					<td class="actions">
+						{ICON_MOVE_UP_DISABLED}
+						{ICON_MOVE_DOWN_DISABLED}
+						{ICON_EDIT_DISABLED}
+						{ICON_DELETE_DISABLED}
+					</td>
+				</tr>
+			<!-- ENDIF -->
+			</tbody>
+	</table>
+	
+	<form id="game_cats" method="post" action="{U_ACTION}">
+
+	<fieldset class="quick">
+		{L_ACP_CREATE_CAT}{L_COLON}
+		<input type="text" name="game_cat_name" value="" maxlength="200" placeholder="" />
+		<input class="button2" name="submit" type="submit" value="{L_SUBMIT}" />
+		<input type="hidden" name="action" value="add_cat" />
+		{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+	
 <!-- ENDIF -->
-</tbody>
-</table>
-<div class="clearfix">&nbsp;</div>
-<form id="module" method="post">
 
-<fieldset class="quick" style="float: left;">
-	<input type="text" name="game_name" maxlength="30" /> 
-	<input class="button2" name="addgame" type="submit" value="{L_ACP_CREATE_GAME}" />
-</fieldset>
-
-</form>
 <!-- INCLUDE overall_footer.html -->

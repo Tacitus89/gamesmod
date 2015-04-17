@@ -1,0 +1,101 @@
+<!-- INCLUDE overall_header.html -->
+<script src="{T_TEMPLATE_PATH}/games.js"></script>
+<script type="text/javascript" language="JavaScript">
+function switchGame(value,mode) {
+    // Create new JsHttpRequest object.
+    var req = new JsHttpRequest();
+    // Code automatically called on load finishing.
+    req.onreadystatechange = function() {
+        if (req.readyState == 4) {
+            // Write result to page element (_RESULT becomes responseJS). 
+				document.getElementById(mode+"_"+value).src='{T_THEME_PATH}/images/'+req.responseJS.image+'.png';
+				document.getElementById('owners_'+value).innerHTML=req.responseJS.owners;
+        }
+    }
+    // Prepare request object (automatically choose GET or POST).
+    req.open(null, 'games.php?mode='+mode+'&gid='+value, true);
+    // Send data to backend.
+    req.send( { id: value } );
+}
+</script>
+<table width="100%" cellspacing="1">
+		<tr>
+		<td class="genmed" align="left">{L_CATPAGES}<!-- BEGIN catlinkrow -->&bull; <a href="{catlinkrow.U_CATPAGE}">{catlinkrow.GAME_CAT}</a><!-- END catlinkrow --><br /><br /><strong style="font-size: 0.95em;"><a href="{S_MODE_ACTION}&amp;first_char=">{L_ALL}</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=a">A</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=b">B</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=c">C</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=d">D</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=e">E</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=f">F</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=g">G</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=h">H</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=i">I</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=j">J</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=k">K</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=l">L</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=m">M</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=n">N</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=o">O</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=p">P</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=q">Q</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=r">R</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=s">S</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=t">T</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=u">U</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=v">V</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=w">W</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=x">X</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=y">Y</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=z">Z</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=other">#</a></strong></td>
+		<td class="genmed" align="right"><!-- IF PAGINATION --><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE -->{PAGE_NUMBER}<!-- ENDIF --></td>
+		</tr>
+</table>
+<!-- IF S_POPULAR or S_RECENT or S_PLAY -->
+<!-- INCLUDE games_index.html -->
+<!-- ENDIF -->
+		<table class="tablebg" width="100%" cellspacing="1">
+			<thead>
+				<tr>
+					<th align="center" width="25%">{L_GAMES_VIEW}</th>
+					<!-- IF S_DESC --><th align="center" width="40%">{L_GAME_DESC}</th><!-- ENDIF -->
+					<th align="center" <!-- IF S_DESC -->width="35%"<!-- ELSE -->width="75%"<!-- ENDIF -->>{L_GAME_AWARDED}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<!-- BEGIN gamerow -->
+				<!-- IF gamerow.IS_CAT -->
+				<tr class="cat">
+					<td colspan="<!-- IF S_DESC -->3<!-- ELSE -->2<!-- ENDIF -->"><h4>{gamerow.GAME_CAT}</h4></td>
+				</tr>
+				<!-- ELSE -->
+				<tr class="<!-- IF gamerow.S_ROW_COUNT is odd -->row1<!-- ELSE -->row2<!-- ENDIF -->">
+					<td align="center">{gamerow.GAME_NAME}<br /><!-- IF gamerow.S_GAME_VIEW -->{gamerow.GAME_IMG}<!-- ELSE --><a href ="{gamerow.U_GAME}">{gamerow.GAME_IMG}</a><!-- ENDIF --><br/>
+					<!-- IF S_USER_LOGGED_IN  and not S_IS_BOT --><a href="#"  onclick="switchGame({gamerow.GAME_ID},'own');return false;"><img id="own_{gamerow.GAME_ID}" src="<!-- IF gamerow.OWNED -->{T_THEME_PATH}/images/game_own_delete.png<!-- ELSE -->{T_THEME_PATH}/images/game_own_add.png<!-- ENDIF -->"/></a><!-- ENDIF --></td>
+					<!-- IF S_DESC --><td align="center">{gamerow.GAME_DESC}</td><!-- ENDIF -->
+					<td align="center"><div id="owners_{gamerow.GAME_ID}">{gamerow.GAME_AWARDED}</div><!-- IF gamerow.S_GAME_VIEW and gamerow.U_GAME_PM and S_USER_LOGGED_IN  and not S_IS_BOT--><br /><br /><a href ="{gamerow.U_GAME_PM}">{L_GAMES_PM}</a><!-- ENDIF --></td>
+				</tr>
+				<!-- ENDIF -->
+				<!-- END gamerow -->
+				
+				<!-- IF NO_GAME -->
+				<tr class="cat">
+					<td colspan="<!-- IF S_DESC -->3<!-- ELSE -->2<!-- ENDIF -->">{L_NO_GAMES}</td>
+				</tr>
+				<!-- ENDIF -->
+			</tbody>
+		</table>
+<table width="100%" cellspacing="1">
+		<tr>
+		<td class="genmed" align="left">{L_CATPAGES}<!-- BEGIN catlinkrow -->&bull; <a href="{catlinkrow.U_CATPAGE}">{catlinkrow.GAME_CAT}</a><!-- END catlinkrow --></td>
+		<td class="genmed" align="right"><!-- IF PAGINATION --><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE -->{PAGE_NUMBER}<!-- ENDIF --></td>
+		</tr>
+</table>
+	<br clear="all" />
+	
+	<!-- INCLUDE breadcrumbs.html -->
+	
+	<br clear="all" />
+	
+	<div align="{S_CONTENT_FLOW_END}"><!-- INCLUDE jumpbox.html --></div>	
+	<!-- INCLUDE overall_footer.html -->

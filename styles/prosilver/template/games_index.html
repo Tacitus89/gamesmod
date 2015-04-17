@@ -1,0 +1,83 @@
+<script type="text/javascript">
+// <![CDATA[ 
+// img_enlarge() and img_return() by madmartyau aka Martin Eddy
+function img_enlarge(obj)
+{	
+	if ({IMAGE_HOVER})
+	{
+		
+			var newImg = new Image();
+			newImg.src = obj.src;
+			var height = newImg.height;
+			var width = newImg.width;
+			var yoffset = ({SMALL_HEIGHT}-height-2)+"px";
+			var xoffset = ({SMALL_WIDTH}-width-2)+"px";
+			
+			obj.width = width;
+			obj.height= height;
+			obj.style.marginTop = yoffset;
+			obj.style.marginLeft = xoffset;
+			obj.style.border="1px solid white";
+		
+	}
+}
+function img_return(obj)
+{
+	if ({IMAGE_HOVER})
+	{
+		
+			obj.width='{SMALL_WIDTH}';
+			obj.height='{SMALL_HEIGHT}';
+			obj.style.marginTop='0px';
+			obj.style.marginLeft='0px';
+			obj.style.border="none";
+		
+	}
+}
+// ]]>
+</script>
+<style media="all" type="text/css">
+a.games img {
+	position:relative;
+}
+</style>
+<div class="forabg"><div class="inner"><span class="corners-top"><span></span></span><ul class="topiclist"><li class="header"><dl class="icon"><dt></dt></dl></li></ul>
+<table width="100%">
+			<!-- IF S_POPULAR -->
+				<tr class="row bg2">
+					<td align="center"><strong>{L_GAMES_POPULAR}</strong></td>
+				</tr>
+				<tr class="row bg1" align="center">
+					<td>
+					<!-- BEGIN popular -->
+					<a class="games" href ="{popular.U_GAME}">{popular.GAME_IMG}</a>
+					<!-- END popular -->
+					</td>
+				</tr>			
+			<!-- ENDIF -->
+			<!-- IF S_RECENT -->
+				<tr class="row bg2">
+					<td align="center"><strong>{L_GAMES_RECENT}</strong></td>
+				</tr>
+				<tr class="row bg1" align="center">
+					<td>
+					<!-- BEGIN recent -->
+					<a class="games" href ="{recent.U_GAME}">{recent.GAME_IMG}</a>
+					<!-- END recent -->
+					</td>
+				</tr>		
+			<!-- ENDIF -->
+			<!-- IF S_PLAY -->
+				<tr class="row bg2">
+					<td align="center"><strong>{L_GAME_PLAY}</strong></td>		
+				</tr>
+				<tr class="row bg1" align="center">
+					<td>
+					<!-- BEGIN play -->
+					<a class="games" href ="{play.U_GAME}">{play.GAME_IMG}</a>
+					<!-- END play -->
+					</td>
+				</tr>
+			<!-- ENDIF -->
+</table>
+<span class="corners-bottom"><span></span></span></div></div>

@@ -1,0 +1,18 @@
+<!-- INCLUDE ucp_header.html -->
+<h2>{L_GAMES_SHARE}</h2>
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="0" border="0">
+	<tr>
+		<th>&nbsp;{L_GAMES}&nbsp;</th>
+		<th>&nbsp;{L_GAMES_SHARED}&nbsp;</th>
+	</tr>
+	<!-- BEGIN share -->
+		<!-- IF share.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+			<td  valign="top">
+				<p class="topictitle">{share.GAME_NAME}</p>
+				<span class="gensmall">{share.GAME_IMAGE}</span>
+			</td>
+				<td width="15%" align="center">{share.SHARED_TO}</td>
+		</tr>
+	<!-- END share -->
+</table>
+<!-- INCLUDE ucp_footer.html -->

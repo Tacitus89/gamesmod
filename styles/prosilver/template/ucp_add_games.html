@@ -1,0 +1,115 @@
+<!-- INCLUDE ucp_header.html -->
+
+<h2>{L_GAMES}</h2>
+
+<div class="panel">
+	<div class="inner">
+	
+	<h3>{L_ADDGAMES_EXPLAIN}</h3>
+	
+	<!-- IF .breadcrumb -->
+	<p>
+		<strong>
+			<a href="{U_MAIN}">{L_ACP_GAMES_MGT_INDEX}</a>
+			<!-- BEGIN breadcrumb -->
+				 -&gt; <!-- IF not breadcrumb.S_CURRENT_LEVEL --><a href="{breadcrumb.U_GAME}"><!-- ENDIF -->{breadcrumb.GAME_TITLE}<!-- IF not breadcrumb.S_CURRENT_LEVEL --></a><!-- ENDIF -->
+			<!-- END breadcrumb -->
+		</strong>
+	</p>
+	<!-- ENDIF -->
+	
+	<!-- IF S_CATEGORY -->
+	<!-- IF .games_cat -->
+	<ul class="topiclist">
+		<li class="header">
+			<dl>
+				<dt><div class="list-inner">{L_GAME_TITLE}</div></dt>
+			</dl>
+		</li>
+	</ul>
+	
+	<form id="ucp" method="post" action="<!-- IF S_ADD_GAME -->{U_ADD_ACTION}<!-- ELSE -->{U_EDIT_ACTION}<!-- ENDIF -->{S_FORM_ENCTYPE}">
+	
+	<ul class="topiclist cplist pmlist responsive-show-all">
+		<!-- BEGIN games_cat -->
+		<li class="row<!-- IF games_cat.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+			<dl class="icon forum_read">
+				<dt>
+					<div class="list-inner">
+						<a href="{games_cat.U_GAME}">{games_cat.GAME_NAME}</a><br />
+					</div>
+				</dt>
+			</dl>
+		</li>
+		<!-- END games_cat -->
+	</ul>
+	<!-- ENDIF -->
+	
+	<!-- ELSE -->
+	<!-- IF .games -->
+	<div class="action-bar top">
+		<!-- IF .pagination or TOTAL_IMAGES -->
+			<div class="pagination">
+				{TOTAL_IMAGES}
+				<!-- IF .pagination -->
+					 &bull; <!-- INCLUDE pagination.html -->
+				<!-- ELSE -->
+					 &bull; {PAGE_NUMBER}
+				<!-- ENDIF -->
+			</div>
+		<!-- ENDIF -->
+	</div>
+	
+	<ul class="topiclist two-columns">
+		<li class="header">
+			<dl>
+				<dt><div class="list-inner">{L_GAME_TITLE}</div></dt>
+				<dd class="mark">{L_GAME_MARK}</dd>
+			</dl>
+		</li>
+	</ul>
+	
+	<form id="ucp" method="post" action="<!-- IF S_ADD_GAME -->{U_ADD_ACTION}<!-- ELSE -->{U_EDIT_ACTION}<!-- ENDIF -->{S_FORM_ENCTYPE}">
+	
+	<ul class="topiclist cplist pmlist two-columns responsive-show-all">
+		<!-- BEGIN games -->
+		<li class="row<!-- IF games.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+			<!-- IF games.S_IS_CATEGORY -->
+				<dl class="icon forum_read">
+					<dt>
+						<div class="list-inner">
+							<a href="{games.U_GAME}">{games.GAME_TITLE}</a><br />
+						</div>
+					</dt>
+				</dl>
+			<!-- ELSE -->
+				<dl>
+					<dt>
+						<div class="list-inner">
+							<strong>{games.GAME_TITLE}</strong><br />
+							<img src="{ROOT_PATH}images/games/{games.GAME_IMAGE}" />
+						</div>
+					</dt>
+					<dd class="mark"><input type="checkbox" name="selected[]" value="{games.GAME_ID}"  MULTIPLE /></dd>
+				</dl>
+			<!-- ENDIF -->
+		</li>
+		<!-- END games -->
+	</ul>
+	<!-- ENDIF -->
+	
+	<fieldset>
+	<div class="right-box">
+		<input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
+		{S_FORM_TOKEN}
+	</div>
+	</fieldset>
+	
+	</form>
+	<!-- ENDIF -->
+	
+	</div>
+</div>
+
+
+<!-- INCLUDE ucp_footer.html -->

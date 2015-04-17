@@ -1,0 +1,56 @@
+<!-- INCLUDE ucp_header.html -->
+<div id="pagecontent">
+<div style="padding: 2px;"></div>
+
+<!-- IF S_GAME_SHARE and S_GAME_PLAY -->
+	<!-- DEFINE $COLSPAN = 4 -->
+<!-- ELSEIF S_GAME_SHARE or S_GAME_PLAY -->
+	<!-- DEFINE $COLSPAN = 3 -->
+<!-- ELSE -->	
+	<!-- DEFINE $COLSPAN = 2 -->
+<!-- ENDIF -->
+<form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
+	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0" border="0">
+	<!-- IF S_GAME_SHARE --><tr><td class="row1" colspan="{$COLSPAN}"><span class="genmed"><a href="{U_GAMES_SHARE_PAGE}">{L_GAMES_SHARE_PAGE_LINK}</a></span></td>
+		</tr><!-- ENDIF -->
+		<tr><td class="row1" colspan="{$COLSPAN}"><span class="genmed">{L_CATPAGES}<!-- BEGIN catlinkrow --> &bull; <a href="{catlinkrow.U_CATPAGE}">{catlinkrow.GAME_CAT}</a><!-- END catlinkrow --></span><span class="genmed" style="float:right" align="right"><!-- IF PAGINATION --><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE -->{PAGE_NUMBER}<!-- ENDIF --></span></td>
+		
+		</tr>
+		<tr>
+			<th colspan="<!-- IF S_GAME_SHARE and S_GAME_PLAY -->3<!-- ELSEIF S_GAME_SHARE or S_GAME_PLAY -->2<!-- ELSE -->1<!-- ENDIF -->">&nbsp;{L_GAMES}&nbsp;</th>
+
+			<th width="50px">&nbsp;{L_SELECT}&nbsp;</th>
+		</tr>
+		<tr>
+			<td class="row1" colspan="{$COLSPAN}" align="center"><span class="genmed">{L_GAMES_EXPLAIN}</span></td>
+		</tr>
+	
+	
+
+
+		<!-- BEGIN owned -->
+		<!-- IF owned.IS_CAT -->
+		<tr>
+			<td class="row3" colspan="{$COLSPAN}">&nbsp;{owned.CAT_NAME} {L_CAT}
+			</td>
+		</tr>
+		<!-- ELSE -->
+		<!-- IF owned.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+			<td  valign="top">
+				<p class="topictitle">{owned.GAME_NAME}</p>
+				<span class="gensmall">{owned.GAME_IMAGE}</span>
+			</td>
+			<!-- IF S_GAME_SHARE --><td align="center"><a href="{owned.U_SHARE}" title="{owned.SHARE_GAME_TITLE}"><img src="{T_THEME_PATH}/images/game_share_{owned.SHARE_CLASS}.gif"></a></td><!-- ENDIF -->
+			<!-- IF S_GAME_PLAY --><td align="center"><a href="{owned.U_PLAY}" title="{owned.PLAY_GAME_TITLE}"><img src="{T_THEME_PATH}/images/game_play_{owned.PLAY_CLASS}.gif"></a></td><!-- ENDIF -->
+			<td align="center" style="padding: 4px;"><input type="checkbox"  class="radio"name="selected[]" value="{owned.GAME_ID}"  MULTIPLE></td>	
+		</tr>
+		<!-- ENDIF -->
+		<!-- END owned -->	
+<tr>
+	<td class="cat" colspan="{$COLSPAN}" align="{S_CONTENT_FLOW_END}"><input class="btnlite" type="submit" name="submit" value="{L_DELETE}" />&nbsp;</td>
+</tr>
+</table>
+{S_FORM_TOKEN}
+</form>
+</div>
+<!-- INCLUDE ucp_footer.html -->
