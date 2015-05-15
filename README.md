@@ -2,8 +2,8 @@
 
 This is the repository for the development of the Games Owned MOD for phpBB3.1.
 
-(c) 2015 Marco Candian (tacitus@strategie-zone.de)<br />
-(c) 2009-2011 Martin Eddy (mods@mecom.com.au)
+(c) 2015 [Marco Candian](tacitus@strategie-zone.de)<br />
+(c) 2009-2011 [Martin Eddy](mods@mecom.com.au)
 
 # Installation
 
