@@ -1,0 +1,151 @@
+<!-- INCLUDE overall_header.html -->
+
+<!-- IF S_ADD_GAME or S_EDIT_GAME -->
+
+	<script>
+		var form_name = 'add_edit_game';
+		var text_name = 'game_message';
+		var load_draft = false;
+		var upload = false;
+		var imageTag = false;
+	</script>
+	<script>
+		function ipreview(element)
+		{
+			$("#imagepreview").html('<img src="{ROOT_PATH}images/games/'+element.value+'" alt="" style="max-width: 60px; max-height: 60px;" />');
+		}
+	</script>
+
+	<a id="maincontent"></a>
+
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+	<!-- IF S_ADD_GAME -->
+	<h1>{L_ACP_GAME_TITLE_ADD}</h1>
+	<p>{L_ACP_GAME_TEXT_ADD}</p>
+	<!-- ELSE -->
+	<h1>{L_ACP_GAME_TITLE_EDIT}</h1>
+	<p>{L_ACP_GAME_TEXT_EDIT}</p>
+	<!-- ENDIF -->
+
+	<!-- IF S_ERROR -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+	<!-- ENDIF -->
+
+	<form id="add_edit_game" method="post" enctype="multipart/form-data" action="<!-- IF S_ADD_GAME -->{U_ADD_ACTION}<!-- ELSE -->{U_EDIT_ACTION}<!-- ENDIF -->">
+		<fieldset>
+			<legend>{L_ACP_GAME_LEGEND}</legend>
+			<dl>
+				<dt><label for="game_name">{L_ACP_NAME_TITLE}{L_COLON}</label></dt>
+				<dd><input class="text medium" type="text" id="game_name" name="game_name" value="{GAME_NAME}" maxlength="200" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_description">{L_ACP_NAME_DESC}:</label></dt>
+				<dd><textarea id="game_description" name="game_description" rows="5" cols="45">{GAME_DESCRIPTION}</textarea></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_image">{L_ACP_IMAGE_TITLE}:</label></dt>
+				<dd><label><select name="game_image" onclick="ipreview(this);return false">{IMAGE_OPTIONS}</select></label>
+					<br /><span id="imagepreview"><!-- IF GAME_IMAGE --><img src="{GAME_IMAGE}" title="{GAME_NAME}" style="max-width: 60px;"/><!-- ENDIF --></span>
+				</dd>
+			</dl>
+			<dl>
+				<dt><label for="uploadfile">{L_UPLOAD_GAME_FILE}:</label></dt>
+				<dd><input type="hidden" name="MAX_FILE_SIZE" value="{GAME_SIZE}" /><input type="file" name="uploadfile" id="uploadfile" class="inputbox autowidth" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_parent">{L_ACP_PARENT_TITLE}{L_COLON}</label><br><span>{L_ACP_PARENT_EXPLAIN}</span></dt>
+				<dd><select id="game_parent" name="game_parent">
+					<!-- BEGIN gamemenu -->
+						<option value="{gamemenu.GAME_ID}"<!-- IF gamemenu.S_GAME_PARENT --> selected="selected"<!-- ENDIF -->>{gamemenu.GAME_TITLE}</option>
+					<!-- END gamemenu -->
+				</select></dd>
+			</dl>
+		</fieldset>
+
+		<fieldset class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			{S_FORM_TOKEN}
+		</fieldset>
+	</form>
+
+<!-- ELSE -->
+
+	<h1>{L_ACP_GAME_MGT_TITLE}</h1>
+
+	<p>{L_ACP_GAME_MGT_DESC}</p>
+
+	<!-- IF .breadcrumb -->
+	<p>
+		<strong>
+			<a href="{U_MAIN}">{L_ACP_GAMES_MGT_INDEX}</a>
+			<!-- BEGIN breadcrumb -->
+				 -&gt; <!-- IF not breadcrumb.S_CURRENT_LEVEL --><a href="{breadcrumb.U_GAME}"><!-- ENDIF -->{breadcrumb.GAME_CAT}<!-- IF not breadcrumb.S_CURRENT_LEVEL --></a><!-- ENDIF -->
+			<!-- END breadcrumb -->
+		</strong>
+	</p>
+	<!-- ENDIF -->
+
+	<div class="action-bar top">
+			<!-- IF .pagination or TOTAL_GAMES -->
+				<div class="pagination">
+					{TOTAL_GAMES}
+					<!-- IF .pagination -->
+						 &bull; <!-- INCLUDE pagination.html -->
+					<!-- ELSE -->
+						 &bull; {PAGE_NUMBER}
+					<!-- ENDIF -->
+				</div>
+			<!-- ENDIF -->
+	</div>
+
+	<table class="table1 forums">
+		<col class="row1" /><col class="row1" /><col class="row2" />
+		<tbody>
+			<!-- IF .games -->
+				<!-- BEGIN games -->
+					<tr>
+						<td class="folder">
+							<img src="images/icon_folder.gif" alt="{L_ACP_GAMES}" />
+						</td>
+						<td class="forum-desc">
+							<strong>{games.GAME_NAME}</strong>
+							<!-- IF games.U_IMAGE --><br /><img src="{games.U_IMAGE}" title="{games.GAME_NAME}" style="max-width: 60px;"/><!-- ENDIF -->
+						</td>
+						<td class="actions">
+							<a href="{games.U_EDIT}">{ICON_EDIT}</a>
+							<a href="{games.U_DELETE}" data-ajax="row_delete">{ICON_DELETE}</a>
+						</td>
+					</tr>
+				<!-- END games -->
+			<!-- ELSE -->
+				<tr>
+					<td class="folder"><img src="images/file_conflict.gif" alt="{L_CAT}" /></td>
+					<td class="forum-desc">{L_ACP_NO_GAMES}</td>
+					<td class="actions">
+						{ICON_EDIT_DISABLED}
+						{ICON_DELETE_DISABLED}
+					</td>
+				</tr>
+			<!-- ENDIF -->
+		</tbody>
+	</table>
+
+
+	<form id="games" method="post" action="{U_ADD_GAME}">
+
+	<fieldset class="quick">
+		{L_ACP_CREATE_GAME}{L_COLON}
+		<input type="text" name="game_name" value="" maxlength="200" placeholder="" />
+		<input class="button2" name="addgame" type="submit" value="{L_SUBMIT}" />
+		<input type="hidden" name="action" value="add_game" />
+		{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

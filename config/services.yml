@@ -1,0 +1,93 @@
+imports:
+    - { resource: tables.yml }
+
+services:
+    tacitus89.gamesmod.listener:
+        class: tacitus89\gamesmod\event\listener
+        arguments:
+            - @config
+            - @controller.helper
+            - @request
+            - @template
+            - @user
+            - @tacitus89.gamesmod.operator.games
+            - @tacitus89.gamesmod.operator.games_cat
+            - %core.php_ext%
+        tags:
+            - { name: event.listener }
+
+    tacitus89.gamesmod.main.controller:
+        class: tacitus89\gamesmod\controller\main_controller
+        arguments:
+            - @config
+            - @controller.helper
+            - @pagination
+            - @request
+            - @template
+            - @user
+            - @service_container
+            - @tacitus89.gamesmod.operator.games
+            - @tacitus89.gamesmod.operator.games_cat
+            - %core.root_path%
+            - %core.php_ext%
+
+    tacitus89.gamesmod.admin.controller:
+        class: tacitus89\gamesmod\controller\admin_controller
+        arguments:
+            - @config
+            - @dbal.conn
+            - @pagination
+            - @request
+            - @template
+            - @user
+            - @service_container
+            - @tacitus89.gamesmod.operator.games
+            - @tacitus89.gamesmod.operator.games_cat
+            - %core.root_path%
+            - %core.php_ext%
+
+    tacitus89.gamesmod.ucp.controller:
+        class: tacitus89\gamesmod\controller\ucp_controller
+        arguments:
+            - @config
+            - @dbal.conn
+            - @pagination
+            - @request
+            - @template
+            - @user
+            - @service_container
+            - @tacitus89.gamesmod.operator.games
+            - @tacitus89.gamesmod.operator.games_cat
+            - %core.root_path%
+            - %core.php_ext%
+
+    tacitus89.gamesmod.entity.game:
+        class: tacitus89\gamesmod\entity\game
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - @dbal.conn
+            - %tacitus89.gamesmod.tables.games%
+
+    tacitus89.gamesmod.entity.games_cat:
+        class: tacitus89\gamesmod\entity\games_cat
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - @dbal.conn
+            - %tacitus89.gamesmod.tables.games_cats%
+
+    tacitus89.gamesmod.operator.games:
+        class: tacitus89\gamesmod\operators\games
+        arguments:
+            - @service_container
+            - @dbal.conn
+            - %tacitus89.gamesmod.tables.games%
+            - %tacitus89.gamesmod.tables.games_awarded%
+            - %tables.users%
+
+    tacitus89.gamesmod.operator.games_cat:
+        class: tacitus89\gamesmod\operators\games_cat
+        arguments:
+            - @service_container
+            - @dbal.conn
+            - %tacitus89.gamesmod.tables.games%
+            - %tacitus89.gamesmod.tables.games_cats%

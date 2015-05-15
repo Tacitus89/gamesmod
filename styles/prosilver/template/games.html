@@ -1,0 +1,182 @@
+<!-- INCLUDECSS @tacitus89_gamesmod/../theme/games.css -->
+<!-- INCLUDE overall_header.html -->
+<script src="{T_TEMPLATE_PATH}/games.js"></script>
+<script type="text/javascript" language="JavaScript">
+function switchGame(value,mode) {
+    // Create new JsHttpRequest object.
+    var req = new JsHttpRequest();
+    // Code automatically called on load finishing.
+    req.onreadystatechange = function() {
+        if (req.readyState == 4) {
+            // Write result to page element (_RESULT becomes responseJS).
+				document.getElementById(mode+"_"+value).src='{T_THEME_PATH}/images/'+req.responseJS.image+'.png';
+				document.getElementById('owners_'+value).innerHTML=req.responseJS.owners;
+        }
+    }
+    // Prepare request object (automatically choose GET or POST).
+    req.open(null, 'games.php?mode='+mode+'&gid='+value, true);
+    // Send data to backend.
+    req.send( { id: value } );
+}
+</script>
+<style media="all" type="text/css">
+.posthilit {
+	background-color: yellow;
+}
+</style>
+
+<a id="start_here" class="anchor"></a>
+<div id="page-body">
+    <h2 class="forum-title"><a href="{U_PAGE_TITLE}">{L_PAGE_TITLE}</a></h2>
+
+    <!-- IF .popular_games -->
+    <div class="forumbg">
+    	<div class="inner">
+            <ul class="topiclist">
+    			<li class="header">
+    				<dl>
+    					<dt>{L_GAMES_POPULAR}</dt>
+    				</dl>
+    			</li>
+    		</ul>
+            <ul class="topiclist cplist pmlist responsive-show-all">
+    			<li class="row bg1">
+    				<dl>
+    					<dt>
+    						<div align="center">
+                                <!-- BEGIN popular_games -->
+    							<a href="{popular_games.U_GAME}"><img src="{ROOT_PATH}images/games/{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
+                                <!-- END popular_games -->
+    						</div>
+    					</dt>
+    				</dl>
+    			</li>
+    		</ul>
+        </div>
+    </div>
+    <!-- ENDIF -->
+    <!-- IF .popular_games -->
+    <div class="forumbg">
+    	<div class="inner">
+            <ul class="topiclist">
+    			<li class="header">
+    				<dl>
+    					<dt>{L_GAMES_RECENT}</dt>
+    				</dl>
+    			</li>
+    		</ul>
+            <ul class="topiclist cplist pmlist responsive-show-all">
+    			<li class="row bg1">
+    				<dl>
+    					<dt>
+    						<div align="center">
+                                <!-- BEGIN recent_games -->
+    							<a href="{recent_games.U_GAME}"><img src="{ROOT_PATH}images/games/{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
+                                <!-- END recent_games -->
+    						</div>
+    					</dt>
+    				</dl>
+    			</li>
+    		</ul>
+        </div>
+    </div>
+    <!-- ENDIF -->
+
+    <div class="action-bar top">
+    	<!-- IF .pagination or TOTAL_GAMES -->
+            <div class="pagination">
+                {TOTAL_GAMES}
+                <!-- IF .pagination -->
+                    <!-- INCLUDE pagination.html -->
+                <!-- ELSE -->
+                    &bull; {PAGE_NUMBER}
+                <!-- ENDIF -->
+            </div>
+    	<!-- ENDIF -->
+
+    </div>
+
+    <div class="forumbg">
+    	<div class="inner">
+
+    	<!-- IF S_GAMES_CAT -->
+    		<ul class="topiclist">
+    			<li class="header">
+    				<dl>
+    					<dt>{L_CATPAGES}</dt>
+    				</dl>
+    			</li>
+    		</ul>
+
+    		<ul class="topiclist cplist pmlist responsive-show-all">
+            <!-- IF .games_cat -->
+    			<!-- BEGIN games_cat -->
+    			<li class="row<!-- IF games_cat.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+    				<dl class="icon forum_read">
+    					<dt>
+    						<div class="list-inner">
+    							<a href="{games_cat.U_GAME}">{games_cat.GAME_NAME}</a>
+    						</div>
+    					</dt>
+    				</dl>
+    			</li>
+    			<!-- END games_cat -->
+            <!-- ELSE -->
+                <li class="row bg1">
+                    <dl class="icon forum_read_locked">
+                        <dt>
+                            <div class="list-inner">
+                                {L_NO_CATS}
+                            </div>
+                        </dt>
+                    </dl>
+                </li>
+            <!-- ENDIF -->
+    		</ul>
+    	<!-- ENDIF -->
+
+    	<!-- IF S_GAMES or S_GAME_VIEW -->
+    		<ul class="topiclist missing-column">
+    			<li class="header">
+    				<dl>
+    					<dt><div class="list-inner">{L_GAMES_VIEW}</div></dt>
+                        <!-- IF S_DESC --><dd class="game_desc">{L_GAME_DESC}</dd><!-- ENDIF -->
+                        <dd class="<!-- IF S_DESC -->gamer35<!-- ELSE -->gamer75<!-- ENDIF -->">{L_GAME_AWARDED}</dd>
+    				</dl>
+    			</li>
+    		</ul>
+
+    		<ul class="topiclist two-columns responsive-show-columns">
+            <!-- IF .games -->
+    			<!-- BEGIN games -->
+    			<li class="row<!-- IF games.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+    				<dl>
+    					<dt>
+    						<div class="list-inner">
+    							<strong>{games.GAME_NAME}</strong><br />
+                                <!-- IF S_GAME_VIEW --><img src="{ROOT_PATH}images/games/{games.GAME_IMAGE}" /><!-- ELSE --><a href="{games.U_GAME}"><img src="{ROOT_PATH}images/games/{games.GAME_IMAGE}" /></a><!-- ENDIF -->
+    						</div>
+    					</dt>
+                        <!-- IF S_DESC --><dd class="game_desc"><span>{games.GAME_DESCRIPTION}</span></dd><!-- ENDIF -->
+    					<dd class="<!-- IF S_DESC -->gamer35<!-- ELSE -->gamer75<!-- ENDIF -->"><span>{games.GAMERS}</span></dd>
+    				</dl>
+    			</li>
+    			<!-- END games -->
+            <!-- ELSE -->
+                <li class="row bg1">
+                    <dl>
+                        <dt>
+                            <div class="list-inner">
+                                {L_NO_GAMES}
+                            </div>
+                        </dt>
+                    </dl>
+                </li>
+            <!-- ENDIF -->
+    		</ul>
+    	<!-- ENDIF -->
+    	</div>
+    </div>
+</div>
+
+<!-- INCLUDE overall_footer.html -->

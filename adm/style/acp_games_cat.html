@@ -1,0 +1,103 @@
+<!-- INCLUDE overall_header.html -->
+
+<!-- IF S_EDIT_GAME_CAT or S_ADD_GAME_CAT -->
+
+	<a id="maincontent"></a>
+
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+	<h1>{L_ACP_GAME_TITLE_CAT}</h1>
+	<p>{L_ACP_GAME_TEXT_CAT}</p>
+
+	<!-- IF S_ERROR -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+	<!-- ENDIF -->
+
+	<form id="{GAME_ACTION}" method="post" action="{U_ACTION}">
+		<fieldset>
+			<legend>{L_ACP_GAME_LEGEND_CAT}</legend>
+			<dl>
+				<dt><label for="game_cat_name">{L_ACP_NAME_TITLE_CAT}{L_COLON}</label></dt>
+				<dd><input class="text medium" type="text" id="game_cat_name" name="game_cat_name" value="{GAME_CAT_NAME}" maxlength="200" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_cat_dir">{L_ACP_DIR_TITLE}:</label><br><span>{L_ACP_DIR_CHANGE_EXPLAIN}</span></dt>
+				<dd><label><select id="game_cat_dir" name="game_cat_dir">{DIR_OPTIONS}</select></label></dd>
+			</dl>
+		</fieldset>
+
+		<fieldset class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+			{S_FORM_TOKEN}
+		</fieldset>
+	</form>
+
+<!-- ELSEIF S_DELETE_GAME_CAT -->
+
+<!-- ELSE -->
+
+	<!-- IF S_ERROR -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+	<!-- ENDIF -->
+
+	<h1>{L_ACP_GAME_MGT_TITLE}</h1>
+
+	<p>{L_ACP_GAME_MGT_DESC}</p>
+
+	<table class="table1 forums">
+		<col class="row1" /><col class="row1" /><col class="row2" />
+			<tbody>
+			<!-- IF .game_cats -->
+				<!-- BEGIN game_cats -->
+					<tr>
+						<td class="folder">
+							<img src="images/icon_subfolder.gif" alt="{L_ACP_GAMES_CATEGORY}" />
+						</td>
+						<td class="forum-desc">
+							<strong><a href="{game_cats.U_GAME}">{game_cats.NAME}</a></strong>
+						</td>
+						<td class="actions">
+							<span class="up-disabled" style="display:none;">{ICON_MOVE_UP_DISABLED}</span>
+							<span class="up"><a href="{game_cats.U_MOVE_UP}" data-ajax="row_up" data-overlay="false">{ICON_MOVE_UP}</a></span>
+							<span class="down-disabled" style="display:none;">{ICON_MOVE_DOWN_DISABLED}</span>
+							<span class="down"><a href="{game_cats.U_MOVE_DOWN}" data-ajax="row_down" data-overlay="false">{ICON_MOVE_DOWN}</a></span>
+							<a href="{game_cats.U_EDIT}">{ICON_EDIT}</a>
+							<a href="{game_cats.U_DELETE}">{ICON_DELETE}</a>
+						</td>
+					</tr>
+				<!-- END game_cats -->
+			<!-- ELSE -->
+				<tr>
+					<td class="folder"><img src="images/file_conflict.gif" alt="{L_CAT}" /></td>
+					<td class="forum-desc">{L_ACP_NO_CATS}</td>
+					<td class="actions">
+						{ICON_MOVE_UP_DISABLED}
+						{ICON_MOVE_DOWN_DISABLED}
+						{ICON_EDIT_DISABLED}
+						{ICON_DELETE_DISABLED}
+					</td>
+				</tr>
+			<!-- ENDIF -->
+			</tbody>
+	</table>
+
+	<form id="game_cats" method="post" action="{U_ADD_CAT}">
+
+	<fieldset class="quick">
+		{L_ACP_CREATE_CAT}{L_COLON}
+		<input type="text" name="game_cat_name" value="" maxlength="200" placeholder="" />
+		<input class="button2" name="add_cat" type="submit" value="{L_SUBMIT}" />
+		<input type="hidden" name="action" value="add_cat" />
+		{S_FORM_TOKEN}
+	</fieldset>
+	</form>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE overall_footer.html -->

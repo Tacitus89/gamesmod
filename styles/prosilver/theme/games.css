@@ -1,0 +1,41 @@
+
+/* Game Icon images
+---------------------------------------- */
+.icon-game {
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+	background-image: url("./images/icon_game.gif");
+}
+
+.rtl .icon-game {
+	background-position: 100% 50%;
+
+}
+
+dd.gamer75, dd.gamer35, dd.game_desc {
+	display: block;
+	position: absolute;
+	right: 5px;
+	top: 0;
+	margin: 0;
+	width: auto;
+	min-width: 0;
+	text-align: left;
+}
+
+dd.gamer75 > span, dd.gamer35 > span, dd.game_desc > span {
+	display: block;
+	padding-left: 5px;
+}
+
+dd.gamer75 {
+	width: 75%;
+}
+
+dd.gamer35 {
+	width: 35%;
+}
+
+dd.game_desc {
+	width: 75%;
+}
