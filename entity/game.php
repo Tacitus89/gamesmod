@@ -1,10 +1,10 @@
 <?php
 /**
 *
-* Board Rules extension for the phpBB Forum Software package.
-*
-* @copyright (c) 2013 phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @package Games Mod for phpBB3.1
+* @copyright (c) 2015 Marco Candian (tacitus@strategie-zone.de)
+* @copyright (c) 2009-2011 Martin Eddy (mods@mecom.com.au)
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -13,7 +13,7 @@ namespace tacitus89\gamesmod\entity;
 /**
 * Entity for a single games_cat
 */
-class game implements game_interface
+class game
 {
 	/**
 	* Data for this entity
@@ -251,7 +251,7 @@ class game implements game_interface
 
 		return $this;
 	}
-	
+
 	/**
 	* Get description
 	*
@@ -287,7 +287,7 @@ class game implements game_interface
 
 		return $this;
 	}
-	
+
 	/**
 	* Get image
 	*
@@ -334,7 +334,7 @@ class game implements game_interface
 	{
 		return (isset($this->data['parent'])) ? (int) $this->data['parent'] : 0;
 	}
-	
+
 	/**
 	* Set parent
 	*

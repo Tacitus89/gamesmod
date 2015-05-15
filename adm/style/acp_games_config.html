@@ -44,22 +44,8 @@
 				<label><input type="text" name="game_small_img_ht" size="3" maxlength="3" value="{S_GAME_SMALL_IMG_HT}"</label>
 			</dd>
 		</dl>
-		<dl>
-			<dt><label for="game_play_allow">{L_ACP_GAMES_PLAY_ALLOW}</label></dt>
-			<dd>
-				<label><input type="radio" class="radio" id="game_play_allow" name="game_play_allow" value="1"<!-- IF S_GAME_PLAY_ALLOW --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-				<label><input type="radio" class="radio" name="game_play_allow" value="0"<!-- IF not S_GAME_PLAY_ALLOW --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
-			</dd>
-		</dl>
-		<dl>
-			<dt><label for="game_share_allow">{L_ACP_GAMES_SHARE_ALLOW}</label></dt>
-			<dd>
-				<label><input type="radio" class="radio" id="game_share_allow" name="game_share_allow" value="1"<!-- IF S_GAME_SHARE_ALLOW --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-				<label><input type="radio" class="radio" name="game_share_allow" value="0"<!-- IF not S_GAME_SHARE_ALLOW --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
-			</dd>
-		</dl>
 	</fieldset>
-	
+
 	<fieldset>
 		<legend>{L_ACP_GAMES_PAGE_SETTINGS}</legend>
 		<dl>
@@ -74,14 +60,8 @@
 				<label><input type="text" name="game_popular" size="3" maxlength="3" value="{S_GAME_POPULAR}"</label>
 			</dd>
 		</dl>
-		<dl>
-			<dt><label for="game_play">{L_ACP_GAMES_SM_IMG_HT}</label><br /><span>{L_ACP_GAMES_PLAY_EXPLAIN}</span></dt>
-			<dd>
-				<label><input type="text" name="game_play" size="3" maxlength="3" value="{S_GAME_PLAY}"</label>
-			</dd>
-		</dl>
 	</fieldset>
-	
+
 	<fieldset>
 		<legend>{L_ACP_GAMES_PAGE_INDEX_SETTINGS}</legend>
 		<dl>
@@ -97,12 +77,6 @@
 			</dd>
 		</dl>
 		<dl>
-			<dt><label for="game_play_index">{L_ACP_GAMES_PLAY_INDEX}</label><br /><span>{L_ACP_GAMES_PLAY_INDEX_EXPLAIN}</span></dt>
-			<dd>
-				<label><input type="text" name="game_play_index" size="3" maxlength="3" value="{S_GAME_PLAY_INDEX}"</label>
-			</dd>
-		</dl>
-		<dl>
 			<dt><label for="game_index_ext_stats">{L_ACP_GAMES_INDEX_EXT_STATS}</label></dt>
 			<dd>
 				<label><input type="radio" class="radio" id="game_index_ext_stats" name="game_index_ext_stats" value="1"<!-- IF S_GAME_INDEX_EXT_STATS --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
@@ -110,7 +84,7 @@
 			</dd>
 		</dl>
 	</fieldset>
-	
+
 	<fieldset>
 		<legend>{L_ACP_GAMES_VT_SETTINGS}</legend>
 		<dl>
@@ -131,69 +105,6 @@
 			<dt><label for="game_topic_limit">{L_ACP_GAMES_TOPIC_LIMIT}</label><br /><span>{L_ACP_GAMES_TOPIC_LIMIT_EXPLAIN}</span></dt>
 			<dd>
 				<label><input type="text" name="game_topic_limit" size="3" maxlength="3" value="{S_GAME_TOPIC_LIMIT}"</label>
-			</dd>
-		</dl>
-	</fieldset>
-
-	<fieldset>
-		<legend>{L_ACP_GAMES_PORTAL_SETTINGS}</legend>
-		<dl>
-			<dt><label for="game_recent_portal">{L_ACP_GAMES_RECENT_PORTAL}</label><br /><span>{L_ACP_GAMES_RECENT_PORTAL_EXPLAIN}</span></dt>
-			<dd>
-				<label><input type="text" name="game_recent_portal" size="3" maxlength="3" value="{S_GAME_RECENT_PORTAL}"</label>
-			</dd>
-		</dl>
-		<dl>
-			<dt><label for="game_popular_portal">{L_ACP_GAMES_POPULAR_PORTAL}</label><br /><span>{L_ACP_GAMES_POPULAR_PORTAL_EXPLAIN}</span></dt>
-			<dd>
-				<label><input type="text" name="game_popular_portal" size="3" maxlength="3" value="{S_GAME_POPULAR_PORTAL}"</label>
-			</dd>
-		</dl>
-		<dl>
-			<dt><label for="game_play_portal">{L_ACP_GAMES_PLAY_PORTAL}</label><br /><span>{L_ACP_GAMES_PLAY_PORTAL_EXPLAIN}</span></dt>
-			<dd>
-				<label><input type="text" name="game_play_portal" size="3" maxlength="3" value="{S_GAME_PLAY_PORTAL}"</label>
-			</dd>
-		</dl>
-	</fieldset>
-	
-	<fieldset>
-		<legend>{L_ACP_GAMES_SIDE_PORTAL_SETTINGS}</legend>
-		<dl>
-			<dt><label for="game_portal_thumb_width">{L_ACP_GAMES_PORTAL_THUMB_WIDTH}</label><br /><span>{L_ACP_GAMES_PORTAL_THUMB_WIDTH_EXPLAIN}</span></dt>
-			<dd>
-				<label><input type="text" name="game_portal_thumb_width" size="3" maxlength="3" value="{S_GAME_PORTAL_THUMB_WIDTH}"</label>
-			</dd>
-		</dl>
-		<dl>
-			<dt><label for="game_portal_thumb_height">{L_ACP_GAMES_PORTAL_THUMB_HEIGHT}</label><br /><span>{L_ACP_GAMES_PORTAL_THUMB_HEIGHT_EXPLAIN}</span></dt>
-			<dd>
-				<label><input type="text" name="game_portal_thumb_height" size="3" maxlength="3" value="{S_GAME_PORTAL_THUMB_HEIGHT}"</label>
-			</dd>
-		</dl>
-		<dl>
-			<dt><label for="game_recent_side_portal">{L_ACP_GAMES_RECENT_SIDE_PORTAL}</label><br /><span>{L_ACP_GAMES_RECENT_SIDE_PORTAL_EXPLAIN}</span></dt>
-			<dd>
-				<label><input type="text" name="game_recent_side_portal" size="3" maxlength="3" value="{S_GAME_RECENT_SIDE_PORTAL}"</label>
-			</dd>
-		</dl>
-		<dl>
-			<dt><label for="game_popular_side_portal">{L_ACP_GAMES_POPULAR_SIDE_PORTAL}</label><br /><span>{L_ACP_GAMES_POPULAR_SIDE_PORTAL_EXPLAIN}</span></dt>
-			<dd>
-				<label><input type="text" name="game_popular_side_portal" size="3" maxlength="3" value="{game_popular_side_portal}"</label>
-			</dd>
-		</dl>
-		<dl>
-			<dt><label for="game_play_side_portal">{L_ACP_GAMES_PLAY_SIDE_PORTAL}</label><br /><span>{L_ACP_GAMES_PLAY_SIDE_PORTAL_EXPLAIN}</span></dt>
-			<dd>
-				<label><input type="text" name="game_play_side_portal" size="3" maxlength="3" value="{game_play_side_portal}"</label>
-			</dd>
-		</dl>
-		<dl>
-			<dt><label for="game_stats_portal">{L_ACP_GAMES_INDEX_EXT_STATS}</label></dt>
-			<dd>
-				<label><input type="radio" class="radio" id="game_stats_portal" name="game_stats_portal" value="1"<!-- IF S_GAME_STATS_PORTAL --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-				<label><input type="radio" class="radio" name="game_stats_portal" value="0"<!-- IF not S_GAME_STATS_PORTAL --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
 			</dd>
 		</dl>
 	</fieldset>

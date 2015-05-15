@@ -47,7 +47,7 @@
 				<dd><textarea id="game_description" name="game_description" rows="5" cols="45">{GAME_DESCRIPTION}</textarea></dd>
 			</dl>
 			<dl>
-				<dt><label>{L_ACP_IMAGE_TITLE}:</label></dt>
+				<dt><label for="game_image">{L_ACP_IMAGE_TITLE}:</label></dt>
 				<dd><label><select name="game_image" onclick="ipreview(this);return false">{IMAGE_OPTIONS}</select></label>
 					<br /><span id="imagepreview"><!-- IF GAME_IMAGE --><img src="{GAME_IMAGE}" title="{GAME_NAME}" style="max-width: 60px;"/><!-- ENDIF --></span>
 				</dd>
@@ -88,7 +88,7 @@
 		</strong>
 	</p>
 	<!-- ENDIF -->
-	
+
 	<div class="action-bar top">
 			<!-- IF .pagination or TOTAL_GAMES -->
 				<div class="pagination">
@@ -133,7 +133,7 @@
 			<!-- ENDIF -->
 		</tbody>
 	</table>
-	
+
 
 	<form id="games" method="post" action="{U_ADD_GAME}">
 
@@ -145,7 +145,7 @@
 		{S_FORM_TOKEN}
 	</fieldset>
 	</form>
-	
+
 <!-- ENDIF -->
 
 <!-- INCLUDE overall_footer.html -->

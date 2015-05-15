@@ -2,8 +2,9 @@
 
 /**
 *
-* @package phpBB Extension - Oxpus Downloads
-* @copyright (c) 2014 OXPUS - www.oxpus.net
+* @package Games Mod for phpBB3.1
+* @copyright (c) 2015 Marco Candian (tacitus@strategie-zone.de)
+* @copyright (c) 2009-2011 Martin Eddy (mods@mecom.com.au)
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -34,7 +35,7 @@ class gamesmod_module
 
 		// Make the $u_action url available in the admin controller
 		$ucp_controller->set_page_url($this->u_action);
-		
+
 		$this->page_title = 'GAMES';
 		$this->tpl_name = 'ucp_games';
 
@@ -42,36 +43,12 @@ class gamesmod_module
 		switch($mode)
 		{
 			case 'index':
-				switch($action)
+
+				if($action == 'remove_game')
 				{
-					case 'share_view':
-					break;
-					
-					case 'share_add':
-						$this->page_title = 'GAMES_SHARING';
-						$ucp_controller->share_add_game($game_id, $parent_id);
-						return;
-					break;
-					
-					case 'share_delete':
-						$ucp_controller->share_delete_game($game_id);
-					break;
-					
-					case 'play_add':
-						$ucp_controller->play_add_game($game_id);
-					break;
-					
-					case 'play_delete':
-						$ucp_controller->play_delete_game($game_id);
-					break;
-					
-					default:
-						if($action == 'remove_game')
-						{
-							$ucp_controller->remove_user_game($parent_id);
-						}
-					break;
+					$ucp_controller->remove_user_game($parent_id);
 				}
+
 				$ucp_controller->display_owned_games($parent_id);
 			break;
 			case 'add':
@@ -80,7 +57,7 @@ class gamesmod_module
 				{
 					$ucp_controller->add_user_game($parent_id);
 				}
-				
+
 				$this->page_title = 'ADDGAMES';
 				$ucp_controller->display_games($parent_id);
 			break;

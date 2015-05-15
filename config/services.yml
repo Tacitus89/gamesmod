@@ -2,6 +2,35 @@ imports:
     - { resource: tables.yml }
 
 services:
+    tacitus89.gamesmod.listener:
+        class: tacitus89\gamesmod\event\listener
+        arguments:
+            - @config
+            - @controller.helper
+            - @request
+            - @template
+            - @user
+            - @tacitus89.gamesmod.operator.games
+            - @tacitus89.gamesmod.operator.games_cat
+            - %core.php_ext%
+        tags:
+            - { name: event.listener }
+
+    tacitus89.gamesmod.main.controller:
+        class: tacitus89\gamesmod\controller\main_controller
+        arguments:
+            - @config
+            - @controller.helper
+            - @pagination
+            - @request
+            - @template
+            - @user
+            - @service_container
+            - @tacitus89.gamesmod.operator.games
+            - @tacitus89.gamesmod.operator.games_cat
+            - %core.root_path%
+            - %core.php_ext%
+
     tacitus89.gamesmod.admin.controller:
         class: tacitus89\gamesmod\controller\admin_controller
         arguments:
@@ -29,16 +58,8 @@ services:
             - @service_container
             - @tacitus89.gamesmod.operator.games
             - @tacitus89.gamesmod.operator.games_cat
-            - @tacitus89.gamesmod.operator.owned_games
             - %core.root_path%
             - %core.php_ext%
-
-    tacitus89.gamesmod.entity.games_cat:
-        class: tacitus89\gamesmod\entity\games_cat
-        scope: prototype # scope MUST be prototype for this to work!
-        arguments:
-            - @dbal.conn
-            - %tacitus89.gamesmod.tables.games_cats%
 
     tacitus89.gamesmod.entity.game:
         class: tacitus89\gamesmod\entity\game
@@ -47,19 +68,10 @@ services:
             - @dbal.conn
             - %tacitus89.gamesmod.tables.games%
 
-    tacitus89.gamesmod.entity.owned_game:
-        class: tacitus89\gamesmod\entity\owned_game
+    tacitus89.gamesmod.entity.games_cat:
+        class: tacitus89\gamesmod\entity\games_cat
         scope: prototype # scope MUST be prototype for this to work!
         arguments:
-            - @dbal.conn
-            - @user
-            - %tacitus89.gamesmod.tables.games%
-            - %tacitus89.gamesmod.tables.games_awarded%
-
-    tacitus89.gamesmod.operator.games_cat:
-        class: tacitus89\gamesmod\operators\games_cat
-        arguments:
-            - @service_container
             - @dbal.conn
             - %tacitus89.gamesmod.tables.games_cats%
 
@@ -69,35 +81,13 @@ services:
             - @service_container
             - @dbal.conn
             - %tacitus89.gamesmod.tables.games%
+            - %tacitus89.gamesmod.tables.games_awarded%
+            - %tables.users%
 
-    tacitus89.gamesmod.operator.owned_games:
-        class: tacitus89\gamesmod\operators\owned_games
+    tacitus89.gamesmod.operator.games_cat:
+        class: tacitus89\gamesmod\operators\games_cat
         arguments:
             - @service_container
             - @dbal.conn
-            - @user
             - %tacitus89.gamesmod.tables.games%
-            - %tacitus89.gamesmod.tables.games_awarded%
-
-    tacitus89.gamesmod.operator.not_owned_games:
-        class: tacitus89\gamesmod\operators\not_owned_games
-        arguments:
-            - @service_container
-            - @dbal.conn
-            - @user
-            - %tacitus89.gamesmod.tables.games%
-            - %tacitus89.gamesmod.tables.games_awarded%
-
-    tacitus89.gamesmod.nestedset_games_cat:
-        class: tacitus89\gamesmod\operators\nestedset_games_cat
-        arguments:
-            - @dbal.conn
-            - @tacitus89.gamesmod.table_lock
             - %tacitus89.gamesmod.tables.games_cats%
-
-    tacitus89.gamesmod.table_lock:
-        class: phpbb\lock\db
-        arguments:
-            - gamesmod.table_lock.gamesmod_table
-            - @config
-            - @dbal.conn

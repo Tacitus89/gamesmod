@@ -1,10 +1,10 @@
 <?php
 /**
 *
-* Board Rules extension for the phpBB Forum Software package.
-*
-* @copyright (c) 2013 phpBB Limited <https://www.phpbb.com>
-* @license GNU General Public License, version 2 (GPL-2.0)
+* @package Games Mod for phpBB3.1
+* @copyright (c) 2015 Marco Candian (tacitus@strategie-zone.de)
+* @copyright (c) 2009-2011 Martin Eddy (mods@mecom.com.au)
+* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
 
@@ -13,7 +13,7 @@ namespace tacitus89\gamesmod\entity;
 /**
 * Entity for a single games_cat
 */
-class games_cat implements games_cat_interface
+class games_cat
 {
 	/**
 	* Data for this entity
@@ -61,7 +61,7 @@ class games_cat implements games_cat_interface
 	*/
 	public function load($id)
 	{
-		$sql = 'SELECT *
+		$sql = 'SELECT id, name, dir, order_id
 			FROM ' . $this->games_cat_table . '
 			WHERE id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
@@ -249,7 +249,7 @@ class games_cat implements games_cat_interface
 
 		return $this;
 	}
-	
+
 	/**
 	* Get dir
 	*
@@ -296,7 +296,7 @@ class games_cat implements games_cat_interface
 	{
 		return (isset($this->data['order_id'])) ? (int) $this->data['order_id'] : 0;
 	}
-	
+
 	/**
 	* Set order_id
 	*

@@ -2,8 +2,9 @@
 
 /**
 *
-* @package GamesMod
-* @copyright (c) 2015
+* @package Games Mod for phpBB3.1
+* @copyright (c) 2015 Marco Candian (tacitus@strategie-zone.de)
+* @copyright (c) 2009-2011 Martin Eddy (mods@mecom.com.au)
 * @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
 *
 */
@@ -13,12 +14,12 @@ namespace tacitus89\gamesmod\migrations;
 class install_2_0_0 extends \phpbb\db\migration\migration
 {
 	var $games_version = '2.0.0';
-	
+
 	public function effectively_installed()
 	{
 		return isset($this->config['games_version']) && version_compare($this->config['games_version'], $this->games_version, '>=');
 	}
-	
+
 	static public function depends_on()
 	{
 		return array('\phpbb\db\migration\data\v310\dev');
@@ -56,17 +57,12 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 			array('config.add', array('game_stats_portal', 0)),
 			array('config.add', array('game_topic_limit', 0)),
 			array('config.add', array('game_index_ext_stats', 0)),
-			
-			//TODO: Testen!!!
+
 			// Add permission
-			array('permission.add', array('u_masspm_game', true)),
+			//array('permission.add', array('u_masspm_game', true)),
 			// Set permissions
-			array('permission.permission_set', array('ROLE_ADMIN_FULL', 'u_masspm_game')),
-			
-			
-			//TODO: Module einbauen
-			//Set ACP-Module
-			
+			//array('permission.permission_set', array('ROLE_ADMIN_FULL', 'u_masspm_game')),
+
 			array('module.add', array('acp', 'ACP_CAT_DOT_MODS', 'ACP_GAMES_INDEX')),
 			array('module.add', array(
 				'acp', 'ACP_GAMES_INDEX', array(
@@ -84,7 +80,7 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 			)),
 		);
 	}
-	
+
 	public function update_schema()
 	{
 		return array(
@@ -108,22 +104,8 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 						'share'		=> array('BOOL', '0'),
 						'share_id'	=> array('UINT:8', '0'),
 					),
-					'PRIMARY_KEY'	=> 'id',	
+					'PRIMARY_KEY'	=> 'id',
 				),
-				/*
-				$this->table_prefix . 'games_cats' => array(
-					'COLUMNS'			=> array(
-						'cat_id'		=> array('UINT', NULL, 'auto_increment'),
-						'left_id'		=> array('UINT:5', 0),
-						'right_id'		=> array('UINT:5', 0),
-						'parent_id'		=> array('UINT:5', 0),
-						'title'			=> array('VCHAR:200', ''),
-						'description'	=> array('VCHAR:255', ''),
-						'image'			=> array('VCHAR:100', ''),
-						'parents'		=> array('VCHAR:100', ''),
-					),
-					'PRIMARY_KEY'		=> 'cat_id',
-				),*/
 				$this->table_prefix . 'games_cats' => array(
 					'COLUMNS'		=> array(
 						'id'		=> array('UINT', NULL, 'auto_increment'),
@@ -137,7 +119,7 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 					)
 				),
 			),
-			
+
 			'add_columns'	=> array(
 				$this->table_prefix . 'users'		=> array(
 					'game_view'			=> array('BOOL', '1'),
@@ -148,7 +130,7 @@ class install_2_0_0 extends \phpbb\db\migration\migration
 			),
 		);
 	}
-	
+
 	public function revert_schema()
 	{
 		return array(

@@ -2,7 +2,7 @@
 	"name": "tacitus89/gamesmod",
 	"type": "phpbb-extension",
 	"description": "Games Owned MOD for phpBB3.1",
-	"homepage": "http://develop.strategie-zone.de",
+	"homepage": "http://www.develop.strategie-zone.de",
 	"version": "2.0.0",
 	"keywords": [
 		"phpbb",
@@ -16,10 +16,16 @@
 	"license": "GPL-2.0",
 	"authors": [
 		{
-			"name": "Marco Candian",
-			"homepage": "http://develop.strategie-zone.de",
+			"name": "Marco Candian [tacitus89]",
+			"homepage": "http://www.develop.strategie-zone.de",
 			"email": "tacitus@strategie-zone.de",
 			"role": "Developer"
+		},
+		{
+			"name": "Martin Eddy [madmartyau]",
+			"homepage": "http://www.mecom.com.au/",
+			"email": "mods@mecom.com.au",
+			"role": "Developer and Main Author 2009-2011"
 		}
 	],
 	"require": {

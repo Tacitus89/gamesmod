@@ -1,4 +1,3 @@
-<!-- INCLUDECSS @tacitus89_gamesmod/../theme/games.css -->
 <!-- INCLUDE ucp_header.html -->
 
 <!-- IF S_SHARE_ADD_USER -->
@@ -9,9 +8,9 @@
 
 <div class="panel">
 	<div class="inner">
-	
+
 	<!-- IF not S_SHARE_ADD_USER --><h3><!-- IF S_IS_OWNED_GAMES -->{L_GAMES_EXPLAIN}<!-- ELSE -->{L_ADDGAMES_EXPLAIN}<!-- ENDIF --></h3><!-- ENDIF -->
-	
+
 	<!-- IF .breadcrumb -->
 		<p>
 			<strong>
@@ -22,8 +21,8 @@
 			</strong>
 		</p>
 	<!-- ENDIF -->
-	
-	<!-- IF .games_cat -->
+
+	<!-- IF S_GAME_CAT -->
 		<ul class="topiclist">
 			<li class="header">
 				<dl>
@@ -31,23 +30,35 @@
 				</dl>
 			</li>
 		</ul>
-		
+
 		<ul class="topiclist cplist pmlist responsive-show-all">
+		<!-- IF .games_cat -->
 			<!-- BEGIN games_cat -->
 			<li class="row<!-- IF games_cat.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl class="icon forum_read">
 					<dt>
 						<div class="list-inner">
-							<a href="{games_cat.U_GAME}">{games_cat.GAME_NAME}</a><br />
+							<a href="{games_cat.U_GAME}">{games_cat.GAME_NAME}</a>
 						</div>
 					</dt>
 				</dl>
 			</li>
 			<!-- END games_cat -->
+		<!-- ELSE -->
+			<li class="row bg1">
+				<dl class="icon forum_read_locked">
+					<dt>
+						<div class="list-inner">
+							{L_NO_CATS}
+						</div>
+					</dt>
+				</dl>
+			</li>
+		<!-- ENDIF -->
 		</ul>
 	<!-- ENDIF -->
-	
-	<!-- IF .games -->
+
+	<!-- IF S_GAME -->
 		<div class="action-bar top">
 			<!-- IF .pagination or TOTAL_GAMES -->
 				<div class="pagination">
@@ -60,8 +71,8 @@
 				</div>
 			<!-- ENDIF -->
 		</div>
-		
-		<ul class="topiclist missing-column">
+
+		<ul class="topiclist two-columns">
 			<li class="header">
 				<dl>
 					<dt><div class="list-inner"><!-- IF S_IS_OWNED_GAMES -->{L_GAMES}<!-- ELSE -->{L_GAMES_UNOWNED}<!-- ENDIF --></div></dt>
@@ -70,70 +81,52 @@
 				</dl>
 			</li>
 		</ul>
-		
+
 		<form id="ucp" method="post" action="{U_ACTION}{S_FORM_ENCTYPE}">
-		
-		<ul class="topiclist cplist missing-column responsive-show-columns">
+
+		<ul class="topiclist two-columns responsive-show-columns">
+		<!-- IF .games -->
 			<!-- BEGIN games -->
 			<li class="row<!-- IF games.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
-				<!-- IF games.S_IS_CATEGORY -->
-					<dl class="icon forum_read">
-						<dt>
-							<div class="list-inner">
-								<a href="{games.U_GAME}">{games.GAME_NAME}</a><br />
-							</div>
-						</dt>
-					</dl>
-				<!-- ELSE -->
-					<dl>
-						<dt>
-							<div class="list-inner">
-								<strong>{games.GAME_NAME}</strong><br />
-								<img src="{ROOT_PATH}images/games/{games.GAME_IMAGE}" />
-							</div>
-						</dt>
-						<!-- IF S_IS_OWNED_GAMES -->
-							<dd class="lastpost">
-									<ul class="post-buttons">
-									<!-- IF S_GAME_SHARE -->
-										<li>
-										<!-- IF games.S_GAME_SHARE_ADD --><a href="{games.U_SHARE}" title="{L_GAME_SHARE_TITLE}" class="button icon-button share-add-icon"><span>{L_GAME_SHARE_TITLE}</span></a>
-										<!-- ELSE --><a href="{games.U_SHARE}" title="{L_GAME_UNSHARE_TITLE}" class="button icon-button share-delete-icon"><span>{L_GAME_UNSHARE_TITLE}</span></a>
-										<!-- ENDIF -->
-										</li>
-									<!-- ENDIF -->
-									<!-- IF S_GAME_PLAY -->
-										<li>
-										<!-- IF games.S_GAME_PLAY_ADD --><a href="{games.U_PLAY}" title="{L_GAME_PLAY_TITLE}" class="button icon-button play-add-icon"><span>{L_GAME_PLAY_TITLE}</span></a>
-										<!-- ELSE --><a href="{games.U_PLAY}" title="{L_GAME_UNPLAY_TITLE}" class="button icon-button play-delete-icon"><span>{L_GAME_UNPLAY_TITLE}</span></a>
-										<!-- ENDIF -->
-										</li>
-									<!-- ENDIF -->
-									</ul>
-							</dd>
-						<!-- ENDIF -->
-						<dd class="mark"><input type="checkbox" name="selected[]" value="{games.GAME_ID}"  MULTIPLE /></dd>
-					</dl>
-				<!-- ENDIF -->
+				<dl>
+					<dt>
+						<div class="list-inner">
+							<strong>{games.GAME_NAME}</strong><br />
+							<img src="{ROOT_PATH}images/games/{games.GAME_IMAGE}" />
+						</div>
+					</dt>
+					<dd class="mark"><input type="checkbox" name="selected[]" value="{games.GAME_ID}"  MULTIPLE /></dd>
+				</dl>
 			</li>
 			<!-- END games -->
+		<!-- ELSE -->
+			<li class="row bg1">
+				<dl>
+					<dt>
+						<div class="list-inner">
+							{L_NO_GAMES}
+						</div>
+					</dt>
+				</dl>
+			</li>
+		<!-- ENDIF -->
 		</ul>
-		
+
 		<fieldset>
 		<div class="right-box">
 			<input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
 			{S_FORM_TOKEN}
 		</div>
 		</fieldset>
-		
+
 		</form>
 	<!-- ENDIF -->
-	
+
 	<!-- IF S_SHARE_ADD_USER -->
 		<!-- IF S_ERROR -->
 		<p class="error">{ERROR_MSG}</p>
 		<!-- ENDIF -->
-	
+
 		<form method="post" id="ucp" action="{U_POST_ACTION}">
 		<fieldset>
 		<dl>
@@ -142,15 +135,15 @@
 			<dd><strong><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></strong></dd>
 		</dl>
 		</fieldset>
-		
+
 		<fieldset class="submit-buttons">
-			<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
+			<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
 			<input type="submit" name="submituser" value="{L_SUBMIT}" class="button1" />
 			{S_FORM_TOKEN}
 		</fieldset>
 		</form>
 	<!-- ENDIF -->
-	
+
 	</div>
 </div>
 

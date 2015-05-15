@@ -1,0 +1,52 @@
+<!-- IF .popular_games -->
+<div class="forumbg">
+    <div class="inner">
+        <ul class="topiclist">
+            <li class="header">
+                <dl>
+                    <dt>{L_GAMES_POPULAR}</dt>
+                </dl>
+            </li>
+        </ul>
+        <ul class="topiclist cplist pmlist responsive-show-all">
+            <li class="row bg1">
+                <dl>
+                    <dt>
+                        <div align="center">
+                            <!-- BEGIN popular_games -->
+                            <a href="{popular_games.U_GAME}"><img src="{ROOT_PATH}images/games/{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
+                            <!-- END popular_games -->
+                        </div>
+                    </dt>
+                </dl>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- ENDIF -->
+<!-- IF .popular_games -->
+<div class="forumbg">
+    <div class="inner">
+        <ul class="topiclist">
+            <li class="header">
+                <dl>
+                    <dt>{L_GAMES_RECENT}</dt>
+                </dl>
+            </li>
+        </ul>
+        <ul class="topiclist cplis1 pmlist responsive-show-all">
+            <li class="row bg1">
+                <dl>
+                    <dt>
+                        <div align="center">
+                            <!-- BEGIN recent_games -->
+                            <a href="{recent_games.U_GAME}"><img src="{ROOT_PATH}images/games/{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
+                            <!-- END recent_games -->
+                        </div>
+                    </dt>
+                </dl>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- ENDIF -->
