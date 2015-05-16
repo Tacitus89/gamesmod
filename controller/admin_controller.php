@@ -575,16 +575,19 @@ class admin_controller
 				$upload = new \fileupload('GAME_', array('jpg', 'jpeg', 'gif', 'png'), 80000, 0, 0, 0, 0, explode('|', $config['mime_triggers']));
 				$file = $upload->form_upload('uploadfile');
 				$file->clean_filename('real', '', '');
-				$destination = 'ext/tacitus89/gamesmod/images/'.$parent->get_dir();
-				echo $destination.'<br />';
+				if($parent->get_dir() != '')
+				{
+					$destination = 'ext/tacitus89/gamesmod/images/'.$parent->get_dir();
+				}
+				else {
+					$destination = 'ext/tacitus89/gamesmod/images';
+				}
+
 				$data['image'] = $file->realname;
 
-				echo $file->destination_path.'<br />';
 				// Move file and overwrite any existing image
 				$file->move_file($destination, true);
 
-				echo $file->destination_path.'<br />';
-				echo ($file->file_moved)? 1:0;
 				print_r($file->error);
 
 				if (sizeof($file->error))
