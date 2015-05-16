@@ -43,17 +43,17 @@
 				<dd><input class="text medium" type="text" id="game_name" name="game_name" value="{GAME_NAME}" maxlength="200" /></dd>
 			</dl>
 			<dl>
-				<dt><label for="game_description">{L_ACP_NAME_DESC}:</label></dt>
+				<dt><label for="game_description">{L_ACP_NAME_DESC}{L_COLON}</label></dt>
 				<dd><textarea id="game_description" name="game_description" rows="5" cols="45">{GAME_DESCRIPTION}</textarea></dd>
 			</dl>
 			<dl>
-				<dt><label for="game_image">{L_ACP_IMAGE_TITLE}:</label></dt>
+				<dt><label for="game_image">{L_ACP_IMAGE_TITLE}{L_COLON}</label></dt>
 				<dd><label><select name="game_image" onclick="ipreview(this);return false">{IMAGE_OPTIONS}</select></label>
 					<br /><span id="imagepreview"><!-- IF GAME_IMAGE --><img src="{GAME_IMAGE}" title="{GAME_NAME}" style="max-width: 60px;"/><!-- ENDIF --></span>
 				</dd>
 			</dl>
 			<dl>
-				<dt><label for="uploadfile">{L_UPLOAD_GAME_FILE}:</label></dt>
+				<dt><label for="uploadfile">{L_UPLOAD_GAME_FILE}{L_COLON}</label></dt>
 				<dd><input type="hidden" name="MAX_FILE_SIZE" value="{GAME_SIZE}" /><input type="file" name="uploadfile" id="uploadfile" class="inputbox autowidth" /></dd>
 			</dl>
 			<dl>
