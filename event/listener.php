@@ -38,8 +38,13 @@ class listener implements EventSubscriberInterface
 	/** @var \tacitus89\gamesmod\operators\games_cat */
 	protected $games_cat_operator;
 
+	/** @var string phpBB root path */
+	protected $root_path;
+
 	/** @var string phpEx */
 	protected $php_ext;
+
+	protected $dir;
 
 	/**
 	* Constructor
@@ -52,20 +57,24 @@ class listener implements EventSubscriberInterface
 	* @param \phpbb\user                 $user               User object
 	* @param \tacitus89\games\operators\games     $games_operator
 	* @param \tacitus89\games\operators\games_cat $games_cat_operator
+	* @param string                               $root_path       phpBB root path
 	* @param string                               $php_ext         phpEx
 	* @return \phpbb\boardannouncements\event\listener
 	* @access public
 	*/
-	public function __construct(\phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \tacitus89\gamesmod\operators\games $games_operator, \tacitus89\gamesmod\operators\games_cat $games_cat_operator, $php_ext)
+	public function __construct(\phpbb\config\config $config, \phpbb\controller\helper $helper, \phpbb\request\request $request, \phpbb\template\template $template, \phpbb\user $user, \tacitus89\gamesmod\operators\games $games_operator, \tacitus89\gamesmod\operators\games_cat $games_cat_operator, $root_path, $php_ext)
 	{
 		$this->config = $config;
 		$this->helper = $helper;
 		$this->request = $request;
 		$this->template = $template;
 		$this->user = $user;
-		$this->php_ext = $php_ext;
 		$this->games_operator = $games_operator;
 		$this->games_cat_operator = $games_cat_operator;
+		$this->root_path = $root_path;
+		$this->php_ext = $php_ext;
+
+		$this->dir = $this->root_path.'ext/tacitus89/gamesmod/images/';
 	}
 
 	/**
@@ -163,7 +172,7 @@ class listener implements EventSubscriberInterface
 			// Set output block vars for display in the template
 			$this->template->assign_block_vars('games', array(
 				'GAME_NAME'			=> $entity->get_name(),
-				'GAME_IMAGE'		=> './images/games/'.$dir.$entity->get_image(),
+				'GAME_IMAGE'		=> $this->dir.$dir.$entity->get_image(),
 				'GAME_ID'			=> $entity->get_id(),
 
 				'U_GAME'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
@@ -266,7 +275,7 @@ class listener implements EventSubscriberInterface
 				//parent
 				$parent = $this->games_cat_operator->get($value2->get_parent());
 				$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
-				$games .= '<div style="float: left;'. $style .'"><a href="'. $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $value2->get_id())) .'"><img src="images/games/'. $dir.$value2->get_image() .'" class="games_img" alt="'. $value2->get_name() .'" '. $width . $height .' /></a></div>';
+				$games .= '<div style="float: left;'. $style .'"><a href="'. $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $value2->get_id())) .'"><img src="'. $this->dir . $dir.$value2->get_image() .'" class="games_img" alt="'. $value2->get_name() .'" '. $width . $height .' /></a></div>';
 			}
 			if($this->config['game_topic_sep'])
 			{
@@ -410,7 +419,7 @@ class listener implements EventSubscriberInterface
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('popular_games', array(
 					'GAME_NAME'		=> $entity->get_name(),
-					'GAME_IMAGE'	=> $dir.$entity->get_image(),
+					'GAME_IMAGE'	=> $this->dir.$dir.$entity->get_image(),
 
 					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
@@ -432,7 +441,7 @@ class listener implements EventSubscriberInterface
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('recent_games', array(
 					'GAME_NAME'		=> $entity->get_name(),
-					'GAME_IMAGE'	=> $dir.$entity->get_image(),
+					'GAME_IMAGE'	=> $this->dir.$dir.$entity->get_image(),
 
 					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));

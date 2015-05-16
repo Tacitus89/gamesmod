@@ -3,15 +3,14 @@
 	"type": "phpbb-extension",
 	"description": "Games Owned MOD for phpBB3.1",
 	"homepage": "http://www.develop.strategie-zone.de",
-	"version": "2.0.0",
+	"version": "2.0.1",
 	"keywords": [
 		"phpbb",
 		"extension",
 		"games",
 		"game",
 		"list",
-		"show",
-		"mod"
+		"show"
 	],
 	"license": "GPL-2.0",
 	"authors": [
@@ -36,6 +35,11 @@
 		"display-name": "Games Owned MOD",
 		"soft-require": {
 			"phpbb/phpbb": ">=3.1.*,<3.2.*@dev"
+		},
+		"version-check": {
+			"host": "www.develop.strategie-zone.de",
+			"directory": "/tacitus-extensions",
+			"filename": "gamesmod_versions.json"
 		}
 	}
 }

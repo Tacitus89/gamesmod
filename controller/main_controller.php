@@ -53,6 +53,8 @@ class main_controller
 	/** @var string Custom form action */
 	protected $u_action;
 
+	protected $dir;
+
 	/**
 	* Constructor
 	*
@@ -83,6 +85,14 @@ class main_controller
 		$this->games_cat_operator = $games_cat_operator;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
+
+		if($this->config['enable_mod_rewrite'])
+		{
+			$this->dir = $this->root_path.'ext/tacitus89/gamesmod/images/';
+		}
+		else {
+			$this->dir = $this->root_path.'../ext/tacitus89/gamesmod/images/';
+		}
 	}
 
 	/**
@@ -126,7 +136,7 @@ class main_controller
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('games', array(
 					'GAME_NAME'			=> $entity->get_name(),
-					'GAME_IMAGE'		=> $dir.$entity->get_image(),
+					'GAME_IMAGE'		=> $this->dir.$dir.$entity->get_image(),
 					'GAME_DESCRIPTION'	=> $entity->get_description(),
 					'GAME_ID'			=> $entity->get_id(),
 					'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
@@ -171,7 +181,7 @@ class main_controller
 			// Set output block vars for display in the template
 			$this->template->assign_block_vars('games', array(
 				'GAME_NAME'			=> $entity->get_name(),
-				'GAME_IMAGE'		=> $dir.$entity->get_image(),
+				'GAME_IMAGE'		=> $this->dir.$dir.$entity->get_image(),
 				'GAME_DESCRIPTION'	=> $entity->get_description(),
 				'GAME_ID'			=> $entity->get_id(),
 				'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
@@ -234,7 +244,7 @@ class main_controller
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('popular_games', array(
 					'GAME_NAME'		=> $entity->get_name(),
-					'GAME_IMAGE'	=> $dir.$entity->get_image(),
+					'GAME_IMAGE'	=> $this->dir.$dir.$entity->get_image(),
 
 					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
@@ -257,7 +267,7 @@ class main_controller
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('recent_games', array(
 					'GAME_NAME'		=> $entity->get_name(),
-					'GAME_IMAGE'	=> $dir.$entity->get_image(),
+					'GAME_IMAGE'	=> $this->dir.$dir.$entity->get_image(),
 
 					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));

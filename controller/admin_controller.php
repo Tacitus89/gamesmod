@@ -53,6 +53,8 @@ class admin_controller
 	/** @var string Custom form action */
 	protected $u_action;
 
+	protected $dir;
+
 	/**
 	* Constructor
 	*
@@ -82,6 +84,8 @@ class admin_controller
 		$this->games_cat_operator = $games_cat_operator;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
+
+		$this->dir = $this->root_path.'ext/tacitus89/gamesmod/images/';
 	}
 
 	/**
@@ -235,7 +239,7 @@ class admin_controller
 			$this->template->assign_block_vars('games', array(
 				'GAME_NAME'		=> $entity->get_name(),
 
-				'U_IMAGE'			=> ($entity->get_image() != '')? '' . $this->root_path . 'images/games/'. $dir . $entity->get_image() . '' : '',
+				'U_IMAGE'			=> ($entity->get_image() != '')? '' . $this->dir . $dir . $entity->get_image() . '' : '',
 				'U_DELETE'			=> "{$this->u_action}&amp;action=delete_game&amp;game_id=" . $entity->get_id(),
 				'U_EDIT'			=> "{$this->u_action}&amp;action=edit_game&amp;game_id=" . $entity->get_id(),
 				'U_GAME'			=> "{$this->u_action}&amp;parent_id=" . $entity->get_id(),
@@ -317,11 +321,11 @@ class admin_controller
 			trigger_error($this->user->lang('ACP_CAT_ADD_GOOD') . adm_back_link("{$this->u_action}"));
 		}
 
-		$dir = $this->root_path.'images/games';
+
 		$dir_options = '<option value=""></option>';
-		if ($dh = opendir($dir))
+		if ($dh = opendir($this->dir))
 		{
-			foreach(glob($dir."/*",GLOB_ONLYDIR) as $file)
+			foreach(glob($this->dir."/*",GLOB_ONLYDIR) as $file)
 			{
 				if ($entity->get_dir() == basename($file))
 				{
@@ -405,8 +409,8 @@ class admin_controller
 
 		// Collect the form data
 		$data = array(
-			'game_cat_name'	=> $this->request->variable('game_cat_name', $entity->get_name()),
-			'game_cat_dir'	=> $this->request->variable('game_cat_dir', $entity->get_dir()),
+			'game_cat_name'	=> $this->request->variable('game_cat_name', $entity->get_name(), true),
+			'game_cat_dir'	=> $this->request->variable('game_cat_dir', $entity->get_dir(), true),
 		);
 
 		$entity->set_name($data['game_cat_name']);
@@ -441,11 +445,10 @@ class admin_controller
 			trigger_error($this->user->lang['ACP_CAT_EDIT_GOOD'] . adm_back_link("{$this->u_action}"));
 		}
 
-		$dir = $this->root_path.'images/games';
 		$dir_options = '<option value=""></option>';
-		if ($dh = opendir($dir))
+		if ($dh = opendir($this->dir))
 		{
-			foreach(glob($dir."/*",GLOB_ONLYDIR) as $file)
+			foreach(glob($this->dir."/*",GLOB_ONLYDIR) as $file)
 			{
 				if ($entity->get_dir() == basename($file))
 				{
@@ -572,12 +575,14 @@ class admin_controller
 				$upload = new \fileupload('GAME_', array('jpg', 'jpeg', 'gif', 'png'), 80000, 0, 0, 0, 0, explode('|', $config['mime_triggers']));
 				$file = $upload->form_upload('uploadfile');
 				$file->clean_filename('real', '', '');
-				$destination = 'images/games/'.$parent->get_dir();
-				if( !is_dir($this->root_path . $destination) )
+				if($parent->get_dir() != '')
 				{
-					mkdir($this->root_path . $destination, 0644);
-					//TODO: if failed?
+					$destination = 'ext/tacitus89/gamesmod/images/'.$parent->get_dir();
 				}
+				else {
+					$destination = 'ext/tacitus89/gamesmod/images';
+				}
+
 				$data['image'] = $file->realname;
 
 				// Move file and overwrite any existing image
@@ -590,7 +595,8 @@ class admin_controller
 				}
 				else
 				{
-					@chmod($this->root_path . $destination . '/' . $data['image'], 0644);
+					@chmod($destination . '/' . $data['image'], 0644);
+					$entity->set_image($data['image']);
 				}
 			}
 
@@ -630,7 +636,7 @@ class admin_controller
 		}
 
 		//view existing images
-		$dir = $this->root_path.'images/games/'.$parent->get_dir();
+		$dir = $this->dir.$parent->get_dir();
 		$options = '<option value=""></option>';
 		if ($dh = opendir($dir))
 		{
@@ -652,7 +658,7 @@ class admin_controller
 			'GAME_NAME'			=> $entity->get_name(),
 			'GAME_DESCRIPTION'	=> $entity->get_description(),
 			'IMAGE_OPTIONS'		=> $options,
-			'GAME_IMAGE'		=> ($entity->get_image() != '')? '' . $this->root_path . 'images/games/'. $dir . $entity->get_image() . '' : '',
+			'GAME_IMAGE'		=> ($entity->get_image() != '')? '' . $this->dir . $dir . $entity->get_image() . '' : '',
 		));
 	}
 
