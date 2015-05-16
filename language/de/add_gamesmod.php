@@ -11,6 +11,11 @@
 /**
 * DO NOT CHANGE
 */
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -34,6 +39,9 @@ $lang = array_merge($lang, array(
 	'GAMES_VIEW_EXPLAIN'		=> 'View Games',
 	'VIEWING_GAMES' 			=> 'Viewing games',
 	'ATTACH_GAMES'				=> 'Attach my games',
+	'GAMES_TOTAL' 					=> 'Total games owned',
+	'GAME_MOST_POP' 				=> 'Most popular game',
+	'GAME_LAST_ADDED' 				=> 'Newest game added',
 ));
 
 ?>

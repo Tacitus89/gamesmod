@@ -13,7 +13,7 @@ namespace tacitus89\gamesmod\controller;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
-* Admin controller
+* UCP controller
 */
 class ucp_controller
 {
@@ -53,6 +53,8 @@ class ucp_controller
 	/** @var string Custom form action */
 	protected $u_action;
 
+	protected $dir;
+
 	/**
 	* Constructor
 	*
@@ -82,6 +84,8 @@ class ucp_controller
 		$this->games_cat_operator = $games_cat_operator;
 		$this->root_path = $root_path;
 		$this->php_ext = $php_ext;
+
+		$this->dir = $this->root_path.'ext/tacitus89/gamesmod/images/';
 	}
 
 	/**
@@ -223,7 +227,7 @@ class ucp_controller
 			// Set output block vars for display in the template
 			$this->template->assign_block_vars('games', array(
 				'GAME_NAME'			=> $entity->get_name(),
-				'GAME_IMAGE'		=> $dir.$entity->get_image(),
+				'GAME_IMAGE'		=> $this->dir.$dir.$entity->get_image(),
 				'GAME_ID'			=> $entity->get_id(),
 
 				'U_GAME'			=> "{$this->u_action}&amp;parent_id=" . $entity->get_id(),

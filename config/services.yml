@@ -12,6 +12,7 @@ services:
             - @user
             - @tacitus89.gamesmod.operator.games
             - @tacitus89.gamesmod.operator.games_cat
+            - %core.root_path%
             - %core.php_ext%
         tags:
             - { name: event.listener }

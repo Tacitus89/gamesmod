@@ -11,6 +11,11 @@
 /**
 * DO NOT CHANGE
 */
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -56,9 +61,6 @@ $lang = array_merge($lang, array(
 	'ALL'							=> 'ALL',
 	'GAME_PLAYING'					=> 'user(s) want to play this game',
 	'GAME_PLAY'						=> 'Users are playing these games',
-	'GAMES_TOTAL' 					=> 'Total games owned',
-	'GAME_MOST_POP' 				=> 'Most popular game',
-	'GAME_LAST_ADDED' 				=> 'Newest game added',
 
 // Error messages
 	'NO_CAT_ID'						=> 'No Category ID was specified.',

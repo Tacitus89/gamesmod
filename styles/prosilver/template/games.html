@@ -45,7 +45,7 @@ function switchGame(value,mode) {
     					<dt>
     						<div align="center">
                                 <!-- BEGIN popular_games -->
-    							<a href="{popular_games.U_GAME}"><img src="{ROOT_PATH}images/games/{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
+    							<a href="{popular_games.U_GAME}"><img src="{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
                                 <!-- END popular_games -->
     						</div>
     					</dt>
@@ -71,7 +71,7 @@ function switchGame(value,mode) {
     					<dt>
     						<div align="center">
                                 <!-- BEGIN recent_games -->
-    							<a href="{recent_games.U_GAME}"><img src="{ROOT_PATH}images/games/{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
+    							<a href="{recent_games.U_GAME}"><img src="{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
                                 <!-- END recent_games -->
     						</div>
     					</dt>
@@ -154,7 +154,7 @@ function switchGame(value,mode) {
     					<dt>
     						<div class="list-inner">
     							<strong>{games.GAME_NAME}</strong><br />
-                                <!-- IF S_GAME_VIEW --><img src="{ROOT_PATH}images/games/{games.GAME_IMAGE}" /><!-- ELSE --><a href="{games.U_GAME}"><img src="{ROOT_PATH}images/games/{games.GAME_IMAGE}" /></a><!-- ENDIF -->
+                                <!-- IF S_GAME_VIEW --><img src="{games.GAME_IMAGE}" /><!-- ELSE --><a href="{games.U_GAME}"><img src="{games.GAME_IMAGE}" /></a><!-- ENDIF -->
     						</div>
     					</dt>
                         <!-- IF S_DESC --><dd class="game_desc"><span>{games.GAME_DESCRIPTION}</span></dd><!-- ENDIF -->
