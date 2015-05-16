@@ -588,8 +588,6 @@ class admin_controller
 				// Move file and overwrite any existing image
 				$file->move_file($destination, true);
 
-				print_r($file->error);
-
 				if (sizeof($file->error))
 				{
 					$file->remove();
