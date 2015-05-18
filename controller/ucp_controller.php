@@ -120,16 +120,15 @@ class ucp_controller
 
 			//Generation pagination
 			$this->pagination->generate_template_pagination("{$this->u_action}&amp;parent_id={$parent_id}", 'pagination', 'start', $total_games, $this->config['games_pagination'], $start);
+
+			// Set output vars for display in the template
+			$this->template->assign_vars(array(
+				'TOTAL_GAMES'		=> $total_games,
+				'U_ACTION'			=> "{$this->u_action}&amp;parent_id={$parent_id}&amp;action=add_game",
+				'U_MAIN'			=> "{$this->u_action}&amp;parent_id=0",
+				'S_IS_OWNED_GAMES'	=> false,
+			));
 		}
-
-		// Set output vars for display in the template
-		$this->template->assign_vars(array(
-			'TOTAL_GAMES'		=> $total_games,
-			'U_ACTION'			=> "{$this->u_action}&amp;parent_id={$parent_id}&amp;action=add_game",
-			'U_MAIN'			=> "{$this->u_action}&amp;parent_id=0",
-			'S_IS_OWNED_GAMES'	=> false,
-		));
-
 	}
 
 	/**
@@ -164,14 +163,14 @@ class ucp_controller
 
 			//Generation pagination
 			$this->pagination->generate_template_pagination("{$this->u_action}&amp;parent_id={$parent_id}", 'pagination', 'start', $total_games, $this->config['games_pagination'], $start);
-		}
 
-		// Set output vars for display in the template
-		$this->template->assign_vars(array(
-			'TOTAL_GAMES'		=> $total_games,
-			'U_ACTION'			=> "{$this->u_action}&amp;parent_id={$parent_id}&amp;action=remove_game",
-			'U_MAIN'			=> "{$this->u_action}&amp;parent_id=0",
-		));
+			// Set output vars for display in the template
+			$this->template->assign_vars(array(
+				'TOTAL_GAMES'		=> $total_games,
+				'U_ACTION'			=> "{$this->u_action}&amp;parent_id={$parent_id}&amp;action=remove_game",
+				'U_MAIN'			=> "{$this->u_action}&amp;parent_id=0",
+			));
+		}
 	}
 
 	/**
@@ -196,12 +195,6 @@ class ucp_controller
 				'U_GAME'		=> "{$this->u_action}&amp;parent_id=" . $entity->get_id(),
 			));
 		}
-		// Set output vars for display in the template
-		$this->template->assign_vars(array(
-			'U_ACTION'		=> "{$this->u_action}&amp;parent_id={$parent_id}",
-			'U_ADD_GAME'	=> "{$this->u_action}&amp;action=add",
-			'U_MAIN'		=> "{$this->u_action}&amp;parent_id=0",
-		));
 
 		// Set output vars for display in the template
 		$this->template->assign_vars(array(
