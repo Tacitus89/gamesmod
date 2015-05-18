@@ -24,6 +24,13 @@ class games_cat
 	protected $db;
 
 	/**
+	* The database table the game are stored in
+	*
+	* @var string
+	*/
+	protected $game_table;
+
+	/**
 	* The database table the game_cat are stored in
 	*
 	* @var string
@@ -31,11 +38,11 @@ class games_cat
 	protected $game_cat_table;
 
 	/**
-	* The database table the game are stored in
+	* The database table the games_awarded are stored in
 	*
 	* @var string
 	*/
-	protected $game_table;
+	protected $games_awarded_table;
 
 	/**
 	* Constructor
@@ -46,12 +53,13 @@ class games_cat
 	* @return \tacitus89\gamesmod\operators\game
 	* @access public
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, $game_table, $game_cat_table)
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, $game_table, $game_cat_table, $games_awarded_table)
 	{
 		$this->container = $container;
 		$this->db = $db;
-		$this->game_cat_table = $game_cat_table;
 		$this->game_table = $game_table;
+		$this->game_cat_table = $game_cat_table;
+		$this->games_awarded_table = $games_awarded_table;
 	}
 
 	/**
@@ -154,6 +162,11 @@ class games_cat
 		}
 		else
 		{
+			//FIRST! deleting the awarded game in this cat
+			$sql = 'DELETE FROM ' . $this->games_awarded_table . '
+			WHERE game_id IN (SELECT id FROM '. $this->game_table .' WHERE parent = '. $games_cat_id .')';
+			$this->db->sql_query($sql);
+
 			//deleting the game in this cat
 			$sql = 'DELETE FROM ' . $this->game_table . '
 			WHERE parent = ' . $games_cat_id;
