@@ -572,7 +572,7 @@ class admin_controller
 				{
 					include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
 				}
-				$upload = new \fileupload('GAME_', array('jpg', 'jpeg', 'gif', 'png'), 80000, 0, 0, 0, 0, explode('|', $config['mime_triggers']));
+				$upload = new \fileupload('GAME_', array('jpg', 'jpeg', 'gif', 'png'), 80000, 0, 0, 0, 0, explode('|', $this->config['mime_triggers']));
 				$file = $upload->form_upload('uploadfile');
 				$file->clean_filename('real', '', '');
 				if($parent->get_dir() != '')

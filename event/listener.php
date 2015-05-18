@@ -215,7 +215,7 @@ class listener implements EventSubscriberInterface
 	{
 		// Do not continue if gamesmod has been disabled
 		// or user has been deactivated
-		if (!$this->config['games_active'] || $event['row']['game_view'] == 0)
+		if (!$this->config['games_active'])
 		{
 			return;
 		}
@@ -223,7 +223,7 @@ class listener implements EventSubscriberInterface
 		$user_cache_data = $event['user_cache_data'];
 		$user_cache_data['game_count'] = $this->games_operator->get_gamers_count($event['row']['user_id']);
 
-		if($this->config['game_display_topic'] && $this->config['game_topic_limit'] > 0)
+		if($this->config['game_display_topic'] && $this->config['game_topic_limit'] > 0 && $event['row']['game_view'] == 1)
 		{
 			$user_cache_data['games'] = $this->show_gamers_game($event['row']['user_id']);
 		}
@@ -248,29 +248,35 @@ class listener implements EventSubscriberInterface
 
 		if(!empty($entities))
 		{
-			// Process each game entity for display
+			//Sort all entities to her parents
+			$count = array();
 			foreach ($entities as $entity)
 			{
-				if($count[$entity->get_parent()] < $this->config['game_topic_limit'])
+				if(empty($count[$entity->get_parent()]) || $count[$entity->get_parent()] < $this->config['game_topic_limit'])
 				{
 					$game[$entity->get_parent()][] = $entity;
-					$count[$entity->get_parent()]++;
+					if(empty($count[$entity->get_parent()]))
+					{
+						$count[$entity->get_parent()] = 1;
+					}
+					else {
+						$count[$entity->get_parent()]++;
+					}
+
 				}
 			}
 
-			$games = '';
-			$width = $height = $style = '';
+			$width = $height = '';
 			if($this->config['game_small_img_width'])
 			{
 				$width = ' width="'. $this->config['game_small_img_width'] .'"';
-				$style .= 'width:'. $this->config['game_small_img_width'] .'px;';
 			}
 			if($this->config['game_small_img_ht'])
 			{
 				$height	= ' height="'. $this->config['game_small_img_ht'] .'"';
-				$style .= 'height:'. $this->config['game_small_img_ht'] .'px;';
 			}
 
+			$games = '';
 			// Process each game entity for display
 			foreach ($game as $value)
 			{
@@ -279,7 +285,7 @@ class listener implements EventSubscriberInterface
 					//parent
 					$parent = $this->games_cat_operator->get($value2->get_parent());
 					$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
-					$games .= '<div style="float: left;'. $style .'"><a href="'. $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $value2->get_id())) .'"><img src="'. $this->dir . $dir.$value2->get_image() .'" class="games_img" alt="'. $value2->get_name() .'" '. $width . $height .' /></a></div>';
+					$games .= '<div style="float: left;"><a href="'. $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $value2->get_id())) .'"><img src="'. $this->dir . $dir.$value2->get_image() .'" class="games_img" alt="'. $value2->get_name() .'" '. $width . $height .'" /></a></div>';
 				}
 				if($this->config['game_topic_sep'])
 				{
@@ -316,14 +322,17 @@ class listener implements EventSubscriberInterface
 	{
 		// Do not continue if gamesmod has been disabled
 		//or games are disabled for this post
-		if (!$this->config['games_active'] || $event['row']['enable_games'] == 0)
+		if (!$this->config['games_active'])
 		{
 			return;
 		}
 
 		$post_row = $event['post_row'];
 		$post_row['GAME_COUNT'] = $event['user_poster_data']['game_count'];
-		$post_row['GAMES'] = $event['user_poster_data']['games'];
+		if($event['row']['enable_games'])
+		{
+			$post_row['GAMES'] = $event['user_poster_data']['games'];
+		}
 		$event['post_row'] = $post_row;
 	}
 

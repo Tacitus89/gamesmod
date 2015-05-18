@@ -31,6 +31,8 @@
             var $this = $(this);
             var w = $this.width(), h = $this.height();
             $this.data('hoverpulse.size', { w: parseInt(w), h: parseInt(h) });
+            //Parents Parents must have the same size
+            $this.parent().parent().css({width: parseInt(w), height: parseInt(h)});
         });
 
         // bind hover event for behavior
