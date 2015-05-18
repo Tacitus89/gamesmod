@@ -179,6 +179,8 @@ class games
 	*/
 	public function get_number_games($parent_id)
 	{
+		$total_games = 0;
+
 		$sql= 'SELECT COUNT(id) AS total_games
 			FROM ' . $this->game_table . '
 			WHERE ' . $this->db->sql_in_set('parent', $parent_id);
@@ -200,6 +202,8 @@ class games
 	*/
 	public function get_number_owned_games($user_id = 0, $parent_id = 0)
 	{
+		$total_games = 0;
+
 		if($user_id > 0 && $parent_id > 0)
 		{
 			$sql= 'SELECT COUNT(g.id) AS total_games
@@ -245,6 +249,8 @@ class games
 	*/
 	public function get_number_not_owned_games($user_id, $parent_id)
 	{
+		$total_games = 0;
+
 		$sql= 'SELECT COUNT(g.id) AS total_games
 			FROM ' . $this->game_table . ' g
 			LEFT OUTER JOIN ' . $this->games_awarded_table . ' ga ON g.id = ga.game_id AND '. $this->db->sql_in_set('ga.user_id', $user_id) .'
@@ -414,6 +420,8 @@ class games
 	*/
 	public function get_gamers_count($user_id)
 	{
+		$count = 0;
+
 		$sql= 'SELECT COUNT(id) AS count
 			FROM ' . $this->games_awarded_table . '
 			WHERE '. $this->db->sql_in_set('user_id', $user_id);
@@ -435,6 +443,8 @@ class games
 	*/
 	public function get_popular_games($number)
 	{
+		$games = array();
+
 		$sql = 'SELECT g.id, g.name, g.description, g.image, g.parent
 			FROM ' . $this->games_awarded_table . ' ga
 			JOIN ' . $this->game_table . ' g ON ga.game_id = g.id
@@ -461,6 +471,8 @@ class games
 	*/
 	public function get_recent_games($number)
 	{
+		$games = array();
+
 		$sql = 'SELECT g.id, g.name, g.description, g.image, g.parent
 			FROM ' . $this->game_table . ' g
 			ORDER BY g.id DESC';
