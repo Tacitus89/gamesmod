@@ -62,6 +62,7 @@ $lang = array_merge($lang, array(
 	'NO_SELF'									=> 'You can\'t share a game with yourself',
 	'NO_SHARE'									=> 'You aren\'t sharing any games',
 	'NO_CATS'									=> 'No Categories',
+	'NO_GAMES'									=> 'No Games',
 	'CATPAGES'									=> 'Categories',
 ));
 
