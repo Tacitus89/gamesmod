@@ -236,50 +236,55 @@ class listener implements EventSubscriberInterface
 	* Adding to the Cache
 	*
 	* @param int $user_id The ID from user
-	* @return string Games from user fpr viewtopics
+	* @return string Games from user for viewtopics
 	* @access private
 	*/
 	private function show_gamers_game($user_id)
 	{
+		$games = '';
+
 		// Grab all the games
 		$entities = $this->games_operator->get_owned_games($user_id);
 
-		// Process each game entity for display
-		foreach ($entities as $entity)
+		if(!empty($entities))
 		{
-			if($count[$entity->get_parent()] < $this->config['game_topic_limit'])
+			// Process each game entity for display
+			foreach ($entities as $entity)
 			{
-				$game[$entity->get_parent()][] = $entity;
-				$count[$entity->get_parent()]++;
+				if($count[$entity->get_parent()] < $this->config['game_topic_limit'])
+				{
+					$game[$entity->get_parent()][] = $entity;
+					$count[$entity->get_parent()]++;
+				}
 			}
-		}
 
-		$games = '';
-		$width = $height = $style = '';
-		if($this->config['game_small_img_width'])
-		{
-			$width = ' width="'. $this->config['game_small_img_width'] .'"';
-			$style .= 'width:'. $this->config['game_small_img_width'] .'px;';
-		}
-		if($this->config['game_small_img_ht'])
-		{
-			$height	= ' height="'. $this->config['game_small_img_ht'] .'"';
-			$style .= 'height:'. $this->config['game_small_img_ht'] .'px;';
-		}
-
-		// Process each game entity for display
-		foreach ($game as $value)
-		{
-			foreach ($value as $value2)
+			$games = '';
+			$width = $height = $style = '';
+			if($this->config['game_small_img_width'])
 			{
-				//parent
-				$parent = $this->games_cat_operator->get($value2->get_parent());
-				$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
-				$games .= '<div style="float: left;'. $style .'"><a href="'. $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $value2->get_id())) .'"><img src="'. $this->dir . $dir.$value2->get_image() .'" class="games_img" alt="'. $value2->get_name() .'" '. $width . $height .' /></a></div>';
+				$width = ' width="'. $this->config['game_small_img_width'] .'"';
+				$style .= 'width:'. $this->config['game_small_img_width'] .'px;';
 			}
-			if($this->config['game_topic_sep'])
+			if($this->config['game_small_img_ht'])
 			{
-				$games .= '<div style="clear:left"></div>';
+				$height	= ' height="'. $this->config['game_small_img_ht'] .'"';
+				$style .= 'height:'. $this->config['game_small_img_ht'] .'px;';
+			}
+
+			// Process each game entity for display
+			foreach ($game as $value)
+			{
+				foreach ($value as $value2)
+				{
+					//parent
+					$parent = $this->games_cat_operator->get($value2->get_parent());
+					$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
+					$games .= '<div style="float: left;'. $style .'"><a href="'. $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $value2->get_id())) .'"><img src="'. $this->dir . $dir.$value2->get_image() .'" class="games_img" alt="'. $value2->get_name() .'" '. $width . $height .' /></a></div>';
+				}
+				if($this->config['game_topic_sep'])
+				{
+					$games .= '<div style="clear:left"></div>';
+				}
 			}
 		}
 
@@ -429,6 +434,7 @@ class listener implements EventSubscriberInterface
 		//Show recent games
 		if($this->config['game_recent'] > 0)
 		{
+			echo 'test';
 			//Get popular games
 			$entities = $this->games_operator->get_recent_games($this->config['game_recent']);
 
@@ -455,13 +461,24 @@ class listener implements EventSubscriberInterface
 			$recent = $this->games_operator->get_recent_games(1);
 			$number = $this->games_operator->get_number_owned_games($event['member']['user_id']);
 
-			$this->template->assign_vars(array(
-				'GAMES_OWNED'			=> $number,
-				'GAMES_MOST_POP_NAME'	=> $popular[0]->get_name(),
-				'GAMES_MOST_POP_URL'	=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $popular[0]->get_id())),
-				'GAMES_NEWEST_NAME'		=> $recent[0]->get_name(),
-				'GAMES_NEWEST_URL'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $recent[0]->get_id())),
-			));
+			if(!empty($popular) && !empty($number))
+			{
+				$this->template->assign_vars(array(
+					'GAMES_OWNED'			=> $number,
+					'GAMES_MOST_POP_NAME'	=> $popular[0]->get_name(),
+					'GAMES_MOST_POP_URL'	=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $popular[0]->get_id())),
+				));
+			}
+
+			if(!empty($recent))
+			{
+				$this->template->assign_vars(array(
+					'GAMES_NEWEST_NAME'		=> $recent[0]->get_name(),
+					'GAMES_NEWEST_URL'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $recent[0]->get_id())),
+				));
+			}
+
+
 		}
 	}
 
