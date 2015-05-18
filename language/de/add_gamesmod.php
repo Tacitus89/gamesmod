@@ -43,6 +43,9 @@ $lang = array_merge($lang, array(
 	'GAMES_TOTAL' 				=> 'Total games owned',
 	'GAME_MOST_POP' 			=> 'Most popular game',
 	'GAME_LAST_ADDED' 			=> 'Newest game added',
+	'GAMES_STATS'				=> 'Games statistics',
+	'GAMES_POPULAR'				=> 'Most popular games',
+	'GAMES_RECENT'				=> 'Recently added games',
 ));
 
 ?>
