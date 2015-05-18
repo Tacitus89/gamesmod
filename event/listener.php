@@ -434,7 +434,6 @@ class listener implements EventSubscriberInterface
 		//Show recent games
 		if($this->config['game_recent'] > 0)
 		{
-			echo 'test';
 			//Get popular games
 			$entities = $this->games_operator->get_recent_games($this->config['game_recent']);
 
