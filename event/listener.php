@@ -410,10 +410,10 @@ class listener implements EventSubscriberInterface
 		}
 
 		//Show popular games
-		if($this->config['game_popular'] > 0)
+		if($this->config['game_popular_index'] > 0)
 		{
 			//Get popular games
-			$entities = $this->games_operator->get_popular_games($this->config['game_popular']);
+			$entities = $this->games_operator->get_popular_games($this->config['game_popular_index']);
 
 			// Process each popular game entity for display
 			foreach ($entities as $entity)
@@ -432,10 +432,10 @@ class listener implements EventSubscriberInterface
 		}
 
 		//Show recent games
-		if($this->config['game_recent'] > 0)
+		if($this->config['game_recent_index'] > 0)
 		{
 			//Get popular games
-			$entities = $this->games_operator->get_recent_games($this->config['game_recent']);
+			$entities = $this->games_operator->get_recent_games($this->config['game_recent_index']);
 
 			// Process each popular game entity for display
 			foreach ($entities as $entity)
