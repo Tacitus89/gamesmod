@@ -346,9 +346,6 @@ class admin_controller
 			'S_ADD_GAME_CAT'	=> true,
 			'DIR_OPTIONS'		=> $dir_options,
 			'GAME_CAT_NAME'		=> $entity->get_name(),
-
-			'U_EDIT_ACTION'		=> "{$this->u_action}&amp;parent_id={$parent_id}&amp;action=edit_cat",
-			'U_BACK'			=> "{$this->u_action}",
 		));
 	}
 

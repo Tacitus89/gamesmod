@@ -11,9 +11,9 @@
 
 namespace tacitus89\gamesmod\migrations;
 
-class install_2_0_1 extends \phpbb\db\migration\migration
+class install_2_0_0 extends \phpbb\db\migration\migration
 {
-	var $games_version = '2.0.1';
+	var $games_version = '2.0.0';
 
 	public function effectively_installed()
 	{
@@ -100,9 +100,9 @@ class install_2_0_1 extends \phpbb\db\migration\migration
 						'id'		=> array('UINT', NULL, 'auto_increment'),
 						'game_id'	=> array('UINT:10', 0),
 						'user_id'	=> array('UINT:10', 0),
-						'play'		=> array('BOOL', '0'),
-						'share'		=> array('BOOL', '0'),
-						'share_id'	=> array('UINT:8', '0'),
+						'play'		=> array('BOOL', 0),
+						'share'		=> array('BOOL', 0),
+						'share_id'	=> array('UINT:8', 0),
 					),
 					'PRIMARY_KEY'	=> 'id',
 				),
