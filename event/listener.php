@@ -513,9 +513,20 @@ class listener implements EventSubscriberInterface
 	*/
 	public function posting_modify_template_vars($event)
 	{
-		//if the variable not set = default is true
+		$bool = false;
+		//default: it is checked
+		if(!isset($event['post_data']['enable_games']))
+		{
+			$bool = true;
+		}
+		//if enable_games == true?
+		elseif($event['post_data']['enable_games'])
+		{
+			$bool = true;
+		}
+		
 		$this->template->assign_vars(array(
-			'S_GAMES_CHECKED'	=> ($event['post_data']['enable_games'] || !isset($event['post_data']['enable_games']) )? ' checked="checked"' : '',
+			'S_GAMES_CHECKED'	=> ($bool)? ' checked="checked"' : '',
 		));
 	}
 }
