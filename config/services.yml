@@ -82,6 +82,7 @@ services:
             - @service_container
             - @dbal.conn
             - %tacitus89.gamesmod.tables.games%
+            - %tacitus89.gamesmod.tables.games_cats%
             - %tacitus89.gamesmod.tables.games_awarded%
             - %tables.users%
 

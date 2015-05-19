@@ -72,7 +72,7 @@ class games_cat
 	{
 		$game_cat = array();
 
-		$sql = "SELECT id, name, order_id, dir
+		$sql = "SELECT id, name, order_id, dir, number
 			FROM " . $this->game_cat_table . "
 			ORDER BY order_id ASC";
 		$result = $this->db->sql_query($sql);

@@ -23,6 +23,7 @@ class games_cat
 	*	name
 	*	dir
 	*	order_id
+	*	number
 	* @access protected
 	*/
 	protected $data;
@@ -61,7 +62,7 @@ class games_cat
 	*/
 	public function load($id)
 	{
-		$sql = 'SELECT id, name, dir, order_id
+		$sql = 'SELECT id, name, dir, order_id, number
 			FROM ' . $this->games_cat_table . '
 			WHERE id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
@@ -101,6 +102,7 @@ class games_cat
 			'name'					=> 'set_name',
 			'dir'					=> 'string',
 			'order_id'				=> 'integer',
+			'number'				=> 'integer',
 		);
 
 		// Go through the basic fields and set them to our data array
@@ -133,6 +135,7 @@ class games_cat
 		$validate_unsigned = array(
 			'id',
 			'order_id',
+			'number',
 		);
 
 		foreach ($validate_unsigned as $field)
@@ -320,5 +323,16 @@ class games_cat
 		$this->data['order_id'] = $order_id;
 
 		return $this;
+	}
+
+	/**
+	* Get the number of objects in the cat
+	*
+	* @return int number
+	* @access public
+	*/
+	public function get_number()
+	{
+		return (isset($this->data['number'])) ? (int) $this->data['number'] : 0;
 	}
 }
