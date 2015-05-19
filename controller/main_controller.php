@@ -214,6 +214,7 @@ class main_controller
 				$this->template->assign_block_vars('games_cat', array(
 					'GAME_NAME'		=> $entity->get_name(),
 					'GAME_ID'		=> $entity->get_id(),
+					'NUMBER'		=> $entity->get_number(),
 
 					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $entity->get_id())),
 				));

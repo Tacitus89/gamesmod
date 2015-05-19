@@ -47,6 +47,7 @@ $lang = array_merge($lang, array(
 	'GAMES_VIEW'					=> 'Games',
 	'GAME_AWARDED'					=> 'Owners',
 	'GAME_NAME'						=> 'Name',
+	'NUMBER_GAMES'					=> 'Games',
 	'NO_GAMES_ISSUED'				=> 'No one owns this game',
 	'GAME_CP'						=> 'Games Control Panel',
 	'GAME_AMOUNT'					=> 'Amount',

@@ -1,29 +1,6 @@
 <!-- INCLUDECSS @tacitus89_gamesmod/../theme/games.css -->
 <!-- INCLUDE overall_header.html -->
 <script src="{T_TEMPLATE_PATH}/games.js"></script>
-<script type="text/javascript" language="JavaScript">
-function switchGame(value,mode) {
-    // Create new JsHttpRequest object.
-    var req = new JsHttpRequest();
-    // Code automatically called on load finishing.
-    req.onreadystatechange = function() {
-        if (req.readyState == 4) {
-            // Write result to page element (_RESULT becomes responseJS).
-				document.getElementById(mode+"_"+value).src='{T_THEME_PATH}/images/'+req.responseJS.image+'.png';
-				document.getElementById('owners_'+value).innerHTML=req.responseJS.owners;
-        }
-    }
-    // Prepare request object (automatically choose GET or POST).
-    req.open(null, 'games.php?mode='+mode+'&gid='+value, true);
-    // Send data to backend.
-    req.send( { id: value } );
-}
-</script>
-<style media="all" type="text/css">
-.posthilit {
-	background-color: yellow;
-}
-</style>
 
 <a id="start_here" class="anchor"></a>
 <div id="page-body">
@@ -55,7 +32,7 @@ function switchGame(value,mode) {
         </div>
     </div>
     <!-- ENDIF -->
-    <!-- IF .popular_games -->
+    <!-- IF .recent_games -->
     <div class="forumbg">
     	<div class="inner">
             <ul class="topiclist">
@@ -115,7 +92,8 @@ function switchGame(value,mode) {
     				<dl class="icon forum_read">
     					<dt>
     						<div class="list-inner">
-    							<a href="{games_cat.U_GAME}">{games_cat.GAME_NAME}</a>
+    							<a href="{games_cat.U_GAME}" class="forumtitle">{games_cat.GAME_NAME}</a>
+                                <br />{L_NUMBER_GAMES}{L_COLON} {games_cat.NUMBER}
     						</div>
     					</dt>
     				</dl>

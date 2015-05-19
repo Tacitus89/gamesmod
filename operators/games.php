@@ -31,6 +31,13 @@ class games
 	protected $game_table;
 
 	/**
+	* The database table the game_cat are stored in
+	*
+	* @var string
+	*/
+	protected $game_cat_table;
+
+	/**
 	* The database table the games_awarded are stored in
 	*
 	* @var string
@@ -55,11 +62,12 @@ class games
 	* @return \tacitus89\gamesmod\operators\game
 	* @access public
 	*/
-	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, $game_table, $games_awarded_table, $users_table)
+	public function __construct(ContainerInterface $container, \phpbb\db\driver\driver_interface $db, $game_table, $game_cat_table, $games_awarded_table, $users_table)
 	{
 		$this->container = $container;
 		$this->db = $db;
 		$this->game_table = $game_table;
+		$this->game_cat_table = $game_cat_table;
 		$this->games_awarded_table = $games_awarded_table;
 		$this->users_table = $users_table;
 	}
@@ -179,6 +187,8 @@ class games
 	*/
 	public function get_number_games($parent_id)
 	{
+		$total_games = 0;
+
 		$sql= 'SELECT COUNT(id) AS total_games
 			FROM ' . $this->game_table . '
 			WHERE ' . $this->db->sql_in_set('parent', $parent_id);
@@ -200,6 +210,8 @@ class games
 	*/
 	public function get_number_owned_games($user_id = 0, $parent_id = 0)
 	{
+		$total_games = 0;
+
 		if($user_id > 0 && $parent_id > 0)
 		{
 			$sql= 'SELECT COUNT(g.id) AS total_games
@@ -245,6 +257,8 @@ class games
 	*/
 	public function get_number_not_owned_games($user_id, $parent_id)
 	{
+		$total_games = 0;
+
 		$sql= 'SELECT COUNT(g.id) AS total_games
 			FROM ' . $this->game_table . ' g
 			LEFT OUTER JOIN ' . $this->games_awarded_table . ' ga ON g.id = ga.game_id AND '. $this->db->sql_in_set('ga.user_id', $user_id) .'
@@ -270,6 +284,12 @@ class games
 		// Insert the game_cat data to the database
 		$entity->insert();
 
+		//Update the number in game_cat
+		$sql = 'UPDATE ' . $this->game_cat_table . '
+			SET number = number + 1
+			WHERE ' . $this->db->sql_in_set('id', $entity->get_parent());
+		$this->db->sql_query($sql);
+
 		// Get the newly inserted game_cat's identifier
 		$game_id = $entity->get_id();
 
@@ -288,6 +308,15 @@ class games
 	{
 		//must an integer
 		$game_id = (int) $game_id;
+
+		//get the game entity
+		$entity = $this->container->get('tacitus89.gamesmod.entity.game')->load($game_id);
+
+		//Update the number in game_cat
+		$sql = 'UPDATE ' . $this->game_cat_table . '
+			SET number = number - 1
+			WHERE ' . $this->db->sql_in_set('id', $entity->get_parent());
+		$this->db->sql_query($sql);
 
 		//Delete all awarded games
 		//Delete from db
@@ -414,6 +443,8 @@ class games
 	*/
 	public function get_gamers_count($user_id)
 	{
+		$count = 0;
+
 		$sql= 'SELECT COUNT(id) AS count
 			FROM ' . $this->games_awarded_table . '
 			WHERE '. $this->db->sql_in_set('user_id', $user_id);
@@ -435,6 +466,8 @@ class games
 	*/
 	public function get_popular_games($number)
 	{
+		$games = array();
+
 		$sql = 'SELECT g.id, g.name, g.description, g.image, g.parent
 			FROM ' . $this->games_awarded_table . ' ga
 			JOIN ' . $this->game_table . ' g ON ga.game_id = g.id
@@ -461,6 +494,8 @@ class games
 	*/
 	public function get_recent_games($number)
 	{
+		$games = array();
+
 		$sql = 'SELECT g.id, g.name, g.description, g.image, g.parent
 			FROM ' . $this->game_table . ' g
 			ORDER BY g.id DESC';
