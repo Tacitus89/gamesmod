@@ -68,6 +68,7 @@ services:
         arguments:
             - @dbal.conn
             - %tacitus89.gamesmod.tables.games%
+            - %tacitus89.gamesmod.tables.games_cats%
 
     tacitus89.gamesmod.entity.games_cat:
         class: tacitus89\gamesmod\entity\games_cat

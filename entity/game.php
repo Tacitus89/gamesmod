@@ -39,6 +39,20 @@ class game
 	protected $games_table;
 
 	/**
+	* The database table the game_cat are stored in
+	*
+	* @var string
+	*/
+	protected $game_cat_table;
+
+	/**
+	* Specifies the path to the image
+	*
+	* @var string
+	*/
+	protected $dir;
+
+	/**
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface    $db              Database object
@@ -46,10 +60,12 @@ class game
 	* @return \tacitus89\gamesmod\entity\game
 	* @access public
 	*/
-	public function __construct(\phpbb\db\driver\driver_interface $db, $games_table)
+	public function __construct(\phpbb\db\driver\driver_interface $db, $games_table, $game_cat_table)
 	{
 		$this->db = $db;
 		$this->games_table = $games_table;
+		$this->game_cat_table = $game_cat_table;
+		$this->dir = '';
 	}
 
 	/**
@@ -62,9 +78,10 @@ class game
 	*/
 	public function load($id)
 	{
-		$sql = 'SELECT *
-			FROM ' . $this->games_table . '
-			WHERE id = ' . (int) $id;
+		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+			FROM ' . $this->games_table . ' g
+			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
+			WHERE g.id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
 		$this->data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -74,6 +91,9 @@ class game
 			// A game does not exist
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
+
+		$this->dir = $this->data['dir'];
+		unset($this->data['dir']);
 
 		return $this;
 	}
@@ -94,6 +114,12 @@ class game
 	{
 		// Clear out any saved data
 		$this->data = array();
+
+		if(isset($data['dir']))
+		{
+			$this->dir = (string) $data['dir'];
+			unset($data['dir']);
+		}
 
 		// All of our fields
 		$fields = array(
@@ -358,5 +384,16 @@ class game
 		$this->data['parent'] = $parent;
 
 		return $this;
+	}
+
+	/**
+	* Get the dir of image
+	*
+	* @return string dir
+	* @access public
+	*/
+	public function get_dir()
+	{
+		return (isset($this->dir)) ? (string) $this->dir.'/' : '';
 	}
 }

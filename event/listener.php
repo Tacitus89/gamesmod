@@ -165,14 +165,10 @@ class listener implements EventSubscriberInterface
 		// Process each game entity for display
 		foreach ($entities as $entity)
 		{
-			//parent
-			$parent = $this->games_cat_operator->get($entity->get_parent());
-			$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
-
 			// Set output block vars for display in the template
 			$this->template->assign_block_vars('games', array(
 				'GAME_NAME'			=> $entity->get_name(),
-				'GAME_IMAGE'		=> $this->dir.$dir.$entity->get_image(),
+				'GAME_IMAGE'		=> $this->dir.$entity->get_dir().$entity->get_image(),
 				'GAME_ID'			=> $entity->get_id(),
 
 				'U_GAME'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
@@ -282,10 +278,7 @@ class listener implements EventSubscriberInterface
 			{
 				foreach ($value as $value2)
 				{
-					//parent
-					$parent = $this->games_cat_operator->get($value2->get_parent());
-					$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
-					$games .= '<div style="float: left;"><a href="'. $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $value2->get_id())) .'"><img src="'. $this->dir . $dir.$value2->get_image() .'" class="games_img" alt="'. $value2->get_name() .'" '. $width . $height .'" /></a></div>';
+					$games .= '<div style="float: left;"><a href="'. $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $value2->get_id())) .'"><img src="'. $this->dir.$entity->get_dir().$value2->get_image() .'" class="games_img" alt="'. $value2->get_name() .'" '. $width . $height .'" /></a></div>';
 				}
 				if($this->config['game_topic_sep'])
 				{
@@ -427,13 +420,10 @@ class listener implements EventSubscriberInterface
 			// Process each popular game entity for display
 			foreach ($entities as $entity)
 			{
-				//parent
-				$parent = $this->games_cat_operator->get($entity->get_parent());
-				$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('popular_games', array(
 					'GAME_NAME'		=> $entity->get_name(),
-					'GAME_IMAGE'	=> $this->dir.$dir.$entity->get_image(),
+					'GAME_IMAGE'	=> $this->dir.$entity->get_dir().$entity->get_image(),
 
 					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
@@ -449,13 +439,10 @@ class listener implements EventSubscriberInterface
 			// Process each popular game entity for display
 			foreach ($entities as $entity)
 			{
-				//parent
-				$parent = $this->games_cat_operator->get($entity->get_parent());
-				$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('recent_games', array(
 					'GAME_NAME'		=> $entity->get_name(),
-					'GAME_IMAGE'	=> $this->dir.$dir.$entity->get_image(),
+					'GAME_IMAGE'	=> $this->dir.$entity->get_dir().$entity->get_image(),
 
 					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
@@ -524,7 +511,7 @@ class listener implements EventSubscriberInterface
 		{
 			$bool = true;
 		}
-		
+
 		$this->template->assign_vars(array(
 			'S_GAMES_CHECKED'	=> ($bool)? ' checked="checked"' : '',
 		));
