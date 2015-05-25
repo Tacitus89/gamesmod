@@ -146,36 +146,76 @@ class listener implements EventSubscriberInterface
 	{
 		// Do not continue if gamesmod has been disabled
 		// or user has been deactivated
-		if (!$this->config['games_active'] || $event['member']['game_view'] == 0)
+		if (!$this->config['games_active'] || $event['member']['game_view'] == 0 || !$this->config['game_display_profile'])
 		{
 			return;
 		}
 
-		// Grab all the games
-		$entities = $this->games_operator->get_owned_games($event['member']['user_id']);
 
-		$game_count = count($entities);
-
-		//Do not continue if the user has not been games
-		if($game_count < 1)
+		$entities = array();
+		if($this->config['game_profile_sep'])
 		{
-			return;
+			//Grab all games cats
+			$games_cats = $this->games_cat_operator->get_games_cat();
+			foreach ($games_cats as $cats)
+			{
+				//Grab all owned games
+				$entities = $this->games_operator->get_owned_games($event['member']['user_id'], $cats->get_id());
+
+				//if the cat contains games
+				if(!empty($entities))
+				{
+					// Set output block vars for display in the template
+					$this->template->assign_block_vars('games_cat', array(
+						'NAME'				=> $cats->get_name(),
+						'COUNT'				=> count($entities),
+						'URL'				=> $this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $cats->get_id())),
+					));
+
+					foreach ($entities as $entity) {
+						// Set output block vars for display in the template
+						$this->template->assign_block_vars('games_cat.games', array(
+							'NAME'			=> $entity->get_name(),
+							'IMAGE'			=> $this->dir.$entity->get_dir().$entity->get_image(),
+							'ID'			=> $entity->get_id(),
+							'URL'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+						));
+					}
+				}
+
+			}
+
+			$this->template->assign_vars(array(
+				'S_GAMES_SEPERATED' => true,
+			));
 		}
+		else {
+			// Grab all the games
+			$entities = $this->games_operator->get_owned_games($event['member']['user_id']);
 
-		// Process each game entity for display
-		foreach ($entities as $entity)
-		{
-			//parent
-			$parent = $this->games_cat_operator->get($entity->get_parent());
-			$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
+			$game_count = count($entities);
 
-			// Set output block vars for display in the template
-			$this->template->assign_block_vars('games', array(
-				'GAME_NAME'			=> $entity->get_name(),
-				'GAME_IMAGE'		=> $this->dir.$dir.$entity->get_image(),
-				'GAME_ID'			=> $entity->get_id(),
+			//Do not continue if the user has not been games
+			if($game_count < 1)
+			{
+				return;
+			}
 
-				'U_GAME'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+			// Process each game entity for display
+			foreach ($entities as $entity)
+			{
+				// Set output block vars for display in the template
+				$this->template->assign_block_vars('games', array(
+					'GAME_NAME'			=> $entity->get_name(),
+					'GAME_IMAGE'		=> $this->dir.$entity->get_dir().$entity->get_image(),
+					'GAME_ID'			=> $entity->get_id(),
+
+					'U_GAME'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+				));
+			}
+
+			$this->template->assign_vars(array(
+				'GAME_COUNT' => $game_count,
 			));
 		}
 
@@ -200,7 +240,6 @@ class listener implements EventSubscriberInterface
 			'GAME_SMALL_WIDTH'	=> $width,
 			'GAME_SMALL_HEIGHT'	=> $height,
 			'GAME_STYLE'		=> $style,
-			'GAME_COUNT'		=> $game_count,
 		));
 	}
 
@@ -282,10 +321,7 @@ class listener implements EventSubscriberInterface
 			{
 				foreach ($value as $value2)
 				{
-					//parent
-					$parent = $this->games_cat_operator->get($value2->get_parent());
-					$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
-					$games .= '<div style="float: left;"><a href="'. $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $value2->get_id())) .'"><img src="'. $this->dir . $dir.$value2->get_image() .'" class="games_img" alt="'. $value2->get_name() .'" '. $width . $height .'" /></a></div>';
+					$games .= '<div style="float: left;"><a href="'. $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $value2->get_id())) .'"><img src="'. $this->dir.$entity->get_dir().$value2->get_image() .'" class="games_img" alt="'. $value2->get_name() .'" '. $width . $height .'" /></a></div>';
 				}
 				if($this->config['game_topic_sep'])
 				{
@@ -427,13 +463,10 @@ class listener implements EventSubscriberInterface
 			// Process each popular game entity for display
 			foreach ($entities as $entity)
 			{
-				//parent
-				$parent = $this->games_cat_operator->get($entity->get_parent());
-				$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('popular_games', array(
 					'GAME_NAME'		=> $entity->get_name(),
-					'GAME_IMAGE'	=> $this->dir.$dir.$entity->get_image(),
+					'GAME_IMAGE'	=> $this->dir.$entity->get_dir().$entity->get_image(),
 
 					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
@@ -449,13 +482,10 @@ class listener implements EventSubscriberInterface
 			// Process each popular game entity for display
 			foreach ($entities as $entity)
 			{
-				//parent
-				$parent = $this->games_cat_operator->get($entity->get_parent());
-				$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('recent_games', array(
 					'GAME_NAME'		=> $entity->get_name(),
-					'GAME_IMAGE'	=> $this->dir.$dir.$entity->get_image(),
+					'GAME_IMAGE'	=> $this->dir.$entity->get_dir().$entity->get_image(),
 
 					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
@@ -513,9 +543,20 @@ class listener implements EventSubscriberInterface
 	*/
 	public function posting_modify_template_vars($event)
 	{
-		//if the variable not set = default is true
+		$bool = false;
+		//default: it is checked
+		if(!isset($event['post_data']['enable_games']))
+		{
+			$bool = true;
+		}
+		//if enable_games == true?
+		elseif($event['post_data']['enable_games'])
+		{
+			$bool = true;
+		}
+
 		$this->template->assign_vars(array(
-			'S_GAMES_CHECKED'	=> ($event['post_data']['enable_games'] || !isset($event['post_data']['enable_games']) )? ' checked="checked"' : '',
+			'S_GAMES_CHECKED'	=> ($bool)? ' checked="checked"' : '',
 		));
 	}
 }

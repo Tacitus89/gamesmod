@@ -62,9 +62,9 @@ class games_cat
 	*/
 	public function load($id)
 	{
-		$sql = 'SELECT id, name, dir, order_id, number
-			FROM ' . $this->games_cat_table . '
-			WHERE id = ' . (int) $id;
+		$sql = 'SELECT gc.id, gc.name, gc.dir, gc.order_id, gc.number
+			FROM ' . $this->games_cat_table . ' gc
+			WHERE gc.id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
 		$this->data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);

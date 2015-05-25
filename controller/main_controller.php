@@ -126,17 +126,13 @@ class main_controller
 			// Grab all the games
 			$entities = $this->games_operator->get_games($parent_id, $start, $this->config['games_pagination']);
 
-			//parent
-			$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
-			$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
-
 			// Process each game entity for display
 			foreach ($entities as $entity)
 			{
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('games', array(
 					'GAME_NAME'			=> $entity->get_name(),
-					'GAME_IMAGE'		=> $this->dir.$dir.$entity->get_image(),
+					'GAME_IMAGE'		=> $this->dir.$entity->get_dir().$entity->get_image(),
 					'GAME_DESCRIPTION'	=> $entity->get_description(),
 					'GAME_ID'			=> $entity->get_id(),
 					'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
@@ -151,6 +147,8 @@ class main_controller
 			//Generation pagination
 			$this->pagination->generate_template_pagination($this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $parent_id)), 'pagination', 'start', $total_games, $this->config['games_pagination'], $start);
 
+			//parent
+			$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
 			//Add more navlinks
 			$this->add_navlinks($parent);
 
@@ -174,14 +172,10 @@ class main_controller
 				echo 'gilfe!';
 			}
 
-			//parent
-			$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($entity->get_parent());
-			$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
-
 			// Set output block vars for display in the template
 			$this->template->assign_block_vars('games', array(
 				'GAME_NAME'			=> $entity->get_name(),
-				'GAME_IMAGE'		=> $this->dir.$dir.$entity->get_image(),
+				'GAME_IMAGE'		=> $this->dir.$entity->get_dir().$entity->get_image(),
 				'GAME_DESCRIPTION'	=> $entity->get_description(),
 				'GAME_ID'			=> $entity->get_id(),
 				'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
@@ -197,6 +191,8 @@ class main_controller
 				'L_PAGE_TITLE'	=> $this->user->lang($entity->get_name()),
 			));
 
+			//parent
+			$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($entity->get_parent());
 			//Add more navlinks
 			$this->add_navlinks($parent);
 			$this->add_navlinks($entity);
@@ -238,14 +234,10 @@ class main_controller
 			// Process each popular game entity for display
 			foreach ($entities as $entity)
 			{
-				//parent
-				$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($entity->get_parent());
-				$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
-
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('popular_games', array(
 					'GAME_NAME'		=> $entity->get_name(),
-					'GAME_IMAGE'	=> $this->dir.$dir.$entity->get_image(),
+					'GAME_IMAGE'	=> $this->dir.$entity->get_dir().$entity->get_image(),
 
 					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
@@ -261,14 +253,10 @@ class main_controller
 			// Process each popular game entity for display
 			foreach ($entities as $entity)
 			{
-				//parent
-				$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($entity->get_parent());
-				$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
-
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('recent_games', array(
 					'GAME_NAME'		=> $entity->get_name(),
-					'GAME_IMAGE'	=> $this->dir.$dir.$entity->get_image(),
+					'GAME_IMAGE'	=> $this->dir.$entity->get_dir().$entity->get_image(),
 
 					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));

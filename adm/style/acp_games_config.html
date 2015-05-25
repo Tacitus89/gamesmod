@@ -63,6 +63,24 @@
 	</fieldset>
 
 	<fieldset>
+		<legend>{L_ACP_GAMES_USER_PROFILE_SETTINGS}</legend>
+		<dl>
+			<dt><label for="game_display_profile">{L_ACP_GAMES_PROFILE_DISPLAY}</label></dt>
+			<dd>
+				<label><input type="radio" class="radio" id="game_display_profile" name="game_display_profile" value="1"<!-- IF S_GAME_DISPLAY_PROFILE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" class="radio" name="game_display_profile" value="0"<!-- IF not S_GAME_DISPLAY_PROFILE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+			</dd>
+		</dl>
+		<dl>
+			<dt><label for="game_profile_sep">{L_ACP_GAMES_PROFILE_SEPARATE}</label></dt>
+			<dd>
+				<label><input type="radio" class="radio" id="game_profile_sep" name="game_profile_sep" value="1"<!-- IF S_GAME_PROFILE_SEP --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" class="radio" name="game_profile_sep" value="0"<!-- IF not S_GAME_PROFILE_SEP --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+			</dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
 		<legend>{L_ACP_GAMES_PAGE_INDEX_SETTINGS}</legend>
 		<dl>
 			<dt><label for="game_recent_index">{L_ACP_GAMES_RECENT_INDEX}</label><br /><span>{L_ACP_GAMES_RECENT_INDEX_EXPLAIN}</span></dt>
