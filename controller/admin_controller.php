@@ -592,7 +592,7 @@ class admin_controller
 				}
 				else
 				{
-					@chmod($destination . '/' . $data['image'], 0644);
+					chmod($this->root_path.$destination . '/' . $data['image'], 0644);
 					$entity->set_image($data['image']);
 				}
 			}
