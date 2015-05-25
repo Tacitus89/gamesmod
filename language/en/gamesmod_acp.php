@@ -131,6 +131,9 @@ $lang = array_merge($lang, array(
 	'ACP_GAMES_INDEX_EXT_STATS'			=> 'Display newest game and most popular game with total games owned',
 	'ACP_GAMES_TOPIC_LIMIT'				=> 'Limit how many games show in viewtopic',
 	'ACP_GAMES_TOPIC_LIMIT_EXPLAIN'		=> 'Leave at zero to disable',
+	'ACP_GAMES_USER_PROFILE_SETTINGS'	=> 'User profile settings',
+	'ACP_GAMES_PROFILE_DISPLAY'			=> 'Allow Game Display in user profile',
+	'ACP_GAMES_PROFILE_SEPARATE'		=> 'Display each catergory on a separate row',
 	// Portal settings
 	'ACP_GAMES_PORTAL_SETTINGS'			=> 'Portal center block settings',
 	'ACP_GAMES_RECENT_PORTAL'			=> 'How many recently added games to show on the portal page',

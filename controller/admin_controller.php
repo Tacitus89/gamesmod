@@ -140,6 +140,9 @@ class admin_controller
 			'S_GAME_SMALL_IMG_WIDTH'			=> $this->config['game_small_img_width'],
 			'S_GAME_SMALL_IMG_HT'				=> $this->config['game_small_img_ht'],
 			//
+			'S_GAME_DISPLAY_PROFILE'			=> $this->config['game_display_profile'] ? true : false,
+			'S_GAME_PROFILE_SEP'				=> $this->config['game_profile_sep'] ? true : false,
+			//
 			'S_GAME_RECENT'						=> $this->config['game_recent'],
 			'S_GAME_POPULAR'					=> $this->config['game_popular'],
 			//
@@ -166,6 +169,9 @@ class admin_controller
 		$this->config->set('games_pagination', $this->request->variable('games_pagination', 0));
 		$this->config->set('game_small_img_width', $this->request->variable('game_small_img_width', 0));
 		$this->config->set('game_small_img_ht', $this->request->variable('game_small_img_ht', 0));
+		//
+		$this->config->set('game_display_profile', $this->request->variable('game_display_profile', 0));
+		$this->config->set('game_profile_sep', $this->request->variable('game_profile_sep', 0));
 		//
 		$this->config->set('game_recent', $this->request->variable('game_recent', 0));
 		$this->config->set('game_popular', $this->request->variable('game_popular', 0));

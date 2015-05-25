@@ -146,7 +146,7 @@ class listener implements EventSubscriberInterface
 	{
 		// Do not continue if gamesmod has been disabled
 		// or user has been deactivated
-		if (!$this->config['games_active'] || $event['member']['game_view'] == 0)
+		if (!$this->config['games_active'] || $event['member']['game_view'] == 0 || !$this->config['game_display_profile'])
 		{
 			return;
 		}
