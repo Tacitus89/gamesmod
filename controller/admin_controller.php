@@ -686,6 +686,8 @@ class admin_controller
 		$moveall = $this->request->is_set_post('moveall');
 		$cancelcat = $this->request->is_set_post('cancelcat');
 
+		// Initiate and load the game entity
+
 		//cancel
 		if($cancelcat)
 		{
