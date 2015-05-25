@@ -687,6 +687,7 @@ class admin_controller
 		$cancelcat = $this->request->is_set_post('cancelcat');
 
 		// Initiate and load the game entity
+		$entity = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
 
 		//cancel
 		if($cancelcat)
