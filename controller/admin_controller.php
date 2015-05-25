@@ -117,6 +117,10 @@ class admin_controller
 				// Set the options the user configured
 				$this->set_options();
 
+				// Add option settings change action to the admin log
+				$phpbb_log = $this->container->get('log');
+				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_SETTINGS_LOG');
+
 				// Option settings have been updated
 				// Confirm this to the user and provide link back to previous page
 				trigger_error($this->user->lang('ACP_GAMES_CONF_SAVED') . adm_back_link($this->u_action));
@@ -317,6 +321,10 @@ class admin_controller
 			// Add a new game entity to the database
 			$this->games_cat_operator->add_games_cat($entity);
 
+			// Add action to the admin log
+			$phpbb_log = $this->container->get('log');
+			$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_GAME_CAT_ADD_LOG', time(), array($entity->get_name()));
+
 			// Show user confirmation of the added game and provide link back to the previous page
 			trigger_error($this->user->lang('ACP_CAT_ADD_GOOD') . adm_back_link("{$this->u_action}"));
 		}
@@ -437,6 +445,10 @@ class admin_controller
 		{
 			// Save the edited game entity to the database
 			$entity->save();
+
+			// Add action to the admin log
+			$phpbb_log = $this->container->get('log');
+			$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_GAME_CAT_EDIT_LOG', time(), array($entity->get_name()));
 
 			// Show user confirmation of the saved game and provide link back to the previous page
 			trigger_error($this->user->lang['ACP_CAT_EDIT_GOOD'] . adm_back_link("{$this->u_action}"));
@@ -612,12 +624,9 @@ class admin_controller
 				// Save the edited game entity to the database
 				$entity->save();
 
-				// Change game parent
-				/*
-				if (isset($data['game_parent_id']) && ($data['game_parent_id'] != $entity->get_parent_id()))
-				{
-					$this->games_cat_operator->change_parent($entity->get_id(), $data['game_parent_id']);
-				}*/
+				// Add action to the admin log
+				$phpbb_log = $this->container->get('log');
+				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_GAME_EDIT_LOG', time(), array($entity->get_name()));
 
 				// Show user confirmation of the saved game and provide link back to the previous page
 				trigger_error($this->user->lang('ACP_GAME_EDIT_GOOD') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}"));
@@ -626,6 +635,10 @@ class admin_controller
 			{
 				// Add a new game entity to the database
 				$this->games_operator->add_game($entity);
+
+				// Add action to the admin log
+				$phpbb_log = $this->container->get('log');
+				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_GAME_NEW_LOG', time(), array($entity->get_name()));
 
 				// Show user confirmation of the added game and provide link back to the previous page
 				trigger_error($this->user->lang('ACP_GAME_ADD_GOOD') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$data['parent']}"));
@@ -685,6 +698,10 @@ class admin_controller
 			// Delete the game on confirmation
 			$this->games_cat_operator->delete_games_cat($parent_id);
 
+			// Add action to the admin log
+			$phpbb_log = $this->container->get('log');
+			$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_GAME_CAT_DELETE_ALL_LOG', time(), array($entity->get_name()));
+
 			//redirect back to main menu
 			redirect("{$this->u_action}");
 		}
@@ -695,6 +712,10 @@ class admin_controller
 
 			// Delete the game on confirmation
 			$this->games_cat_operator->delete_games_cat($parent_id, $new_cat);
+
+			// Add action to the admin log
+			$phpbb_log = $this->container->get('log');
+			$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_GAME_CAT_DELETE_MOVING_LOG', time(), array($entity->get_name()));
 
 			//redirect back to main menu
 			redirect("{$this->u_action}");
@@ -746,6 +767,10 @@ class admin_controller
 		{
 			// Delete the game on confirmation
 			$this->games_operator->delete_game($game_id);
+
+			// Add action to the admin log
+			$phpbb_log = $this->container->get('log');
+			$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_GAME_DELETE_LOG', time(), array($entity->get_name()));
 
 			// Show user confirmation of the deleted game and provide link back to the previous page
 			trigger_error($this->user->lang('ACP_GAME_DELETE_GOOD') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}"));
