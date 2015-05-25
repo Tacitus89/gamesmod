@@ -151,27 +151,71 @@ class listener implements EventSubscriberInterface
 			return;
 		}
 
-		// Grab all the games
-		$entities = $this->games_operator->get_owned_games($event['member']['user_id']);
 
-		$game_count = count($entities);
-
-		//Do not continue if the user has not been games
-		if($game_count < 1)
+		$entities = array();
+		if($this->config['game_profile_sep'])
 		{
-			return;
+			//Grab all games cats
+			$games_cats = $this->games_cat_operator->get_games_cat();
+			foreach ($games_cats as $cats)
+			{
+				//Grab all owned games
+				$entities = $this->games_operator->get_owned_games($event['member']['user_id'], $cats->get_id());
+
+				//if the cat contains games
+				if(!empty($entities))
+				{
+					// Set output block vars for display in the template
+					$this->template->assign_block_vars('games_cat', array(
+						'NAME'				=> $cats->get_name(),
+						'COUNT'				=> count($entities),
+						'URL'				=> $this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $cats->get_id())),
+					));
+
+					foreach ($entities as $entity) {
+						// Set output block vars for display in the template
+						$this->template->assign_block_vars('games_cat.games', array(
+							'NAME'			=> $entity->get_name(),
+							'IMAGE'			=> $this->dir.$entity->get_dir().$entity->get_image(),
+							'ID'			=> $entity->get_id(),
+							'URL'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+						));
+					}
+				}
+
+			}
+
+			$this->template->assign_vars(array(
+				'S_GAMES_SEPERATED' => true,
+			));
 		}
+		else {
+			// Grab all the games
+			$entities = $this->games_operator->get_owned_games($event['member']['user_id']);
 
-		// Process each game entity for display
-		foreach ($entities as $entity)
-		{
-			// Set output block vars for display in the template
-			$this->template->assign_block_vars('games', array(
-				'GAME_NAME'			=> $entity->get_name(),
-				'GAME_IMAGE'		=> $this->dir.$entity->get_dir().$entity->get_image(),
-				'GAME_ID'			=> $entity->get_id(),
+			$game_count = count($entities);
 
-				'U_GAME'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+			//Do not continue if the user has not been games
+			if($game_count < 1)
+			{
+				return;
+			}
+
+			// Process each game entity for display
+			foreach ($entities as $entity)
+			{
+				// Set output block vars for display in the template
+				$this->template->assign_block_vars('games', array(
+					'GAME_NAME'			=> $entity->get_name(),
+					'GAME_IMAGE'		=> $this->dir.$entity->get_dir().$entity->get_image(),
+					'GAME_ID'			=> $entity->get_id(),
+
+					'U_GAME'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+				));
+			}
+
+			$this->template->assign_vars(array(
+				'GAME_COUNT' => $game_count,
 			));
 		}
 
@@ -196,7 +240,6 @@ class listener implements EventSubscriberInterface
 			'GAME_SMALL_WIDTH'	=> $width,
 			'GAME_SMALL_HEIGHT'	=> $height,
 			'GAME_STYLE'		=> $style,
-			'GAME_COUNT'		=> $game_count,
 		));
 	}
 

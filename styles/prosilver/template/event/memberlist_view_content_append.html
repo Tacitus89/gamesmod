@@ -1,12 +1,31 @@
 <!-- IF S_GAMES -->
 <!-- INCLUDEJS @tacitus89_gamesmod/jquery.hoverpulse.js -->
+
+<!-- IF S_GAMES_SEPERATED -->
+<!-- BEGIN games_cat -->
 <div class="panel bg2">
 	<div class="inner">
 
-		<h3>{L_GAMES}:&nbsp;<b>{GAME_COUNT}</b></h3>
+		<h3><a href="{games_cat.URL}">{games_cat.NAME}</a>{L_COLON} <b>{games_cat.COUNT}</b></h3>
+		<div class="games">
+		<!-- BEGIN games -->
+			<div style="float: left;{GAME_STYLE}"><a href="{games.URL}" title="{games.NAME}"><img src="{games.IMAGE}" class="games_img" title="{games.NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a></div>
+		<!-- END games -->
+		</div>
+	</div>
+</div>
+<!-- END games_cat -->
+
+<!-- ELSE -->
+<div class="panel bg2">
+	<div class="inner">
+
+		<h3>{L_GAMES}{L_COLON} <b>{GAME_COUNT}</b></h3>
 		<!-- BEGIN games -->
 			<div style="float: left;{GAME_STYLE}"><a href="{games.U_GAME}" title="{games.GAME_NAME}"><img src="{games.GAME_IMAGE}" class="games_img" title="{games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a></div>
 		<!-- END games -->
 	</div>
 </div>
+<!-- ENDIF -->
+
 <!-- ENDIF -->

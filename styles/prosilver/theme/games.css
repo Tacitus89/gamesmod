@@ -9,7 +9,10 @@
 
 .rtl .icon-game {
 	background-position: 100% 50%;
+}
 
+div.games {
+	padding: 10px 0 0 5px;
 }
 
 dd.gamer75, dd.gamer35, dd.game_desc {
