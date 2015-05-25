@@ -254,7 +254,7 @@ class listener implements EventSubscriberInterface
 	{
 		// Do not continue if gamesmod has been disabled
 		// or user has been deactivated
-		if (!$this->config['games_active'])
+		if (!$this->config['games_active'] || !$this->config['game_display_topic'])
 		{
 			return;
 		}
@@ -262,7 +262,7 @@ class listener implements EventSubscriberInterface
 		$user_cache_data = $event['user_cache_data'];
 		$user_cache_data['game_count'] = $this->games_operator->get_gamers_count($event['row']['user_id']);
 
-		if($this->config['game_display_topic'] && $this->config['game_topic_limit'] > 0 && $event['row']['game_view'] == 1)
+		if($this->config['game_topic_limit'] > 0 && $event['row']['game_view'] == 1)
 		{
 			$user_cache_data['games'] = $this->show_gamers_game($event['row']['user_id']);
 		}
@@ -342,6 +342,12 @@ class listener implements EventSubscriberInterface
 	*/
 	public function viewtopic_post_rowset_data($event)
 	{
+		// Do not continue if gamesmod has been disabled
+		if (!$this->config['games_active'])
+		{
+			return;
+		}
+
 		$rowset_data = $event['rowset_data'];
 		$rowset_data['enable_games'] = $event['row']['enable_games'];
 		$event['rowset_data'] = $rowset_data;
@@ -357,15 +363,15 @@ class listener implements EventSubscriberInterface
 	public function add_games_at_viewtopic($event)
 	{
 		// Do not continue if gamesmod has been disabled
-		//or games are disabled for this post
-		if (!$this->config['games_active'])
+		//or game display in topics are disabled
+		if (!$this->config['games_active'] || !$this->config['game_display_topic'])
 		{
 			return;
 		}
 
 		$post_row = $event['post_row'];
 		$post_row['GAME_COUNT'] = $event['user_poster_data']['game_count'];
-		if($event['row']['enable_games'])
+		if($event['row']['enable_games'] && $this->config['game_topic_limit'] > 0)
 		{
 			$post_row['GAMES'] = $event['user_poster_data']['games'];
 		}
