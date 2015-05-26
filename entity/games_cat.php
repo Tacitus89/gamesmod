@@ -79,18 +79,18 @@ class games_cat
 	}
 
 	/**
-	* Load the data from the database for this game by name
+	* Load the data from the database for this game by seo_name
 	*
-	* @param int $id game identifier
+	* @param string $seo_name game cat identifier
 	* @return game_interface $this object for chaining calls; load()->set()->save()
 	* @access public
 	* @throws \tacitus89\gamesmod\exception\out_of_bounds
 	*/
-	public function load_by_name($name)
+	public function load_by_name($seo_name)
 	{
 		$sql = 'SELECT gc.id, gc.name, gc.dir, gc.order_id, gc.number
 			FROM ' . $this->games_cat_table . ' gc
-			WHERE '. $this->db->sql_in_set('gc.name', $name);
+			WHERE '. $this->db->sql_in_set('gc.name', $seo_name);
 		$result = $this->db->sql_query($sql);
 		$this->data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);

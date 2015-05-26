@@ -99,6 +99,36 @@ class game
 	}
 
 	/**
+	* Load the data from the database for this game by seo_name
+	*
+	* @param string $seo_name game identifier
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\out_of_bounds
+	*/
+	public function load_by_name($seo_name)
+	{
+		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+			FROM ' . $this->games_table . ' g
+			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
+			WHERE '. $this->db->sql_in_set('g.name', $seo_name);
+		$result = $this->db->sql_query($sql);
+		$this->data = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if ($this->data === false)
+		{
+			// A game does not exist
+			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
+		}
+
+		$this->dir = $this->data['dir'];
+		unset($this->data['dir']);
+
+		return $this;
+	}
+
+	/**
 	* Import data for this game
 	*
 	* Used when the data is already loaded externally.

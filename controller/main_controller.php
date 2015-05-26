@@ -122,7 +122,7 @@ class main_controller
 		$this->add_navlinks();
 
 		//show the list of games
-		if($parent_id != 0 || $category != '')
+		if($parent_id != 0 || ($category != '' && $game == ''))
 		{
 			$start = $this->request->variable('start', 0);
 
@@ -153,7 +153,8 @@ class main_controller
 					'GAME_ID'			=> $entity->get_id(),
 					'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
 
-					'U_GAME'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_name(), 'game' => $entity->get_name())),
+					'U_GAME'			=> (true)? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_name(), 'game' => $entity->get_name())):
+					$this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $parent->get_name(), 'game' => $entity->get_name())),
 				));
 			}
 
@@ -176,10 +177,21 @@ class main_controller
 			));
 		}
 		//show a game
-		elseif ($game_id != 0)
+		elseif ($game_id != 0 || ($category != '' && $game != ''))
 		{
-			//get the game
-			$entity = $this->container->get('tacitus89.gamesmod.entity.game')->load($game_id);
+			if(true)
+			{
+				//get the game
+				$entity = $this->container->get('tacitus89.gamesmod.entity.game')->load_by_name($game);
+				//parent
+				$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load_by_name($category);
+			}
+			else {
+				//get the game
+				$entity = $this->container->get('tacitus89.gamesmod.entity.game')->load($game_id);
+				//parent
+				$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($entity->get_parent());
+			}
 
 			if($entity === false)
 			{
@@ -205,8 +217,6 @@ class main_controller
 				'L_PAGE_TITLE'	=> $this->user->lang($entity->get_name()),
 			));
 
-			//parent
-			$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($entity->get_parent());
 			//Add more navlinks
 			$this->add_navlinks($parent);
 			$this->add_navlinks($entity);
@@ -240,7 +250,7 @@ class main_controller
 
 
 		//Show popular games
-		if($this->config['game_popular'] > 0 && $game_id == 0)
+		if($this->config['game_popular'] > 0 && ($game_id == 0 && $game == ''))
 		{
 			//Get popular games
 			$entities = $this->games_operator->get_popular_games($this->config['game_popular']);
@@ -259,7 +269,7 @@ class main_controller
 		}
 
 		//Show recent games
-		if($this->config['game_recent'] > 0 && $game_id == 0)
+		if($this->config['game_recent'] > 0 && ($game_id == 0 && $game == ''))
 		{
 			//Get popular games
 			$entities = $this->games_operator->get_recent_games($this->config['game_recent']);
