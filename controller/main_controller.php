@@ -132,15 +132,22 @@ class main_controller
 				$entities = $this->games_operator->get_games_by_name($category, $start, $this->config['games_pagination']);
 				//parent
 				$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load_by_name($category);
+
+				//number of games
+				$total_games = $this->games_operator->get_number_games($parent->get_id());
 			}
 			else {
 				// Grab all the games
 				$entities = $this->games_operator->get_games($parent_id, $start, $this->config['games_pagination']);
 				//parent
 				$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
+
+				//number of games
+				$total_games = $this->games_operator->get_number_games($parent->get_id());
+
+				//Generation pagination
+				$this->pagination->generate_template_pagination($this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $parent_id)), 'pagination', 'start', $total_games, $this->config['games_pagination'], $start);
 			}
-
-
 
 			// Process each game entity for display
 			foreach ($entities as $entity)
@@ -153,16 +160,10 @@ class main_controller
 					'GAME_ID'			=> $entity->get_id(),
 					'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
 
-					'U_GAME'			=> (true)? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_name(), 'game' => $entity->get_name())):
-					$this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $parent->get_name(), 'game' => $entity->get_name())),
+					'U_GAME'			=> (true)? 	$this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_name(), 'game' => $entity->get_name())):
+													$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
 			}
-
-			//number of games
-			$total_games = $this->games_operator->get_number_games($parent_id);
-
-			//Generation pagination
-			$this->pagination->generate_template_pagination($this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $parent_id)), 'pagination', 'start', $total_games, $this->config['games_pagination'], $start);
 
 			//Add more navlinks
 			$this->add_navlinks($parent);
