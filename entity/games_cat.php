@@ -79,6 +79,32 @@ class games_cat
 	}
 
 	/**
+	* Load the data from the database for this game by name
+	*
+	* @param int $id game identifier
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\out_of_bounds
+	*/
+	public function load_by_name($name)
+	{
+		$sql = 'SELECT gc.id, gc.name, gc.dir, gc.order_id, gc.number
+			FROM ' . $this->games_cat_table . ' gc
+			WHERE '. $this->db->sql_in_set('gc.name', $name);
+		$result = $this->db->sql_query($sql);
+		$this->data = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if ($this->data === false)
+		{
+			// A game does not exist
+			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
+		}
+
+		return $this;
+	}
+
+	/**
 	* Import data for this game
 	*
 	* Used when the data is already loaded externally.

@@ -89,7 +89,27 @@ class games
 			WHERE ' . $this->db->sql_in_set('parent', $parent_id) .'
 			ORDER BY name ASC';
 
-		return $this->get_sql_result($sql, $parent_id, $start, $end);
+		return $this->get_sql_result($sql, $start, $end);
+	}
+
+	/**
+	* Get the games by name
+	*
+	* @param int $parent_id Category to display games from; default = 0
+	* @param int $start Start position in the table; default = 0
+	* @param int $end End position at table; default = 0
+	* @return array Array of game data entities
+	* @access public
+	*/
+	public function get_games_by_name($parent_name = '', $start = 0, $end = 0)
+	{
+		$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+			FROM ' . $this->game_table . ' g
+			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
+			WHERE ' . $this->db->sql_in_set('gc.name', $parent_name) .'
+			ORDER BY name ASC';
+
+		return $this->get_sql_result($sql, $start, $end);
 	}
 
 	/**
@@ -123,7 +143,7 @@ class games
 				AND ' . $this->db->sql_in_set('g.parent', $parent_id) .'
 				ORDER BY g.name ASC';
 		}
-		return $this->get_sql_result($sql, $parent_id, $start, $end);
+		return $this->get_sql_result($sql, $start, $end);
 	}
 
 	/**
@@ -146,7 +166,7 @@ class games
 			AND '. $this->db->sql_in_set('g.parent', $parent_id) .'
 			ORDER BY name ASC';
 
-		return $this->get_sql_result($sql, $parent_id, $start, $end);
+		return $this->get_sql_result($sql, $start, $end);
 	}
 
 	/**
@@ -159,7 +179,7 @@ class games
 	* @return array Array of game data entities
 	* @access private
 	*/
-	private function get_sql_result($sql, $parent_id = 0, $start = 0, $end = 0)
+	private function get_sql_result($sql, $start = 0, $end = 0)
 	{
 		$games = array();
 

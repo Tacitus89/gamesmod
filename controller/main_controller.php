@@ -101,8 +101,11 @@ class main_controller
 	* @return null
 	* @access public
 	*/
-	public function display()
+	public function display($category = '', $game = '')
 	{
+		echo $category;
+		echo $game;
+
 		// When gamesmod are disabled, redirect users back to the forum index
 		if (empty($this->config['games_active']))
 		{
@@ -119,12 +122,25 @@ class main_controller
 		$this->add_navlinks();
 
 		//show the list of games
-		if($parent_id != 0)
+		if($parent_id != 0 || $category != '')
 		{
 			$start = $this->request->variable('start', 0);
 
-			// Grab all the games
-			$entities = $this->games_operator->get_games($parent_id, $start, $this->config['games_pagination']);
+			if(true)
+			{
+				// Grab all the games
+				$entities = $this->games_operator->get_games_by_name($category, $start, $this->config['games_pagination']);
+				//parent
+				$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load_by_name($category);
+			}
+			else {
+				// Grab all the games
+				$entities = $this->games_operator->get_games($parent_id, $start, $this->config['games_pagination']);
+				//parent
+				$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
+			}
+
+
 
 			// Process each game entity for display
 			foreach ($entities as $entity)
@@ -137,7 +153,7 @@ class main_controller
 					'GAME_ID'			=> $entity->get_id(),
 					'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
 
-					'U_GAME'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+					'U_GAME'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_name(), 'game' => $entity->get_name())),
 				));
 			}
 
@@ -147,8 +163,6 @@ class main_controller
 			//Generation pagination
 			$this->pagination->generate_template_pagination($this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $parent_id)), 'pagination', 'start', $total_games, $this->config['games_pagination'], $start);
 
-			//parent
-			$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
 			//Add more navlinks
 			$this->add_navlinks($parent);
 
