@@ -140,11 +140,12 @@ class admin_controller
 			'S_GAME_SMALL_IMG_WIDTH'			=> $this->config['game_small_img_width'],
 			'S_GAME_SMALL_IMG_HT'				=> $this->config['game_small_img_ht'],
 			//
-			'S_GAME_DISPLAY_PROFILE'			=> $this->config['game_display_profile'] ? true : false,
-			'S_GAME_PROFILE_SEP'				=> $this->config['game_profile_sep'] ? true : false,
-			//
 			'S_GAME_RECENT'						=> $this->config['game_recent'],
 			'S_GAME_POPULAR'					=> $this->config['game_popular'],
+			'S_GAMES_SEO_URL'					=> $this->config['game_seo_url'] ? true : false,
+			//
+			'S_GAME_DISPLAY_PROFILE'			=> $this->config['game_display_profile'] ? true : false,
+			'S_GAME_PROFILE_SEP'				=> $this->config['game_profile_sep'] ? true : false,
 			//
 			'S_GAME_RECENT_INDEX'				=> $this->config['game_recent_index'],
 			'S_GAME_POPULAR_INDEX'				=> $this->config['game_popular_index'],
@@ -170,11 +171,12 @@ class admin_controller
 		$this->config->set('game_small_img_width', $this->request->variable('game_small_img_width', 0));
 		$this->config->set('game_small_img_ht', $this->request->variable('game_small_img_ht', 0));
 		//
-		$this->config->set('game_display_profile', $this->request->variable('game_display_profile', 0));
-		$this->config->set('game_profile_sep', $this->request->variable('game_profile_sep', 0));
-		//
 		$this->config->set('game_recent', $this->request->variable('game_recent', 0));
 		$this->config->set('game_popular', $this->request->variable('game_popular', 0));
+		$this->config->set('game_seo_url', $this->request->variable('game_seo_url', 0));
+		//
+		$this->config->set('game_display_profile', $this->request->variable('game_display_profile', 0));
+		$this->config->set('game_profile_sep', $this->request->variable('game_profile_sep', 0));
 		//
 		$this->config->set('game_recent_index', $this->request->variable('game_recent_index', 0));
 		$this->config->set('game_popular_index', $this->request->variable('game_popular_index', 0));
@@ -299,11 +301,20 @@ class admin_controller
 
 		// Initiate a game entity
 		$entity = $this->container->get('tacitus89.gamesmod.entity.games_cat');
-		$entity->set_name($this->request->variable('game_cat_name', '', true));
-		$entity->set_dir($this->request->variable('game_cat_dir', '', true));
 
 		// Create an array to collect errors that will be output to the user
 		$errors = array();
+		try
+		{
+			$entity->set_name($this->request->variable('game_cat_name', '', true));
+			$entity->set_dir($this->request->variable('game_cat_dir', '', true));
+			$entity->set_route($this->request->variable('game_cat_route', '', true));
+		}
+		catch (\tacitus89\gamesmod\exception\base $e)
+		{
+			// Catch exceptions and add them to errors array
+			$errors[] = $e->get_message($this->user);
+		}
 
 		// If the form has been submitted
 		if ($submit)
@@ -387,6 +398,7 @@ class admin_controller
 			'name'			=> $this->request->variable('game_name', '', true),
 			'description'	=> $this->request->variable('game_description', '', true),
 			'image'			=> $this->request->variable('game_image', '', true),
+			'route'			=> $this->request->variable('game_route', '', true),
 		);
 
 		// Process the new game
@@ -422,13 +434,21 @@ class admin_controller
 		$data = array(
 			'game_cat_name'	=> $this->request->variable('game_cat_name', $entity->get_name(), true),
 			'game_cat_dir'	=> $this->request->variable('game_cat_dir', $entity->get_dir(), true),
-		);
-
-		$entity->set_name($data['game_cat_name']);
-		$entity->set_dir($data['game_cat_dir']);
+			'game_cat_route'=> $this->request->variable('game_cat_route', $entity->get_dir(), true),		);
 
 		// Create an array to collect errors that will be output to the user
 		$errors = array();
+		try
+		{
+			$entity->set_name($data['game_cat_name']);
+			$entity->set_dir($data['game_cat_dir']);
+			$entity->set_route($this->request->variable('game_cat_route', '', true));
+		}
+		catch (\tacitus89\gamesmod\exception\base $e)
+		{
+			// Catch exceptions and add them to errors array
+			$errors[] = $e->get_message($this->user);
+		}
 
 		// If the form has been submitted
 		if ($submit)
@@ -479,6 +499,8 @@ class admin_controller
 
 		// Set output vars for display in the template
 		$this->template->assign_vars(array(
+			'S_ERROR'			=> (sizeof($errors)) ? true : false,
+			'ERROR_MSG'			=> (sizeof($errors)) ? implode('<br />', $errors) : '',
 			'S_EDIT_GAME_CAT'	=> true,
 			'DIR_OPTIONS'		=> $dir_options,
 			'GAME_CAT_NAME'		=> $entity->get_name(),
@@ -512,6 +534,7 @@ class admin_controller
 			'name'			=> $this->request->variable('game_name', $entity->get_name(), true),
 			'description'	=> $this->request->variable('game_description', $entity->get_description(), true),
 			'image'			=> $this->request->variable('game_image', $entity->get_image(), true),
+			'route'			=> $this->request->variable('game_route', $entity->get_route(), true),
 		);
 
 		// Process the edited game
@@ -551,6 +574,7 @@ class admin_controller
 			'description'	=> $data['description'],
 			'image'			=> $data['image'],
 			'parent'		=> $data['parent'],
+			'route'			=> $data['route'],
 		);
 
 		// Set the game's data in the entity
@@ -672,6 +696,7 @@ class admin_controller
 			'ERROR_MSG'			=> (sizeof($errors)) ? implode('<br />', $errors) : '',
 
 			'GAME_NAME'			=> $entity->get_name(),
+			'GAME_ROUTE'		=> $entity->get_route(),
 			'GAME_DESCRIPTION'	=> $entity->get_description(),
 			'IMAGE_OPTIONS'		=> $options,
 			'GAME_IMAGE'		=> ($entity->get_image() != '')? '' . $this->dir . $dir . $entity->get_image() . '' : '',

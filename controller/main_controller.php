@@ -126,7 +126,7 @@ class main_controller
 		{
 			$start = $this->request->variable('start', 0);
 
-			if(true)
+			if($this->config['game_seo_url'])
 			{
 				// Grab all the games
 				$entities = $this->games_operator->get_games_by_name($category, $start, $this->config['games_pagination']);
@@ -160,8 +160,8 @@ class main_controller
 					'GAME_ID'			=> $entity->get_id(),
 					'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
 
-					'U_GAME'			=> (true)? 	$this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_name(), 'game' => $entity->get_name())):
-													$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+					'U_GAME'			=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_route(), 'game' => $entity->get_route())):
+																			$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
 			}
 
@@ -173,14 +173,15 @@ class main_controller
 				'S_GAMES'		=> true,
 				'S_DESC'		=> ($this->config['games_description'])? true:false,
 				'TOTAL_GAMES'	=> $total_games . ' ' . $this->user->lang('GAMES'),
-				'U_PAGE_TITLE'	=> $this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $parent_id)),
+				'U_PAGE_TITLE'	=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_route())):
+																	$this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $parent_id)),
 				'L_PAGE_TITLE'	=> $this->user->lang($parent->get_name()),
 			));
 		}
 		//show a game
 		elseif ($game_id != 0 || ($category != '' && $game != ''))
 		{
-			if(true)
+			if($this->config['game_seo_url'])
 			{
 				//get the game
 				$entity = $this->container->get('tacitus89.gamesmod.entity.game')->load_by_name($game);
@@ -194,11 +195,6 @@ class main_controller
 				$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($entity->get_parent());
 			}
 
-			if($entity === false)
-			{
-				echo 'gilfe!';
-			}
-
 			// Set output block vars for display in the template
 			$this->template->assign_block_vars('games', array(
 				'GAME_NAME'			=> $entity->get_name(),
@@ -207,20 +203,22 @@ class main_controller
 				'GAME_ID'			=> $entity->get_id(),
 				'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
 
-				'U_GAME'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+				'U_GAME'			=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_route(), 'game' => $entity->get_route())):
+																		$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 			));
 
 			// Set output vars for display in the template
 			$this->template->assign_vars(array(
 				'S_GAME_VIEW'	=> true,
 				'S_DESC'		=> ($this->config['games_description'])? true:false,
-				'U_PAGE_TITLE'	=> $this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $parent_id)),
+				'U_PAGE_TITLE'	=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_route(), 'game' => $entity->get_route())):
+																	$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				'L_PAGE_TITLE'	=> $this->user->lang($entity->get_name()),
 			));
 
 			//Add more navlinks
 			$this->add_navlinks($parent);
-			$this->add_navlinks($entity);
+			$this->add_navlinks($parent, $entity);
 		}
 		//show the list of cats
 		else
@@ -237,7 +235,8 @@ class main_controller
 					'GAME_ID'		=> $entity->get_id(),
 					'NUMBER'		=> $entity->get_number(),
 
-					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $entity->get_id())),
+					'U_GAME'		=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_route())):
+																		$this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $entity->get_id())),
 				));
 			}
 
@@ -296,13 +295,14 @@ class main_controller
 	/**
 	* Adding link at navlinks
 	*
-	* @param int $game_id Game ID
+	* @param object parent; default = null
+	* @param object game; default = null
 	* @return null
 	* @access public
 	*/
-	private function add_navlinks($entity = null)
+	private function add_navlinks($parent = null, $game = null)
 	{
-		if($entity == null)
+		if(empty($parent))
 		{
 			$this->template->assign_block_vars('navlinks', array(
 				'U_VIEW_FORUM'		=> $this->helper->route('tacitus89_gamesmod_main_controller'),
@@ -311,10 +311,21 @@ class main_controller
 		}
 		else
 		{
-			$this->template->assign_block_vars('navlinks', array(
-				'U_VIEW_FORUM'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $entity->get_id())),
-				'FORUM_NAME'		=> $this->user->lang($entity->get_name()),
-			));
+			if(!empty($parent) && empty($game))
+			{
+				$this->template->assign_block_vars('navlinks', array(
+					'U_VIEW_FORUM'		=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_route())):
+																			$this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $parent->get_id())),
+					'FORUM_NAME'		=> $this->user->lang($parent->get_name()),
+				));
+			}
+			else {
+				$this->template->assign_block_vars('navlinks', array(
+					'U_VIEW_FORUM'		=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_route(), 'game' => $game->get_route())):
+																			$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $game->get_id())),
+					'FORUM_NAME'		=> $this->user->lang($game->get_name()),
+				));
+			}
 		}
 	}
 

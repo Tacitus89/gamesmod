@@ -83,7 +83,7 @@ class games
 	*/
 	public function get_games($parent_id = 0, $start = 0, $end = 0)
 	{
-		$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+		$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir
 			FROM ' . $this->game_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE ' . $this->db->sql_in_set('parent', $parent_id) .'
@@ -103,10 +103,10 @@ class games
 	*/
 	public function get_games_by_name($parent_name = '', $start = 0, $end = 0)
 	{
-		$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+		$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir
 			FROM ' . $this->game_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
-			WHERE ' . $this->db->sql_in_set('gc.name', $parent_name) .'
+			WHERE ' . $this->db->sql_in_set('gc.route', $parent_name) .'
 			ORDER BY name ASC';
 
 		return $this->get_sql_result($sql, $start, $end);
@@ -126,7 +126,7 @@ class games
 	{
 		if($parent_id == 0)
 		{
-			$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+			$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir
 				FROM ' . $this->games_awarded_table . ' ga
 				JOIN ' . $this->game_table . ' g ON g.id = ga.game_id
 				LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
@@ -135,7 +135,7 @@ class games
 		}
 		else
 		{
-			$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+			$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir
 				FROM ' . $this->game_table . ' g
 				JOIN ' . $this->games_awarded_table . ' ga ON g.id = ga.game_id
 				LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
@@ -158,7 +158,7 @@ class games
 	*/
 	public function get_not_owned_games($user_id, $parent_id = 0, $start = 0, $end = 0)
 	{
-		$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+		$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir
 			FROM ' . $this->game_table . ' g
 			LEFT OUTER JOIN ' . $this->games_awarded_table . ' ga ON g.id = ga.game_id AND '. $this->db->sql_in_set('ga.user_id', $user_id) .'
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
@@ -492,7 +492,7 @@ class games
 	{
 		$games = array();
 
-		$sql = 'SELECT g.id, g.name, g.description, g.image, g.parent, gc.dir
+		$sql = 'SELECT g.id, g.name, g.description, g.image, g.parent, g.route, gc.dir
 			FROM ' . $this->games_awarded_table . ' ga
 			JOIN ' . $this->game_table . ' g ON ga.game_id = g.id
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
@@ -521,7 +521,7 @@ class games
 	{
 		$games = array();
 
-		$sql = 'SELECT g.id, g.name, g.description, g.image, g.parent, gc.dir
+		$sql = 'SELECT g.id, g.name, g.description, g.image, g.parent, g.route, gc.dir
 			FROM ' . $this->game_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			ORDER BY g.id DESC';

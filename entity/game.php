@@ -24,6 +24,7 @@ class game
 	*	description
 	*	image
 	*	parent
+	*	route
 	* @access protected
 	*/
 	protected $data;
@@ -78,7 +79,7 @@ class game
 	*/
 	public function load($id)
 	{
-		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir
 			FROM ' . $this->games_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE g.id = ' . (int) $id;
@@ -108,10 +109,10 @@ class game
 	*/
 	public function load_by_name($seo_name)
 	{
-		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir
 			FROM ' . $this->games_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
-			WHERE '. $this->db->sql_in_set('g.name', $seo_name);
+			WHERE '. $this->db->sql_in_set('g.route', $seo_name);
 		$result = $this->db->sql_query($sql);
 		$this->data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
@@ -159,6 +160,7 @@ class game
 			'name'						=> 'set_name', // call set_title()
 			'description'				=> 'string',
 			'image'						=> 'string',
+			'route'						=> 'string',
 		);
 
 		// Go through the basic fields and set them to our data array
@@ -425,5 +427,72 @@ class game
 	public function get_dir()
 	{
 		return (isset($this->dir)) ? (string) $this->dir.'/' : '';
+	}
+
+	/**
+	* Get route
+	*
+	* @return string route
+	* @access public
+	*/
+	public function get_route()
+	{
+		return (isset($this->data['route'])) ? (string) $this->data['route'] : '';
+	}
+
+	/**
+	* Set route
+	*
+	* @param string $route Route text
+	* @return page_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_route($route)
+	{
+		// Enforce a string
+		$route = (string) $route;
+
+		// Route is a empty field
+		if ($route == '')
+		{
+			// Set the route on our data array
+			$this->data['route'] = '';
+			return $this;
+		}
+
+		// Route should not contain any special characters
+		if (!preg_match('/^[^!"#$%&*\'()+,.\/\\\\:;<=>?@\[\]^`{|}~ ]*$/i', $route))
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('route', 'ILLEGAL_CHARACTERS'));
+		}
+
+		// We limit the route length to 100 characters
+		if (truncate_string($route, 100) != $route)
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('route', 'TOO_LONG'));
+		}
+
+		// Routes must be unique
+		if (!$this->get_id() || ($this->get_id() && $this->get_route() != $route))
+		{
+			$sql = 'SELECT 1
+				FROM ' . $this->games_table . "
+				WHERE route = '" . $this->db->sql_escape($route) . "'
+					AND id <> " . $this->get_id();
+			$result = $this->db->sql_query_limit($sql, 1);
+			$row = $this->db->sql_fetchrow($result);
+			$this->db->sql_freeresult($result);
+
+			if ($row)
+			{
+				throw new \tacitus89\gamesmod\exception\unexpected_value(array('route', 'NOT_UNIQUE'));
+			}
+		}
+
+		// Set the route on our data array
+		$this->data['route'] = $route;
+
+		return $this;
 	}
 }
