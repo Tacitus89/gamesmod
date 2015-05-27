@@ -103,7 +103,8 @@ class games
 	*/
 	public function get_games_by_name($parent_name = '', $start = 0, $end = 0)
 	{
-		$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir
+		$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir,
+				gc.id as parent_id, gc.name as parent_name, gc.dir as parent_dir, gc.order_id as parent_order_id, gc.number as parent_number, gc.route as parent_route
 			FROM ' . $this->game_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE ' . $this->db->sql_in_set('gc.route', $parent_name) .'
@@ -492,7 +493,8 @@ class games
 	{
 		$games = array();
 
-		$sql = 'SELECT g.id, g.name, g.description, g.image, g.parent, g.route, gc.dir
+		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir,
+				gc.id as parent_id, gc.name as parent_name, gc.dir as parent_dir, gc.order_id as parent_order_id, gc.number as parent_number, gc.route as parent_route
 			FROM ' . $this->games_awarded_table . ' ga
 			JOIN ' . $this->game_table . ' g ON ga.game_id = g.id
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
@@ -521,7 +523,8 @@ class games
 	{
 		$games = array();
 
-		$sql = 'SELECT g.id, g.name, g.description, g.image, g.parent, g.route, gc.dir
+		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir,
+				gc.id as parent_id, gc.name as parent_name, gc.dir as parent_dir, gc.order_id as parent_order_id, gc.number as parent_number, gc.route as parent_route
 			FROM ' . $this->game_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			ORDER BY g.id DESC';

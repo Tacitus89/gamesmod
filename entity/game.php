@@ -32,6 +32,9 @@ class game
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
+	/** @var ContainerInterface */
+	protected $container;
+
 	/**
 	* The database table the games are stored in
 	*
@@ -54,10 +57,19 @@ class game
 	protected $dir;
 
 	/**
+	* Specifies the parent entity
+	*
+	* @var string
+	*/
+	protected $parent;
+
+	/**
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface    $db              Database object
+	* @param ContainerInterface                   $container       Service container interface
 	* @param string                               $games_table     Name of the table used to store game data
+	* @param string                               $games_cat_table Name of the table used to store game data
 	* @return \tacitus89\gamesmod\entity\game
 	* @access public
 	*/
@@ -67,6 +79,8 @@ class game
 		$this->games_table = $games_table;
 		$this->game_cat_table = $game_cat_table;
 		$this->dir = '';
+
+		$this->parent = new games_cat($db, $game_cat_table);
 	}
 
 	/**
@@ -79,7 +93,8 @@ class game
 	*/
 	public function load($id)
 	{
-		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir
+		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir,
+				gc.id as parent_id, gc.name as parent_name, gc.dir as parent_dir, gc.order_id as parent_order_id, gc.number as parent_number, gc.route as parent_route
 			FROM ' . $this->games_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE g.id = ' . (int) $id;
@@ -96,6 +111,8 @@ class game
 		$this->dir = $this->data['dir'];
 		unset($this->data['dir']);
 
+		$this->include_parent();
+
 		return $this;
 	}
 
@@ -109,7 +126,8 @@ class game
 	*/
 	public function load_by_name($seo_name)
 	{
-		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir
+		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir,
+			gc.id as parent_id, gc.name as parent_name, gc.dir as parent_dir, gc.order_id as parent_order_id, gc.number as parent_number, gc.route as parent_route
 			FROM ' . $this->games_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE '. $this->db->sql_in_set('g.route', $seo_name);
@@ -125,6 +143,8 @@ class game
 
 		$this->dir = $this->data['dir'];
 		unset($this->data['dir']);
+
+		$this->data = $this->include_parent($this->data);
 
 		return $this;
 	}
@@ -151,6 +171,8 @@ class game
 			$this->dir = (string) $data['dir'];
 			unset($data['dir']);
 		}
+
+		$data = $this->include_parent($data);
 
 		// All of our fields
 		$fields = array(
@@ -261,6 +283,36 @@ class game
 		$this->db->sql_query($sql);
 
 		return $this;
+	}
+
+	/**
+	* Include parent
+	*
+	* @param data array
+	* @return data array
+	* @access private
+	*/
+	private function include_parent($data)
+	{
+		$parent_data = array(
+			'id'					=> $data['parent_id'],
+			'name'					=> $data['parent_name'],
+			'dir'					=> $data['parent_dir'],
+			'order_id'				=> $data['parent_order_id'],
+			'number'				=> $data['parent_number'],
+			'route'					=> $data['parent_route'],
+		);
+
+		$this->parent->import($parent_data);
+
+		unset($data['parent_id']);
+		unset($data['parent_name']);
+		unset($data['parent_dir']);
+		unset($data['parent_order_id']);
+		unset($data['parent_number']);
+		unset($data['parent_route']);
+
+		return $data;
 	}
 
 	/**
@@ -391,6 +443,17 @@ class game
 	public function get_parent()
 	{
 		return (isset($this->data['parent'])) ? (int) $this->data['parent'] : 0;
+	}
+
+	/**
+	* Get the parent: game_cat object
+	*
+	* @return object game_cat
+	* @access public
+	*/
+	public function get_parent2()
+	{
+		return $this->parent;
 	}
 
 	/**
