@@ -537,4 +537,51 @@ class games
 		// Return all game entities
 		return $games;
 	}
+
+	/**
+	* Clear the seo_url in games table
+	*
+	* @return null
+	* @access public
+	*/
+	public function clear_route()
+	{
+		$sql = 'UPDATE ' . $this->game_table . '
+			SET route = ""';
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Clear the seo_url in games table
+	*
+	* @return null
+	* @access public
+	*/
+	public function create_route()
+	{
+		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir
+			FROM ' . $this->game_table . ' g
+			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id';
+
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$game = $this->container->get('tacitus89.gamesmod.entity.game')
+				->import($row);
+			try
+			{
+				//replace the special characters
+				$string = preg_replace('/[!"#$%&*\'()+,.\/\\\\:;<=>?@\[\]^`{|}~ ]/', "_", strtolower($row['name']));
+				//replace the repeat
+				$string = preg_replace('/(_)\\1+/', "_", strtolower($string));
+				$game->set_route($string);
+				$game->save();
+			}
+			catch (\tacitus89\gamesmod\exception\base $e)
+			{
+			}
+
+		}
+		$this->db->sql_freeresult($result);
+	}
 }

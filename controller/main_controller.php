@@ -128,6 +128,9 @@ class main_controller
 
 			if($this->config['game_seo_url'])
 			{
+				//correct the path
+				$this->dir = '../'.$this->dir;
+
 				// Grab all the games
 				$entities = $this->games_operator->get_games_by_name($category, $start, $this->config['games_pagination']);
 				//parent
@@ -183,6 +186,9 @@ class main_controller
 		{
 			if($this->config['game_seo_url'])
 			{
+				//correct the path
+				$this->dir = '../../'.$this->dir;
+
 				//get the game
 				$entity = $this->container->get('tacitus89.gamesmod.entity.game')->load_by_name($game);
 				//parent

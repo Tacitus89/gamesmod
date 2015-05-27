@@ -127,6 +127,40 @@ class admin_controller
 			}
 		}
 
+		//Clear the seo url
+		if($this->request->is_set_post('clear_seo_url'))
+		{
+			// Test if the submitted form is valid
+			if (!check_form_key('gamesmod_config'))
+			{
+				$errors[] = $this->user->lang('FORM_INVALID');
+			}
+
+			// If no errors, process the form data
+			if (empty($errors))
+			{
+				$this->games_operator->clear_route();
+				$this->games_cat_operator->clear_route();
+			}
+		}
+
+		//Create the seo url
+		if($this->request->is_set_post('create_seo_url'))
+		{
+			// Test if the submitted form is valid
+			if (!check_form_key('gamesmod_config'))
+			{
+				$errors[] = $this->user->lang('FORM_INVALID');
+			}
+
+			// If no errors, process the form data
+			if (empty($errors))
+			{
+				$this->games_operator->create_route();
+				$this->games_cat_operator->create_route();
+			}
+		}
+
 		// Set output vars for display in the template
 		$this->template->assign_vars(array(
 			'S_ERROR'		=> (sizeof($errors)) ? true : false,

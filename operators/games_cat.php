@@ -236,4 +236,51 @@ class games_cat
 		WHERE ' . $this->db->sql_in_set('id', $games_cat_id);
 		$this->db->sql_query($sql);
 	}
+
+	/**
+	* Clear the seo_url in games-cat table
+	*
+	* @return null
+	* @access public
+	*/
+	public function clear_route()
+	{
+		$sql = 'UPDATE ' . $this->game_cat_table . '
+			SET route = ""';
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Clear the seo_url in games table
+	*
+	* @return null
+	* @access public
+	*/
+	public function create_route()
+	{
+		$sql = 'SELECT id, name, order_id, dir, number, route
+			FROM '. $this->game_cat_table ;
+
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$game_cat = $this->container->get('tacitus89.gamesmod.entity.games_cat')
+				->import($row);
+
+			try
+			{
+				//replace the special characters
+				$string = preg_replace('/[!"#$%&*\'()+,.\/\\\\:;<=>?@\[\]^`{|}~ ]/', "_", strtolower($row['name']));
+				//replace the repeat
+				$string = preg_replace('/(_)\\1+/', "_", strtolower($string));
+				$game_cat->set_route($string);
+				$game_cat->save();
+			}
+			catch (\tacitus89\gamesmod\exception\base $e)
+			{
+			}
+
+		}
+		$this->db->sql_freeresult($result);
+	}
 }
