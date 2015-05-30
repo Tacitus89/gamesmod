@@ -103,12 +103,14 @@ class games
 	*/
 	public function get_games_by_name($parent_name = '', $start = 0, $end = 0)
 	{
-		$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir,
-				gc.id as parent_id, gc.name as parent_name, gc.dir as parent_dir, gc.order_id as parent_order_id, gc.number as parent_number, gc.route as parent_route
+		$sql= 'SELECT '. \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
 			FROM ' . $this->game_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE ' . $this->db->sql_in_set('gc.route', $parent_name) .'
-			ORDER BY name ASC';
+			ORDER BY g.name ASC';
+
+		//echo \tacitus89\gamesmod\entity\game::get_sql(array('this' => g, 'parent' => gc));
+		echo \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc'));
 
 		return $this->get_sql_result($sql, $start, $end);
 	}
@@ -197,6 +199,7 @@ class games
 			$games[] = $this->container->get('tacitus89.gamesmod.entity.game')
 				->import($row);
 		}
+
 		$this->db->sql_freeresult($result);
 
 		// Return all game entities
@@ -493,8 +496,7 @@ class games
 	{
 		$games = array();
 
-		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir,
-				gc.id as parent_id, gc.name as parent_name, gc.dir as parent_dir, gc.order_id as parent_order_id, gc.number as parent_number, gc.route as parent_route
+		$sql = 'SELECT '. \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
 			FROM ' . $this->games_awarded_table . ' ga
 			JOIN ' . $this->game_table . ' g ON ga.game_id = g.id
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
@@ -523,8 +525,7 @@ class games
 	{
 		$games = array();
 
-		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir,
-				gc.id as parent_id, gc.name as parent_name, gc.dir as parent_dir, gc.order_id as parent_order_id, gc.number as parent_number, gc.route as parent_route
+		$sql = 'SELECT '. \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
 			FROM ' . $this->game_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			ORDER BY g.id DESC';

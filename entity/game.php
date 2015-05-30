@@ -13,7 +13,7 @@ namespace tacitus89\gamesmod\entity;
 /**
 * Entity for a single games_cat
 */
-class game
+class game extends abstract_item
 {
 	/**
 	* Data for this entity
@@ -64,6 +64,26 @@ class game
 	protected $parent;
 
 	/**
+	* All of fields of this objects
+	*
+	**/
+	protected static $fields = array(
+		'id'						=> 'integer',
+		'parent'					=> 'object',
+		'name'						=> 'set_name',
+		'description'				=> 'string',
+		'image'						=> 'string',
+		'route'						=> 'string',
+	);
+
+	/**
+	* All object must be assigned to a class
+	**/
+	protected static $classes = array(
+		'parent'					=> 'games_cat',
+	);
+
+	/**
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface    $db              Database object
@@ -80,7 +100,17 @@ class game
 		$this->game_cat_table = $game_cat_table;
 		$this->dir = '';
 
-		$this->parent = new games_cat($db, $game_cat_table);
+		parent::$fields = self::$fields;
+		parent::$classes = self::$classes;
+
+		$this->data['parent'] = new games_cat($db, $game_cat_table);
+	}
+
+	public static function get_sql_fields($table_prefix = array(), $prefix = '')
+	{
+		//parent::$fields = self::$fields;
+		//parent::$classes = self::$classes;
+		return parent::get_sql_fields($table_prefix);
 	}
 
 	/**
@@ -93,25 +123,28 @@ class game
 	*/
 	public function load($id)
 	{
-		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir,
-				gc.id as parent_id, gc.name as parent_name, gc.dir as parent_dir, gc.order_id as parent_order_id, gc.number as parent_number, gc.route as parent_route
+		$data = array();
+
+		$sql = 'SELECT '. game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
 			FROM ' . $this->games_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE g.id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
-		$this->data = $this->db->sql_fetchrow($result);
+		$data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		if ($this->data === false)
+		if ($data === false)
 		{
 			// A game does not exist
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
-		$this->dir = $this->data['dir'];
-		unset($this->data['dir']);
+		$this->dir = $data['dir'];
+		unset($data['dir']);
 
-		$this->include_parent();
+		$data = $this->include_parent($data);
+
+		$this->data = $data;
 
 		return $this;
 	}
@@ -126,25 +159,33 @@ class game
 	*/
 	public function load_by_name($seo_name)
 	{
-		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, g.route, gc.dir,
-			gc.id as parent_id, gc.name as parent_name, gc.dir as parent_dir, gc.order_id as parent_order_id, gc.number as parent_number, gc.route as parent_route
+		$data = array();
+
+		$sql = 'SELECT '. game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
 			FROM ' . $this->games_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE '. $this->db->sql_in_set('g.route', $seo_name);
 		$result = $this->db->sql_query($sql);
-		$this->data = $this->db->sql_fetchrow($result);
+		$data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		if ($this->data === false)
+		if ($data === false)
 		{
 			// A game does not exist
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
-		$this->dir = $this->data['dir'];
-		unset($this->data['dir']);
+		//$this->dir = $data['dir'];
+		//unset($data['dir']);
 
-		$this->data = $this->include_parent($this->data);
+		//$data = $this->data['parent']->set_data($data, 'parent');
+		//$data['parent'] = $this->set_parent($data);
+		//$data = $this->include_parent($data);
+
+		print_r($data);
+
+		//$this->data = $data;
+		$this->import($data);
 
 		return $this;
 	}
@@ -161,7 +202,7 @@ class game
 	* @access public
 	* @throws \tacitus89\gamesmod\exception\base
 	*/
-	public function import($data)
+	/**public function import($data)
 	{
 		// Clear out any saved data
 		$this->data = array();
@@ -172,13 +213,15 @@ class game
 			unset($data['dir']);
 		}
 
-		$data = $this->include_parent($data);
+		//$data = $this->set_parent($data);
+		$this->data['parent'] = new games_cat($this->db, $this->game_cat_table);
+		$data = $this->data['parent']->set_parent($data);
 
 		// All of our fields
 		$fields = array(
 			// column					=> data type (see settype())
 			'id'						=> 'integer',
-			'parent'					=> 'integer',
+			'parent'					=> 'object',
 			'name'						=> 'set_name', // call set_title()
 			'description'				=> 'string',
 			'image'						=> 'string',
@@ -214,7 +257,6 @@ class game
 		// Some fields must be unsigned (>= 0)
 		$validate_unsigned = array(
 			'id',
-			'parent',
 		);
 
 		foreach ($validate_unsigned as $field)
@@ -227,7 +269,7 @@ class game
 		}
 
 		return $this;
-	}
+	}**/
 
 	/**
 	* Insert the game for the first time
@@ -249,12 +291,19 @@ class game
 		// Make extra sure there is no id set
 		unset($this->data['id']);
 
+		//set parent-id to parent
+		$parent = $this->data['parent'];
+		$this->data['parent'] = $parent->get_id();
+
 		// Insert the game data to the database
 		$sql = 'INSERT INTO ' . $this->games_table . ' ' . $this->db->sql_build_array('INSERT', $this->data);
 		$this->db->sql_query($sql);
 
 		// Set the game_id using the id created by the SQL insert
 		$this->data['id'] = (int) $this->db->sql_nextid();
+
+		//set it back
+		$this->data['parent'] = $parent;
 
 		return $this;
 	}
@@ -277,10 +326,17 @@ class game
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
+		//set parent-id to parent
+		$parent = $this->data['parent'];
+		$this->data['parent'] = $parent->get_id();
+
 		$sql = 'UPDATE ' . $this->games_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', $this->data) . '
 			WHERE id = ' . $this->get_id();
 		$this->db->sql_query($sql);
+
+		//set it back
+		$this->data['parent'] = $parent;
 
 		return $this;
 	}
@@ -303,7 +359,7 @@ class game
 			'route'					=> $data['parent_route'],
 		);
 
-		$this->parent->import($parent_data);
+		$data['parent'] = $this->parent;
 
 		unset($data['parent_id']);
 		unset($data['parent_name']);
@@ -442,7 +498,7 @@ class game
 	*/
 	public function get_parent()
 	{
-		return (isset($this->data['parent'])) ? (int) $this->data['parent'] : 0;
+		return (isset($this->data['parent']->get_id)) ? (int) $this->data['parent'] : 0;
 	}
 
 	/**
@@ -453,7 +509,7 @@ class game
 	*/
 	public function get_parent2()
 	{
-		return $this->parent;
+		return $this->data['parent'];
 	}
 
 	/**
@@ -475,8 +531,10 @@ class game
 			throw new \tacitus89\gamesmod\exception\out_of_bounds($parent);
 		}
 
+		$this->data['parent'] = new games_cat($this->db, $this->game_cat_table);
+
 		// Set the parent on our data array
-		$this->data['parent'] = $parent;
+		$this->data['parent']->load($parent);
 
 		return $this;
 	}

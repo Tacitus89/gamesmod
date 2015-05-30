@@ -13,7 +13,7 @@ namespace tacitus89\gamesmod\entity;
 /**
 * Entity for a single games_cat
 */
-class games_cat
+class games_cat extends abstract_item
 {
 	/**
 	* Data for this entity
@@ -40,6 +40,24 @@ class games_cat
 	protected $games_cat_table;
 
 	/**
+	* All of fields of this objects
+	*
+	**/
+	protected static $fields = array(
+		'id'					=> 'integer',
+		'name'					=> 'set_name',
+		'dir'					=> 'string',
+		'order_id'				=> 'integer',
+		'number'				=> 'integer',
+		'route'					=> 'string',
+	);
+
+	/**
+	* All object must be assigned to a class
+	**/
+	protected static $classes = array();
+
+	/**
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface    $db              Database object
@@ -51,6 +69,56 @@ class games_cat
 	{
 		$this->db = $db;
 		$this->games_cat_table = $games_cat_table;
+
+		parent::$fields = self::$fields;
+		parent::$classes = self::$classes;
+	}
+
+	/**
+	* get the fields of this object
+	*
+	* @param string $type Get the attribute as array or string; default = array
+	* @param string $prefix Set a prefix if it a string
+	* @return string or array Depent of type
+	* @access private
+	*/
+	private static function get_fields($type = 'array', $prefix = '')
+	{
+		// All of our fields
+		$fields = array(
+			// column				=> data type (see settype())
+			'id'					=> 'integer',
+			'name'					=> 'set_name',
+			'dir'					=> 'string',
+			'order_id'				=> 'integer',
+			'number'				=> 'integer',
+			'route'					=> 'string',
+		);
+
+		if($type == 'string')
+		{
+			if($prefix != '')
+			{
+				$new_fields = array();
+				foreach ($fields as $key => $value) {
+					$new_fields[] = $prefix.$key;
+				}
+				return implode(", ", $new_fields);
+			}
+			else {
+				return implode(", ", array_keys($fields));
+			}
+		}
+		else{
+			return $fields;
+		}
+	}
+
+	public static function get_sql_fields($table_prefix = array(), $prefix = '')
+	{
+		//parent::$fields = self::$fields;
+		//parent::$classes = self::$classes;
+		return parent::get_sql_fields($table_prefix);
 	}
 
 	/**
@@ -117,6 +185,7 @@ class games_cat
 	* @access public
 	* @throws \tacitus89\gamesmod\exception\base
 	*/
+	/**
 	public function import($data)
 	{
 		// Clear out any saved data
@@ -176,7 +245,7 @@ class games_cat
 		}
 
 		return $this;
-	}
+	}**/
 
 	/**
 	* Insert the game for the first time
