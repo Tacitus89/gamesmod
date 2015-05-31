@@ -104,9 +104,16 @@ class main_controller
 	public function display($category = '', $game = '')
 	{
 		// When gamesmod are disabled, redirect users back to the forum index
-		if (empty($this->config['games_active']))
+		if(empty($this->config['games_active']))
 		{
 			redirect(append_sid("{$this->root_path}index.{$this->php_ext}"));
+		}
+
+		//Seo url is not acitve
+		if(!$this->config['game_seo_url'] && ($category != '' || $game != ''))
+		{
+			//redirect to main page
+			redirect($this->helper->route('tacitus89_gamesmod_main_controller'));
 		}
 
 		// Add gamesmod controller language file
@@ -115,6 +122,13 @@ class main_controller
 		// Requests
 		$game_id = $this->request->variable('gid', 0);
 		$parent_id = $this->request->variable('parent_id', 0);
+
+		//Seo url is active
+		if($this->config['game_seo_url'] && ($game_id != 0 || $parent_id != 0))
+		{
+			//redirect to main page
+			redirect($this->helper->route('tacitus89_gamesmod_main_controller'));
+		}
 
 		$this->add_navlinks();
 
