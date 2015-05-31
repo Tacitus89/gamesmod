@@ -46,7 +46,7 @@ $lang = array_merge($lang, array(
 	'ACP_GAMESMOD_GAME_CAT_EDIT_LOG'	=> '<strong>Game category edited</strong><br />» %s',
 	'ACP_GAMESMOD_GAME_CAT_ADD_LOG'		=> '<strong>Game category added</strong><br />» %s',
 	'ACP_GAMESMOD_GAME_CAT_DELETE_ALL_LOG'		=> '<strong>Game category and contained games deleted</strong><br />» %s',
-	'ACP_GAMESMOD_GAME_CAT_DELETE_MOVING_LOG'	=> '<strong>Game category deleted and contained games moved</strong><br />» %s'
+	'ACP_GAMESMOD_GAME_CAT_DELETE_MOVING_LOG'	=> '<strong>Game category deleted and contained games moved</strong><br />» %s',
+	'ACP_GAMESMOD_CLEAR_SEO_URL_LOG'			=> '<strong>Game Extension: All routes have been deleted!</strong>',
+	'ACP_GAMESMOD_CREATE_SEO_URL_LOG'			=> '<strong>Game Extension: All routes have been created!</strong>',
 ));
-
-?>

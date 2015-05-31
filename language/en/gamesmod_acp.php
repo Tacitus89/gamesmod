@@ -39,7 +39,7 @@ $lang = array_merge($lang, array(
 	'ACP_GAMES_TITLE'				=> 'Games Management',
 	'ACP_GAMES_SETTINGS'			=> 'Configuration',
 // Games Management
-	'ACP_GAME_MGT_TITLE'				=> 'Game Management',
+	'ACP_GAME_MGT_TITLE'			=> 'Game Management',
 	'ACP_GAME_MGT_DESC'				=> 'Here you can view, create, modify, and delete game categories',
 
 	'ACP_GAMES'							=> 'Games',
@@ -140,6 +140,8 @@ $lang = array_merge($lang, array(
 	'ACP_GAMES_USE_SEO_URL_EXPLAIN'		=> 'If the SEO URL is active, the links look like phpBB/games/strategy/game1. <b>But</b> the field "route" must be filled, or the category or game can not be linked.</br>You can automaticly fill the route based on their name. (<b>May take some time!</b>)',
 	'CLEAR_SEO_URL'						=> 'Clear SEO URL',
 	'CREATE_SEO_URL'					=> 'Create SEO URL',
+	'ACP_CONFIRM_CLEAR_SEO_URL'			=> 'Are you sure you wish to clear the route of all category and games? If you have not disabled the SEO-URL, no category or games can be linked.',
+	'ACP_CLEAR_SEO_URL_GOOD'			=> 'All routes have been deleted!',
+	'ACP_CONFIRM_CREATE_SEO_URL'		=> 'Are you sure you wish to create automaticly the route of all category and games? This will be overwrite all previous settings',
+	'ACP_CREATE_SEO_URL_GOOD'			=> 'All routes have been created!',
 ));
-
-?>

@@ -130,34 +130,62 @@ class admin_controller
 		//Clear the seo url
 		if($this->request->is_set_post('clear_seo_url'))
 		{
-			// Test if the submitted form is valid
-			if (!check_form_key('gamesmod_config'))
+			// Use a confirmation box routine when deleting a game
+			if (confirm_box(true))
 			{
-				$errors[] = $this->user->lang('FORM_INVALID');
-			}
-
-			// If no errors, process the form data
-			if (empty($errors))
-			{
+				// Delete the game route on confirmation
 				$this->games_operator->clear_route();
 				$this->games_cat_operator->clear_route();
+
+				// Add action to the admin log
+				$phpbb_log = $this->container->get('log');
+				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_CLEAR_SEO_URL_LOG');
+
+				// Show user confirmation of the deleted game and provide link back to the previous page
+				trigger_error($this->user->lang('ACP_CLEAR_SEO_URL_GOOD') . adm_back_link("{$this->u_action}"));
+			}
+			else
+			{
+				// Request confirmation from the user to delete the game
+				confirm_box(false, $this->user->lang('ACP_CONFIRM_CLEAR_SEO_URL'), build_hidden_fields(array(
+					'mode' 			=> 'config',
+					'clear_seo_url' => 'clear_seo_url',
+				)));
+
+				// Use a redirect to take the user back to the previous page
+				// if the user chose not delete the game from the confirmation page.
+				redirect("{$this->u_action}");
 			}
 		}
 
 		//Create the seo url
 		if($this->request->is_set_post('create_seo_url'))
 		{
-			// Test if the submitted form is valid
-			if (!check_form_key('gamesmod_config'))
+			// Use a confirmation box routine when deleting a game
+			if (confirm_box(true))
 			{
-				$errors[] = $this->user->lang('FORM_INVALID');
-			}
-
-			// If no errors, process the form data
-			if (empty($errors))
-			{
+				//Create the game route on confirmation
 				$this->games_operator->create_route();
 				$this->games_cat_operator->create_route();
+
+				// Add action to the admin log
+				$phpbb_log = $this->container->get('log');
+				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_CREATE_SEO_URL_LOG');
+
+				// Show user confirmation of the deleted game and provide link back to the previous page
+				trigger_error($this->user->lang('ACP_CREATE_SEO_URL_GOOD') . adm_back_link("{$this->u_action}"));
+			}
+			else
+			{
+				// Request confirmation from the user to delete the game
+				confirm_box(false, $this->user->lang('ACP_CONFIRM_CREATE_SEO_URL'), build_hidden_fields(array(
+					'mode' 			=> 'config',
+					'create_seo_url'=> 'create_seo_url',
+				)));
+
+				// Use a redirect to take the user back to the previous page
+				// if the user chose not delete the game from the confirmation page.
+				redirect("{$this->u_action}");
 			}
 		}
 

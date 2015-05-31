@@ -72,5 +72,3 @@ $lang = array_merge($lang, array(
 	'NO_USER_GAMES'					=> 'This user doesn\'t own any games',
 
 ));
-
-?>
