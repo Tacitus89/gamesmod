@@ -13,7 +13,7 @@ namespace tacitus89\gamesmod\entity;
 /**
 * Entity for a single games_cat
 */
-class game
+class game extends abstract_entity
 {
 	/**
 	* Data for this entity
@@ -24,12 +24,16 @@ class game
 	*	description
 	*	image
 	*	parent
+	*	route
 	* @access protected
 	*/
 	protected $data;
 
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
+
+	/** @var ContainerInterface */
+	protected $container;
 
 	/**
 	* The database table the games are stored in
@@ -46,17 +50,39 @@ class game
 	protected $game_cat_table;
 
 	/**
-	* Specifies the path to the image
+	* All of fields of this objects
 	*
-	* @var string
-	*/
-	protected $dir;
+	**/
+	protected static $fields = array(
+		'id'				=> 'integer',
+		'parent'			=> 'object',
+		'name'				=> 'set_name',
+		'description'		=> 'string',
+		'image'				=> 'string',
+		'route'				=> 'string',
+	);
+
+	/**
+	* All object must be assigned to a class
+	**/
+	protected static $classes = array(
+		'parent'			=> 'games_cat',
+	);
+
+	/**
+	* Some fields must be unsigned (>= 0)
+	**/
+	protected static $validate_unsigned = array(
+		'id',
+	);
 
 	/**
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface    $db              Database object
+	* @param ContainerInterface                   $container       Service container interface
 	* @param string                               $games_table     Name of the table used to store game data
+	* @param string                               $games_cat_table Name of the table used to store game data
 	* @return \tacitus89\gamesmod\entity\game
 	* @access public
 	*/
@@ -78,99 +104,56 @@ class game
 	*/
 	public function load($id)
 	{
-		$sql = 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+		$data = array();
+
+		$sql = 'SELECT '. game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
 			FROM ' . $this->games_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE g.id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
-		$this->data = $this->db->sql_fetchrow($result);
+		$data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		if ($this->data === false)
+		if ($data === false)
 		{
 			// A game does not exist
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
-		$this->dir = $this->data['dir'];
-		unset($this->data['dir']);
+		//Import data for this game
+		$this->import($data);
 
 		return $this;
 	}
 
 	/**
-	* Import data for this game
+	* Load the data from the database for this game by seo_name
 	*
-	* Used when the data is already loaded externally.
-	* Any existing data on this game is over-written.
-	* All data is validated and an exception is thrown if any data is invalid.
-	*
-	* @param array $data Data array, typically from the database
+	* @param string $seo_name game identifier
 	* @return game_interface $this object for chaining calls; load()->set()->save()
 	* @access public
-	* @throws \tacitus89\gamesmod\exception\base
+	* @throws \tacitus89\gamesmod\exception\out_of_bounds
 	*/
-	public function import($data)
+	public function load_by_name($seo_name)
 	{
-		// Clear out any saved data
-		$this->data = array();
+		$data = array();
 
-		if(isset($data['dir']))
+		$sql = 'SELECT '. game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
+			FROM ' . $this->games_table . ' g
+			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
+			WHERE '. $this->db->sql_in_set('g.route', $seo_name);
+		$result = $this->db->sql_query($sql);
+		$data = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
+
+		if ($data === false)
 		{
-			$this->dir = (string) $data['dir'];
-			unset($data['dir']);
+			// A game does not exist
+			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
-		// All of our fields
-		$fields = array(
-			// column					=> data type (see settype())
-			'id'						=> 'integer',
-			'parent'					=> 'integer',
-			'name'						=> 'set_name', // call set_title()
-			'description'				=> 'string',
-			'image'						=> 'string',
-		);
-
-		// Go through the basic fields and set them to our data array
-		foreach ($fields as $field => $type)
-		{
-			// If the data wasn't sent to us, throw an exception
-			if (!isset($data[$field]))
-			{
-				throw new \tacitus89\gamesmod\exception\invalid_argument(array($field, 'FIELD_MISSING'));
-			}
-
-			// If the type is a method on this class, call it
-			if (method_exists($this, $type))
-			{
-				$this->$type($data[$field]);
-			}
-			else
-			{
-				// settype passes values by reference
-				$value = $data[$field];
-
-				// We're using settype to enforce data types
-				settype($value, $type);
-
-				$this->data[$field] = $value;
-			}
-		}
-
-		// Some fields must be unsigned (>= 0)
-		$validate_unsigned = array(
-			'id',
-			'parent',
-		);
-
-		foreach ($validate_unsigned as $field)
-		{
-			// If the data is less than 0, it's not unsigned and we'll throw an exception
-			if ($this->data[$field] < 0)
-			{
-				throw new \tacitus89\gamesmod\exception\out_of_bounds($field);
-			}
-		}
+		//Import data for this game
+		$this->import($data);
 
 		return $this;
 	}
@@ -195,12 +178,20 @@ class game
 		// Make extra sure there is no id set
 		unset($this->data['id']);
 
+		//save the parent object to parent
+		$parent = $this->data['parent'];
+		//set parent-id to parent
+		$this->data['parent'] = $parent->get_id();
+
 		// Insert the game data to the database
 		$sql = 'INSERT INTO ' . $this->games_table . ' ' . $this->db->sql_build_array('INSERT', $this->data);
 		$this->db->sql_query($sql);
 
 		// Set the game_id using the id created by the SQL insert
 		$this->data['id'] = (int) $this->db->sql_nextid();
+
+		//set parent object back
+		$this->data['parent'] = $parent;
 
 		return $this;
 	}
@@ -223,57 +214,18 @@ class game
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
+		//save the parent object to parent
+		$parent = $this->data['parent'];
+		//set parent-id to parent
+		$this->data['parent'] = $parent->get_id();
+
 		$sql = 'UPDATE ' . $this->games_table . '
 			SET ' . $this->db->sql_build_array('UPDATE', $this->data) . '
 			WHERE id = ' . $this->get_id();
 		$this->db->sql_query($sql);
 
-		return $this;
-	}
-
-	/**
-	* Get id
-	*
-	* @return int game identifier
-	* @access public
-	*/
-	public function get_id()
-	{
-		return (isset($this->data['id'])) ? (int) $this->data['id'] : 0;
-	}
-
-	/**
-	* Get name
-	*
-	* @return string name
-	* @access public
-	*/
-	public function get_name()
-	{
-		return (isset($this->data['name'])) ? (string) $this->data['name'] : '';
-	}
-
-	/**
-	* Set name
-	*
-	* @param string $name
-	* @return game_interface $this object for chaining calls; load()->set()->save()
-	* @access public
-	* @throws \tacitus89\gamesmod\exception\unexpected_value
-	*/
-	public function set_name($name)
-	{
-		// Enforce a string
-		$name = (string) $name;
-
-		// We limit the name length to 200 characters
-		if (truncate_string($name, 200) != $name)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('name', 'TOO_LONG'));
-		}
-
-		// Set the name on our data array
-		$this->data['name'] = $name;
+		//set parent object back
+		$this->data['parent'] = $parent;
 
 		return $this;
 	}
@@ -351,14 +303,14 @@ class game
 	}
 
 	/**
-	* Get the parent identifier
+	* Get the parent object
 	*
-	* @return int parent identifier
+	* @return object Object games_cat class
 	* @access public
 	*/
 	public function get_parent()
 	{
-		return (isset($this->data['parent'])) ? (int) $this->data['parent'] : 0;
+		return $this->data['parent'];
 	}
 
 	/**
@@ -380,20 +332,12 @@ class game
 			throw new \tacitus89\gamesmod\exception\out_of_bounds($parent);
 		}
 
-		// Set the parent on our data array
-		$this->data['parent'] = $parent;
+		//Generated new games_cat object
+		$this->data['parent'] = new games_cat($this->db, $this->game_cat_table);
+
+		//Load the data for new parent
+		$this->data['parent']->load($parent);
 
 		return $this;
-	}
-
-	/**
-	* Get the dir of image
-	*
-	* @return string dir
-	* @access public
-	*/
-	public function get_dir()
-	{
-		return (isset($this->dir)) ? (string) $this->dir.'/' : '';
 	}
 }

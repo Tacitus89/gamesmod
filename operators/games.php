@@ -83,13 +83,33 @@ class games
 	*/
 	public function get_games($parent_id = 0, $start = 0, $end = 0)
 	{
-		$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+		$sql= 'SELECT '. \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
 			FROM ' . $this->game_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
-			WHERE ' . $this->db->sql_in_set('parent', $parent_id) .'
-			ORDER BY name ASC';
+			WHERE ' . $this->db->sql_in_set('g.parent', $parent_id) .'
+			ORDER BY g.name ASC';
 
-		return $this->get_sql_result($sql, $parent_id, $start, $end);
+		return $this->get_sql_result($sql, $start, $end);
+	}
+
+	/**
+	* Get the games by name
+	*
+	* @param int $parent_id Category to display games from; default = 0
+	* @param int $start Start position in the table; default = 0
+	* @param int $end End position at table; default = 0
+	* @return array Array of game data entities
+	* @access public
+	*/
+	public function get_games_by_name($parent_name = '', $start = 0, $end = 0)
+	{
+		$sql= 'SELECT '. \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
+			FROM ' . $this->game_table . ' g
+			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
+			WHERE ' . $this->db->sql_in_set('gc.route', $parent_name) .'
+			ORDER BY g.name ASC';
+
+		return $this->get_sql_result($sql, $start, $end);
 	}
 
 	/**
@@ -106,7 +126,7 @@ class games
 	{
 		if($parent_id == 0)
 		{
-			$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+			$sql= 'SELECT '. \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
 				FROM ' . $this->games_awarded_table . ' ga
 				JOIN ' . $this->game_table . ' g ON g.id = ga.game_id
 				LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
@@ -115,7 +135,7 @@ class games
 		}
 		else
 		{
-			$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+			$sql= 'SELECT '. \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
 				FROM ' . $this->game_table . ' g
 				JOIN ' . $this->games_awarded_table . ' ga ON g.id = ga.game_id
 				LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
@@ -123,7 +143,7 @@ class games
 				AND ' . $this->db->sql_in_set('g.parent', $parent_id) .'
 				ORDER BY g.name ASC';
 		}
-		return $this->get_sql_result($sql, $parent_id, $start, $end);
+		return $this->get_sql_result($sql, $start, $end);
 	}
 
 	/**
@@ -138,15 +158,15 @@ class games
 	*/
 	public function get_not_owned_games($user_id, $parent_id = 0, $start = 0, $end = 0)
 	{
-		$sql= 'SELECT g.id, g.name, g.description, g.parent, g.image, gc.dir
+		$sql= 'SELECT '. \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
 			FROM ' . $this->game_table . ' g
 			LEFT OUTER JOIN ' . $this->games_awarded_table . ' ga ON g.id = ga.game_id AND '. $this->db->sql_in_set('ga.user_id', $user_id) .'
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE ga.user_id is NULL
 			AND '. $this->db->sql_in_set('g.parent', $parent_id) .'
-			ORDER BY name ASC';
+			ORDER BY g.name ASC';
 
-		return $this->get_sql_result($sql, $parent_id, $start, $end);
+		return $this->get_sql_result($sql, $start, $end);
 	}
 
 	/**
@@ -159,7 +179,7 @@ class games
 	* @return array Array of game data entities
 	* @access private
 	*/
-	private function get_sql_result($sql, $parent_id = 0, $start = 0, $end = 0)
+	private function get_sql_result($sql, $start = 0, $end = 0)
 	{
 		$games = array();
 
@@ -176,6 +196,7 @@ class games
 			$games[] = $this->container->get('tacitus89.gamesmod.entity.game')
 				->import($row);
 		}
+
 		$this->db->sql_freeresult($result);
 
 		// Return all game entities
@@ -291,7 +312,7 @@ class games
 		//Update the number in game_cat
 		$sql = 'UPDATE ' . $this->game_cat_table . '
 			SET number = number + 1
-			WHERE ' . $this->db->sql_in_set('id', $entity->get_parent());
+			WHERE ' . $this->db->sql_in_set('id', $entity->get_parent()->get_id());
 		$this->db->sql_query($sql);
 
 		// Get the newly inserted game_cat's identifier
@@ -319,7 +340,7 @@ class games
 		//Update the number in game_cat
 		$sql = 'UPDATE ' . $this->game_cat_table . '
 			SET number = number - 1
-			WHERE ' . $this->db->sql_in_set('id', $entity->get_parent());
+			WHERE ' . $this->db->sql_in_set('id', $entity->get_parent()->get_id());
 		$this->db->sql_query($sql);
 
 		//Delete all awarded games
@@ -344,7 +365,9 @@ class games
 	*/
 	public function add_owned_game($user_id, $entities)
 	{
+		//Number variable
 		$added = 0;
+
 		foreach($entities as $key => $value)
 		{
 			if (!$value)
@@ -376,14 +399,9 @@ class games
 	*/
 	public function delete_owned_game($user_id, $game_ids)
 	{
-
-		//Delete from db
-		//$sql = 'DELETE FROM ' . $this->games_awarded_table . '
-		//		WHERE  '. $this->db->sql_in_set('game_ids', $game_ids) .'
-		//		AND '. $this->db->sql_in_set('user_id', $this->user->data['user_id']);
-		//$this->db->sql_query($sql);
-
+		//Number variable
 		$removed = 0;
+
 		foreach($game_ids as $key => $value)
 		{
 			if (!$value)
@@ -407,7 +425,7 @@ class games
 	* Get the gamer
 	*
 	* @param int $game_id Game ID
-	* @return string A list with usernames
+	* @return string A enum with usernames
 	* @access public
 	*/
 	public function get_gamers($game_id)
@@ -433,8 +451,7 @@ class games
 			$gamer = implode(", ", $users_games);
 		}
 
-
-		// Return all game entities
+		// Return all gamers
 		return $gamer;
 	}
 
@@ -472,7 +489,7 @@ class games
 	{
 		$games = array();
 
-		$sql = 'SELECT g.id, g.name, g.description, g.image, g.parent, gc.dir
+		$sql = 'SELECT '. \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
 			FROM ' . $this->games_awarded_table . ' ga
 			JOIN ' . $this->game_table . ' g ON ga.game_id = g.id
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
@@ -501,7 +518,7 @@ class games
 	{
 		$games = array();
 
-		$sql = 'SELECT g.id, g.name, g.description, g.image, g.parent, gc.dir
+		$sql = 'SELECT '. \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
 			FROM ' . $this->game_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			ORDER BY g.id DESC';
@@ -516,5 +533,52 @@ class games
 
 		// Return all game entities
 		return $games;
+	}
+
+	/**
+	* Clear the seo_url in games table
+	*
+	* @return null
+	* @access public
+	*/
+	public function clear_route()
+	{
+		$sql = 'UPDATE ' . $this->game_table . '
+			SET route = ""';
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Clear the seo_url in games table
+	*
+	* @return null
+	* @access public
+	*/
+	public function create_route()
+	{
+		$sql = 'SELECT '. \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
+			FROM ' . $this->game_table . ' g
+			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id';
+
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$game = $this->container->get('tacitus89.gamesmod.entity.game')
+				->import($row);
+			try
+			{
+				//replace the special characters
+				$string = preg_replace('/[!"#$%&*\'()+,.\/\\\\:;<=>?@\[\]^`{|}~ ]/', "_", strtolower($row['name']));
+				//replace the repeat
+				$string = preg_replace('/(_)\\1+/', "_", strtolower($string));
+				$game->set_route($string);
+				$game->save();
+			}
+			catch (\tacitus89\gamesmod\exception\base $e)
+			{
+			}
+
+		}
+		$this->db->sql_freeresult($result);
 	}
 }

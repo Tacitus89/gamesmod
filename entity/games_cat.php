@@ -13,7 +13,7 @@ namespace tacitus89\gamesmod\entity;
 /**
 * Entity for a single games_cat
 */
-class games_cat
+class games_cat extends abstract_entity
 {
 	/**
 	* Data for this entity
@@ -24,6 +24,7 @@ class games_cat
 	*	dir
 	*	order_id
 	*	number
+	*	route
 	* @access protected
 	*/
 	protected $data;
@@ -37,6 +38,33 @@ class games_cat
 	* @var string
 	*/
 	protected $games_cat_table;
+
+	/**
+	* All of fields of this objects
+	*
+	**/
+	protected static $fields = array(
+		'id'					=> 'integer',
+		'name'					=> 'set_name',
+		'dir'					=> 'string',
+		'order_id'				=> 'integer',
+		'number'				=> 'integer',
+		'route'					=> 'string',
+	);
+
+	/**
+	* All object must be assigned to a class
+	**/
+	protected static $classes = array();
+
+	/**
+	* Some fields must be unsigned (>= 0)
+	**/
+	protected static $validate_unsigned = array(
+		'id',
+		'order_id',
+		'number',
+	);
 
 	/**
 	* Constructor
@@ -62,90 +90,50 @@ class games_cat
 	*/
 	public function load($id)
 	{
-		$sql = 'SELECT gc.id, gc.name, gc.dir, gc.order_id, gc.number
+		$sql = 'SELECT '. games_cat::get_sql_fields(array('this' => 'gc')) .'
 			FROM ' . $this->games_cat_table . ' gc
 			WHERE gc.id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
-		$this->data = $this->db->sql_fetchrow($result);
+		$data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		if ($this->data === false)
+		if ($data === false)
 		{
 			// A game does not exist
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
+		//Import data for this game
+		$this->import($data);
+
 		return $this;
 	}
 
 	/**
-	* Import data for this game
+	* Load the data from the database for this game by seo_name
 	*
-	* Used when the data is already loaded externally.
-	* Any existing data on this game is over-written.
-	* All data is validated and an exception is thrown if any data is invalid.
-	*
-	* @param array $data Data array, typically from the database
+	* @param string $seo_name game cat identifier
 	* @return game_interface $this object for chaining calls; load()->set()->save()
 	* @access public
-	* @throws \tacitus89\gamesmod\exception\base
+	* @throws \tacitus89\gamesmod\exception\out_of_bounds
 	*/
-	public function import($data)
+	public function load_by_name($seo_name)
 	{
-		// Clear out any saved data
-		$this->data = array();
+		$sql = 'SELECT '. games_cat::get_sql_fields(array('this' => 'gc')) .'
+			FROM ' . $this->games_cat_table . ' gc
+			WHERE '. $this->db->sql_in_set('gc.route', $seo_name);
+		$result = $this->db->sql_query($sql);
+		$data = $this->db->sql_fetchrow($result);
+		$this->db->sql_freeresult($result);
 
-		// All of our fields
-		$fields = array(
-			// column					=> data type (see settype())
-			'id'					=> 'integer',
-			'name'					=> 'set_name',
-			'dir'					=> 'string',
-			'order_id'				=> 'integer',
-			'number'				=> 'integer',
-		);
-
-		// Go through the basic fields and set them to our data array
-		foreach ($fields as $field => $type)
+		if ($data === false)
 		{
-			// If the data wasn't sent to us, throw an exception
-			if (!isset($data[$field]))
-			{
-				throw new \tacitus89\gamesmod\exception\invalid_argument(array($field, 'FIELD_MISSING'));
-			}
-
-			// If the type is a method on this class, call it
-			if (method_exists($this, $type))
-			{
-				$this->$type($data[$field]);
-			}
-			else
-			{
-				// settype passes values by reference
-				$value = $data[$field];
-
-				// We're using settype to enforce data types
-				settype($value, $type);
-
-				$this->data[$field] = $value;
-			}
+			// A game does not exist
+			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
-		// Some fields must be unsigned (>= 0)
-		$validate_unsigned = array(
-			'id',
-			'order_id',
-			'number',
-		);
-
-		foreach ($validate_unsigned as $field)
-		{
-			// If the data is less than 0, it's not unsigned and we'll throw an exception
-			if ($this->data[$field] < 0)
-			{
-				throw new \tacitus89\gamesmod\exception\out_of_bounds($field);
-			}
-		}
+		//Import data for this game
+		$this->import($data);
 
 		return $this;
 	}
@@ -204,28 +192,6 @@ class games_cat
 		$this->db->sql_query($sql);
 
 		return $this;
-	}
-
-	/**
-	* Get id
-	*
-	* @return int game identifier
-	* @access public
-	*/
-	public function get_id()
-	{
-		return (isset($this->data['id'])) ? (int) $this->data['id'] : 0;
-	}
-
-	/**
-	* Get name
-	*
-	* @return string name
-	* @access public
-	*/
-	public function get_name()
-	{
-		return (isset($this->data['name'])) ? (string) $this->data['name'] : '';
 	}
 
 	/**

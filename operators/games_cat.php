@@ -72,9 +72,9 @@ class games_cat
 	{
 		$game_cat = array();
 
-		$sql = "SELECT id, name, order_id, dir, number
-			FROM " . $this->game_cat_table . "
-			ORDER BY order_id ASC";
+		$sql = 'SELECT '. \tacitus89\gamesmod\entity\games_cat::get_sql_fields() .'
+			FROM ' . $this->game_cat_table . '
+			ORDER BY order_id ASC';
 		$result = $this->db->sql_query($sql);
 		while ($row = $this->db->sql_fetchrow($result))
 		{
@@ -142,8 +142,10 @@ class games_cat
 	{
 		//must an integer
 		$games_cat_id = (int) $games_cat_id;
+		//must an integer
 		$new_cat = (int) $new_cat;
 
+		//Get the order_id of games_cat
 		$sql = "SELECT order_id
 				FROM " . $this->game_cat_table . "
 				WHERE " . $this->db->sql_in_set('id', $games_cat_id);
@@ -195,8 +197,10 @@ class games_cat
 	*/
 	public function move($games_cat_id, $direction = 'up')
 	{
+		//must an integer
 		$games_cat_id = (int) $games_cat_id;
 
+		//Get the old order_id of games_cat
 		$sql = "SELECT order_id
 				FROM " . $this->game_cat_table . "
 				WHERE " . $this->db->sql_in_set('id', $games_cat_id);
@@ -205,6 +209,7 @@ class games_cat
 		$old_position = $row['order_id'];
 		$this->db->sql_freeresult($result);
 
+		//Count all game_cat
 		$sql = "SELECT COUNT(order_id) AS counter
 				FROM " . $this->game_cat_table;
 		$result = $this->db->sql_query($sql);
@@ -235,5 +240,52 @@ class games_cat
 		SET order_id = ' . $new_position . '
 		WHERE ' . $this->db->sql_in_set('id', $games_cat_id);
 		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Clear the seo_url in games-cat table
+	*
+	* @return null
+	* @access public
+	*/
+	public function clear_route()
+	{
+		$sql = 'UPDATE ' . $this->game_cat_table . '
+			SET route = ""';
+		$this->db->sql_query($sql);
+	}
+
+	/**
+	* Clear the seo_url in games table
+	*
+	* @return null
+	* @access public
+	*/
+	public function create_route()
+	{
+		$sql = 'SELECT '. \tacitus89\gamesmod\entity\games_cat::get_sql_fields() .'
+			FROM '. $this->game_cat_table ;
+
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			$game_cat = $this->container->get('tacitus89.gamesmod.entity.games_cat')
+				->import($row);
+
+			try
+			{
+				//replace the special characters
+				$string = preg_replace('/[!"#$%&*\'()+,.\/\\\\:;<=>?@\[\]^`{|}~ ]/', "_", strtolower($row['name']));
+				//replace the repeat
+				$string = preg_replace('/(_)\\1+/', "_", strtolower($string));
+				$game_cat->set_route($string);
+				$game_cat->save();
+			}
+			catch (\tacitus89\gamesmod\exception\base $e)
+			{
+			}
+
+		}
+		$this->db->sql_freeresult($result);
 	}
 }
