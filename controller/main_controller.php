@@ -295,6 +295,8 @@ class main_controller
 			// Process each popular game entity for display
 			foreach ($entities as $entity)
 			{
+				$image = ($entity->get_parent()->get_dir() != '')? $this->dir.$entity->get_parent()->get_dir().'/'.$entity->get_image() : $this->dir.$entity->get_image();
+
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('recent_games', array(
 					'GAME_NAME'		=> $entity->get_name(),

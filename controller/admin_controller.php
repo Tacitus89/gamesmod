@@ -571,7 +571,7 @@ class admin_controller
 
 		// Collect the form data
 		$data = array(
-			'parent'		=> $this->request->variable('game_parent', $entity->get_parent()),
+			'parent'		=> $this->request->variable('game_parent', $entity->get_parent()->get_id()),
 			'name'			=> $this->request->variable('game_name', $entity->get_name(), true),
 			'description'	=> $this->request->variable('game_description', $entity->get_description(), true),
 			'image'			=> $this->request->variable('game_image', $entity->get_image(), true),
@@ -586,7 +586,7 @@ class admin_controller
 			'S_EDIT_GAME'		=> true,
 
 			'U_EDIT_ACTION'		=> "{$this->u_action}&amp;game_id={$game_id}&amp;action=edit_game",
-			'U_BACK'			=> "{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}",
+			'U_BACK'			=> "{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()->get_id()}",
 		));
 	}
 
@@ -697,7 +697,7 @@ class admin_controller
 				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_GAME_EDIT_LOG', time(), array($entity->get_name()));
 
 				// Show user confirmation of the saved game and provide link back to the previous page
-				trigger_error($this->user->lang('ACP_GAME_EDIT_GOOD') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}"));
+				trigger_error($this->user->lang('ACP_GAME_EDIT_GOOD') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()->get_id()}"));
 			}
 			else
 			{
@@ -845,7 +845,7 @@ class admin_controller
 			$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_GAME_DELETE_LOG', time(), array($entity->get_name()));
 
 			// Show user confirmation of the deleted game and provide link back to the previous page
-			trigger_error($this->user->lang('ACP_GAME_DELETE_GOOD') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}"));
+			trigger_error($this->user->lang('ACP_GAME_DELETE_GOOD') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()->get_id()}"));
 		}
 		else
 		{
@@ -858,7 +858,7 @@ class admin_controller
 
 			// Use a redirect to take the user back to the previous page
 			// if the user chose not delete the game from the confirmation page.
-			redirect("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}");
+			redirect("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()->get_id()}");
 		}
 	}
 
@@ -918,7 +918,7 @@ class admin_controller
 	*/
 	protected function build_parent_select_menu($entity, $parent_id = 0, $mode = 'edit')
 	{
-		$parent_id = ($mode == 'edit') ? $entity->get_parent() : $parent_id;
+		$parent_id = ($mode == 'edit') ? $entity->get_parent()->get_id() : $parent_id;
 
 		// Prepare game pull-down field
 		$game_menu_items = $this->games_cat_operator->get_games_cat();

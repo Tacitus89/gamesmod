@@ -120,9 +120,8 @@ class game extends abstract_entity
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
-		$data = $this->include_parent($data);
-
-		$this->data = $data;
+		//Import data for this game
+		$this->import($data);
 
 		return $this;
 	}

@@ -169,7 +169,8 @@ class listener implements EventSubscriberInterface
 					$this->template->assign_block_vars('games_cat', array(
 						'NAME'				=> $cats->get_name(),
 						'COUNT'				=> count($entities),
-						'URL'				=> $this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $cats->get_id())),
+						'URL'				=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $cats->get_route())):
+																				$this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $cats->get_id())),
 					));
 
 					foreach ($entities as $entity) {
@@ -178,7 +179,8 @@ class listener implements EventSubscriberInterface
 							'NAME'			=> $entity->get_name(),
 							'IMAGE'			=> $this->dir.$entity->get_dir().$entity->get_image(),
 							'ID'			=> $entity->get_id(),
-							'URL'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+							'URL'			=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_parent()->get_route(), 'game' => $entity->get_route())):
+																				$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 						));
 					}
 				}
@@ -210,7 +212,8 @@ class listener implements EventSubscriberInterface
 					'GAME_IMAGE'		=> $this->dir.$entity->get_dir().$entity->get_image(),
 					'GAME_ID'			=> $entity->get_id(),
 
-					'U_GAME'			=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+					'U_GAME'			=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_parent()->get_route(), 'game' => $entity->get_route())):
+																			$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
 			}
 
@@ -291,15 +294,15 @@ class listener implements EventSubscriberInterface
 			$count = array();
 			foreach ($entities as $entity)
 			{
-				if(empty($count[$entity->get_parent()]) || $count[$entity->get_parent()] < $this->config['game_topic_limit'])
+				if(empty($count[$entity->get_parent()->get_id()]) || $count[$entity->get_parent()->get_id()] < $this->config['game_topic_limit'])
 				{
-					$game[$entity->get_parent()][] = $entity;
-					if(empty($count[$entity->get_parent()]))
+					$game[$entity->get_parent()->get_id()][] = $entity;
+					if(empty($count[$entity->get_parent()->get_id()]))
 					{
-						$count[$entity->get_parent()] = 1;
+						$count[$entity->get_parent()->get_id()] = 1;
 					}
 					else {
-						$count[$entity->get_parent()]++;
+						$count[$entity->get_parent()->get_id()]++;
 					}
 
 				}
@@ -321,7 +324,12 @@ class listener implements EventSubscriberInterface
 			{
 				foreach ($value as $value2)
 				{
-					$games .= '<div style="float: left;"><a href="'. $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $value2->get_id())) .'"><img src="'. $this->dir.$entity->get_dir().$value2->get_image() .'" class="games_img" alt="'. $value2->get_name() .'" '. $width . $height .'" /></a></div>';
+					$url = ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $value2->get_parent()->get_route(), 'game' => $value2->get_route())):
+															$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $value2->get_id()));
+
+					$image = ($value2->get_parent()->get_dir() != '')? $this->dir.$value2->get_parent()->get_dir().'/'.$value2->get_image() : $this->dir.$value2->get_image();
+
+					$games .= '<div style="float: left;"><a href="'. $url .'"><img src="'. $image .'" class="games_img" alt="'. $value2->get_name() .'" '. $width . $height .'" /></a></div>';
 				}
 				if($this->config['game_topic_sep'])
 				{
@@ -469,12 +477,15 @@ class listener implements EventSubscriberInterface
 			// Process each popular game entity for display
 			foreach ($entities as $entity)
 			{
+				$image = ($entity->get_parent()->get_dir() != '')? $this->dir.$entity->get_parent()->get_dir().'/'.$entity->get_image() : $this->dir.$entity->get_image();
+
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('popular_games', array(
 					'GAME_NAME'		=> $entity->get_name(),
-					'GAME_IMAGE'	=> $this->dir.$entity->get_dir().$entity->get_image(),
+					'GAME_IMAGE'	=> ($entity->get_image() != '')? $image : '',
 
-					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+					'U_GAME'		=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_parent()->get_route(), 'game' => $entity->get_route())):
+																		$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
 			}
 		}
@@ -488,12 +499,15 @@ class listener implements EventSubscriberInterface
 			// Process each popular game entity for display
 			foreach ($entities as $entity)
 			{
+				$image = ($entity->get_parent()->get_dir() != '')? $this->dir.$entity->get_parent()->get_dir().'/'.$entity->get_image() : $this->dir.$entity->get_image();
+
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('recent_games', array(
 					'GAME_NAME'		=> $entity->get_name(),
-					'GAME_IMAGE'	=> $this->dir.$entity->get_dir().$entity->get_image(),
+					'GAME_IMAGE'	=> ($entity->get_image() != '')? $image : '',
 
-					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+					'U_GAME'		=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_parent()->get_route(), 'game' => $entity->get_route())):
+																		$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
 			}
 		}
@@ -510,7 +524,8 @@ class listener implements EventSubscriberInterface
 				$this->template->assign_vars(array(
 					'GAMES_OWNED'			=> $number,
 					'GAMES_MOST_POP_NAME'	=> $popular[0]->get_name(),
-					'GAMES_MOST_POP_URL'	=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $popular[0]->get_id())),
+					'GAMES_MOST_POP_URL'	=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $popular[0]->get_parent()->get_route(), 'game' => $popular[0]->get_route())):
+																				$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $popular[0]->get_id())),
 				));
 			}
 
@@ -518,7 +533,8 @@ class listener implements EventSubscriberInterface
 			{
 				$this->template->assign_vars(array(
 					'GAMES_NEWEST_NAME'		=> $recent[0]->get_name(),
-					'GAMES_NEWEST_URL'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $recent[0]->get_id())),
+					'GAMES_NEWEST_URL'		=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $recent[0]->get_parent()->get_route(), 'game' => $recent[0]->get_route())):
+																				$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $recent[0]->get_id())),
 				));
 			}
 
