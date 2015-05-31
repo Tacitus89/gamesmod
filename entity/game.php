@@ -304,9 +304,9 @@ class game extends abstract_entity
 	}
 
 	/**
-	* Get the parent identifier
+	* Get the parent object
 	*
-	* @return int parent identifier
+	* @return object Object games_cat class
 	* @access public
 	*/
 	public function get_parent()
