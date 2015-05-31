@@ -302,7 +302,8 @@ class main_controller
 					'GAME_NAME'		=> $entity->get_name(),
 					'GAME_IMAGE'	=> ($entity->get_image() != '')? $image : '',
 
-					'U_GAME'		=> $this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
+					'U_GAME'		=> ($this->config['game_seo_url'])?	$this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_parent()->get_route(), 'game' =>$entity->get_route())):
+																		$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				));
 			}
 		}
