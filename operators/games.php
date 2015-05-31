@@ -571,7 +571,7 @@ class games
 				$string = preg_replace('/[!"#$%&*\'()+,.\/\\\\:;<=>?@\[\]^`{|}~ ]/', "_", strtolower($row['game_name']));
 				//replace the repeat
 				$string = preg_replace('/(_)\\1+/', "_", strtolower($string));
-				$game->set_route($string, $this->game_table);
+				$game->set_route($string);
 				$game->save();
 			}
 			catch (\tacitus89\gamesmod\exception\base $e)
