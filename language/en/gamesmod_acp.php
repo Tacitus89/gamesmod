@@ -80,6 +80,8 @@ $lang = array_merge($lang, array(
 	'ACP_CAT_DELETE_MOVE_GOOD'			=> 'All games from "%1$s" have been moved to "%2$s" and the category has been deleted successfully.',
 	'ACP_NO_CATS'						=> 'No Categories',
 	'UPLOAD_GAME_FILE'					=> 'Upload game image',
+	'ACP_ROUTE_TITLE'					=> 'Game URL route',
+	'ACP_ROUTE_EXPLAIN'					=> 'If the SEO URL is active, then this unique identifier is used to define the link to the pages, e.g. phpBB/games/strategy. Only letters, numbers, hyphens and underscores are allowed.',
 // Upload errors
 	'GAME_GENERAL_UPLOAD_ERROR'			=> 'Could not upload game image to %s.',
 	'GAME_DISALLOWED_CONTENT'			=> 'The upload was rejected because the uploaded file was identified as a possible attack vector.',
@@ -134,64 +136,10 @@ $lang = array_merge($lang, array(
 	'ACP_GAMES_USER_PROFILE_SETTINGS'	=> 'User profile settings',
 	'ACP_GAMES_PROFILE_DISPLAY'			=> 'Allow Game Display in user profile',
 	'ACP_GAMES_PROFILE_SEPARATE'		=> 'Display each catergory on a separate row',
-	// Portal settings
-	'ACP_GAMES_PORTAL_SETTINGS'			=> 'Portal center block settings',
-	'ACP_GAMES_RECENT_PORTAL'			=> 'How many recently added games to show on the portal page',
-	'ACP_GAMES_RECENT_PORTAL_EXPLAIN'	=> 'Leave at zero to disable',
-	'ACP_GAMES_POPULAR_PORTAL'			=> 'How many most popular games to show on the portal page',
-	'ACP_GAMES_POPULAR_PORTAL_EXPLAIN'	=> 'Leave at zero to disable',
-	'ACP_GAMES_PLAY_PORTAL'				=> 'How many games being played to show on the portal page',
-	'ACP_GAMES_PLAY_PORTAL_EXPLAIN'		=> 'Leave at zero to disable',
-	//Portal side block settings
-	'ACP_GAMES_SIDE_PORTAL_SETTINGS'	=> 'Portal side block settings',
-	'ACP_GAMES_PORTAL_THUMB_WIDTH'			=> 'Side portal block thumbnail width',
-	'ACP_GAMES_PORTAL_THUMB_WIDTH_EXPLAIN'	=> 'The width (in pixels) for games displayed in the portal side block.<br />Set to 0 to not define a width.',
-	'ACP_GAMES_PORTAL_THUMB_HEIGHT'			=> 'Side portal block thumbnail height',
-	'ACP_GAMES_PORTAL_THUMB_HEIGHT_EXPLAIN' => 'The height (in pixels) for games displayed in the portal side block.<br />Set to 0 to not define a height.',
-	'ACP_GAMES_RECENT_SIDE_PORTAL'			=> 'How many recently added games to show on the portal side block',
-	'ACP_GAMES_RECENT_SIDE_PORTAL_EXPLAIN'	=> 'Leave at zero to disable',
-	'ACP_GAMES_POPULAR_SIDE_PORTAL'			=> 'How many most popular games to show on the portal side block',
-	'ACP_GAMES_POPULAR_SIDE_PORTAL_EXPLAIN'	=> 'Leave at zero to disable',
-	'ACP_GAMES_PLAY_SIDE_PORTAL'			=> 'How many games being played to show on the portal side block',
-	'ACP_GAMES_PLAY_SIDE_PORTAL_EXPLAIN'	=> 'Leave at zero to disable',
-	'ACP_GAMES_STATS_PORTAL'				=> 'Display games statistics',
-	'ACP_GAMES_STATS_PORTAL_EXPLAIN'		=> 'Displays total games owned',
-
-
-	//umil language
-	'GAMES_MOD'					=> 'Games MOD',
-	'INSTALL_GAMES_MOD'			=> 'Install Games MOD',
-	'INSTALL_GAMES_MOD_CONFIRM'	=> 'Are you sure you want to install the Games MOD?',
-	'UPDATE_GAMES_MOD'			=> 'Update Games MOD',
-	'UPDATE_GAMES_MOD_CONFIRM'	=> 'Are you sure you want to update the Games MOD?',
-	'UNINSTALL_GAMES_MOD'			=> 'Uninstall Games MOD',
-	'UNINSTALL_GAMES_MOD_CONFIRM'	=> 'Are you sure you want to uninstall the Games MOD?',
-	'UCP_GAMES_INDEX'				=> 'Games',
-	'UCP_GAMES_INDEX_TITLE'             => 'Games Owned',
-	'UCP_GAMES_ADD_TITLE'				=> 'Add Games',
-	'GAME_TABLE_UPDATE'				=> 'Games table updated',
-	//ACP User Games Managaement
-	'ACP_USER_GAMES'				=> 'Users Games',
-	'ACP_USER_GAMES_MANAGEMENT'		=> 'Manage Users Games',
-	//Mod version check
-	'ACP_MOD_VERSION_CHECK'	=> 'Check for MOD updates',
-	'ANNOUNCEMENT_TOPIC'	=> 'Release Announcement',
-
-	'CURRENT_VERSION'		=> 'Current Version',
-
-	'DOWNLOAD_LATEST'		=> 'Download Latest Version',
-
-	'LATEST_VERSION'		=> 'Latest Version',
-
-	'NO_ACCESS_MODS_DIRECTORY'	=> 'Unable to open adm/mods, check to make sure that directory exists and you have read permission on that directory',
-	'NO_INFO'					=> 'Version server could not be contacted',
-	'NOT_UP_TO_DATE'			=> '%s is not up to date',
-
-	'RELEASE_ANNOUNCEMENT'	=> 'Announcement Topic',
-	'UP_TO_DATE'			=> '%s is up to date',
-
-	'VERSION_CHECK'			=> 'MOD Version Check',
-	'VERSION_CHECK_EXPLAIN'	=> 'Checks to see if your mods are up to date',
+	'ACP_GAMES_USE_SEO_URL'				=> 'Use SEO URL',
+	'ACP_GAMES_USE_SEO_URL_EXPLAIN'		=> 'If the SEO URL is active, the links look like phpBB/games/strategy/game1. <b>But</b> the field "route" must be filled, or the category or game can not be linked.</br>You can automaticly fill the route based on their name. (<b>May take some time!</b>)',
+	'CLEAR_SEO_URL'						=> 'Clear SEO URL',
+	'CREATE_SEO_URL'					=> 'Create SEO URL',
 ));
 
 ?>
