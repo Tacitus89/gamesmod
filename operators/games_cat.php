@@ -275,10 +275,10 @@ class games_cat
 			try
 			{
 				//replace the special characters
-				$string = preg_replace('/[!"#$%&*\'()+,.\/\\\\:;<=>?@\[\]^`{|}~ ]/', "_", strtolower($row['name']));
+				$string = preg_replace('/[!"#$%&*\'()+,.\/\\\\:;<=>?@\[\]^`{|}~ ]/', "_", strtolower($row['games_cat_name']));
 				//replace the repeat
 				$string = preg_replace('/(_)\\1+/', "_", strtolower($string));
-				$game_cat->set_route($string);
+				$game_cat->set_route($string, $this->game_cat_table);
 				$game_cat->save();
 			}
 			catch (\tacitus89\gamesmod\exception\base $e)

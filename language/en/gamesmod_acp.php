@@ -142,6 +142,6 @@ $lang = array_merge($lang, array(
 	'CREATE_SEO_URL'					=> 'Create SEO URL',
 	'ACP_CONFIRM_CLEAR_SEO_URL'			=> 'Are you sure you wish to clear the route of all category and games? If you have not disabled the SEO-URL, no category or games can be linked.',
 	'ACP_CLEAR_SEO_URL_GOOD'			=> 'All routes have been deleted!',
-	'ACP_CONFIRM_CREATE_SEO_URL'		=> 'Are you sure you wish to create automaticly the route of all category and games? This will be overwrite all previous settings',
+	'ACP_CONFIRM_CREATE_SEO_URL'		=> 'Are you sure you wish to create automaticly the route of all category and games? This will be overwrite all previous settings.',
 	'ACP_CREATE_SEO_URL_GOOD'			=> 'All routes have been created!',
 ));

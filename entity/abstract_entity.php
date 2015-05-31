@@ -247,11 +247,12 @@ abstract class abstract_entity
 	* Set route
 	*
 	* @param string $route Route text
+	* @param string $database
 	* @return page_interface $this object for chaining calls; load()->set()->save()
 	* @access public
 	* @throws \tacitus89\gamesmod\exception\unexpected_value
 	*/
-	public function set_route($route)
+	public function set_route($route, $database)
 	{
 		// Enforce a string
 		$route = (string) $route;
@@ -280,7 +281,7 @@ abstract class abstract_entity
 		if (!$this->get_id() || ($this->get_id() && $this->get_route() != $route))
 		{
 			$sql = 'SELECT 1
-				FROM ' . $this->games_table . "
+				FROM ' . $database . "
 				WHERE route = '" . $this->db->sql_escape($route) . "'
 					AND id <> " . $this->get_id();
 			$result = $this->db->sql_query_limit($sql, 1);
