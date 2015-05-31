@@ -13,7 +13,7 @@ namespace tacitus89\gamesmod\entity;
 /**
 * Entity for a single games_cat
 */
-class game extends abstract_item
+class game extends abstract_entity
 {
 	/**
 	* Data for this entity
@@ -50,37 +50,30 @@ class game extends abstract_item
 	protected $game_cat_table;
 
 	/**
-	* Specifies the path to the image
-	*
-	* @var string
-	*/
-	protected $dir;
-
-	/**
-	* Specifies the parent entity
-	*
-	* @var string
-	*/
-	protected $parent;
-
-	/**
 	* All of fields of this objects
 	*
 	**/
 	protected static $fields = array(
-		'id'						=> 'integer',
-		'parent'					=> 'object',
-		'name'						=> 'set_name',
-		'description'				=> 'string',
-		'image'						=> 'string',
-		'route'						=> 'string',
+		'id'				=> 'integer',
+		'parent'			=> 'object',
+		'name'				=> 'set_name',
+		'description'		=> 'string',
+		'image'				=> 'string',
+		'route'				=> 'string',
 	);
 
 	/**
 	* All object must be assigned to a class
 	**/
 	protected static $classes = array(
-		'parent'					=> 'games_cat',
+		'parent'			=> 'games_cat',
+	);
+
+	/**
+	* Some fields must be unsigned (>= 0)
+	**/
+	protected static $validate_unsigned = array(
+		'id',
 	);
 
 	/**
@@ -99,18 +92,6 @@ class game extends abstract_item
 		$this->games_table = $games_table;
 		$this->game_cat_table = $game_cat_table;
 		$this->dir = '';
-
-		parent::$fields = self::$fields;
-		parent::$classes = self::$classes;
-
-		$this->data['parent'] = new games_cat($db, $game_cat_table);
-	}
-
-	public static function get_sql_fields($table_prefix = array(), $prefix = '')
-	{
-		//parent::$fields = self::$fields;
-		//parent::$classes = self::$classes;
-		return parent::get_sql_fields($table_prefix);
 	}
 
 	/**
@@ -138,9 +119,6 @@ class game extends abstract_item
 			// A game does not exist
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
-
-		$this->dir = $data['dir'];
-		unset($data['dir']);
 
 		$data = $this->include_parent($data);
 
@@ -175,101 +153,11 @@ class game extends abstract_item
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
-		//$this->dir = $data['dir'];
-		//unset($data['dir']);
-
-		//$data = $this->data['parent']->set_data($data, 'parent');
-		//$data['parent'] = $this->set_parent($data);
-		//$data = $this->include_parent($data);
-
-		print_r($data);
-
-		//$this->data = $data;
+		//Import data for this game
 		$this->import($data);
 
 		return $this;
 	}
-
-	/**
-	* Import data for this game
-	*
-	* Used when the data is already loaded externally.
-	* Any existing data on this game is over-written.
-	* All data is validated and an exception is thrown if any data is invalid.
-	*
-	* @param array $data Data array, typically from the database
-	* @return game_interface $this object for chaining calls; load()->set()->save()
-	* @access public
-	* @throws \tacitus89\gamesmod\exception\base
-	*/
-	/**public function import($data)
-	{
-		// Clear out any saved data
-		$this->data = array();
-
-		if(isset($data['dir']))
-		{
-			$this->dir = (string) $data['dir'];
-			unset($data['dir']);
-		}
-
-		//$data = $this->set_parent($data);
-		$this->data['parent'] = new games_cat($this->db, $this->game_cat_table);
-		$data = $this->data['parent']->set_parent($data);
-
-		// All of our fields
-		$fields = array(
-			// column					=> data type (see settype())
-			'id'						=> 'integer',
-			'parent'					=> 'object',
-			'name'						=> 'set_name', // call set_title()
-			'description'				=> 'string',
-			'image'						=> 'string',
-			'route'						=> 'string',
-		);
-
-		// Go through the basic fields and set them to our data array
-		foreach ($fields as $field => $type)
-		{
-			// If the data wasn't sent to us, throw an exception
-			if (!isset($data[$field]))
-			{
-				throw new \tacitus89\gamesmod\exception\invalid_argument(array($field, 'FIELD_MISSING'));
-			}
-
-			// If the type is a method on this class, call it
-			if (method_exists($this, $type))
-			{
-				$this->$type($data[$field]);
-			}
-			else
-			{
-				// settype passes values by reference
-				$value = $data[$field];
-
-				// We're using settype to enforce data types
-				settype($value, $type);
-
-				$this->data[$field] = $value;
-			}
-		}
-
-		// Some fields must be unsigned (>= 0)
-		$validate_unsigned = array(
-			'id',
-		);
-
-		foreach ($validate_unsigned as $field)
-		{
-			// If the data is less than 0, it's not unsigned and we'll throw an exception
-			if ($this->data[$field] < 0)
-			{
-				throw new \tacitus89\gamesmod\exception\out_of_bounds($field);
-			}
-		}
-
-		return $this;
-	}**/
 
 	/**
 	* Insert the game for the first time
@@ -291,8 +179,9 @@ class game extends abstract_item
 		// Make extra sure there is no id set
 		unset($this->data['id']);
 
-		//set parent-id to parent
+		//save the parent object to parent
 		$parent = $this->data['parent'];
+		//set parent-id to parent
 		$this->data['parent'] = $parent->get_id();
 
 		// Insert the game data to the database
@@ -302,7 +191,7 @@ class game extends abstract_item
 		// Set the game_id using the id created by the SQL insert
 		$this->data['id'] = (int) $this->db->sql_nextid();
 
-		//set it back
+		//set parent object back
 		$this->data['parent'] = $parent;
 
 		return $this;
@@ -326,8 +215,9 @@ class game extends abstract_item
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
-		//set parent-id to parent
+		//save the parent object to parent
 		$parent = $this->data['parent'];
+		//set parent-id to parent
 		$this->data['parent'] = $parent->get_id();
 
 		$sql = 'UPDATE ' . $this->games_table . '
@@ -335,85 +225,8 @@ class game extends abstract_item
 			WHERE id = ' . $this->get_id();
 		$this->db->sql_query($sql);
 
-		//set it back
+		//set parent object back
 		$this->data['parent'] = $parent;
-
-		return $this;
-	}
-
-	/**
-	* Include parent
-	*
-	* @param data array
-	* @return data array
-	* @access private
-	*/
-	private function include_parent($data)
-	{
-		$parent_data = array(
-			'id'					=> $data['parent_id'],
-			'name'					=> $data['parent_name'],
-			'dir'					=> $data['parent_dir'],
-			'order_id'				=> $data['parent_order_id'],
-			'number'				=> $data['parent_number'],
-			'route'					=> $data['parent_route'],
-		);
-
-		$data['parent'] = $this->parent;
-
-		unset($data['parent_id']);
-		unset($data['parent_name']);
-		unset($data['parent_dir']);
-		unset($data['parent_order_id']);
-		unset($data['parent_number']);
-		unset($data['parent_route']);
-
-		return $data;
-	}
-
-	/**
-	* Get id
-	*
-	* @return int game identifier
-	* @access public
-	*/
-	public function get_id()
-	{
-		return (isset($this->data['id'])) ? (int) $this->data['id'] : 0;
-	}
-
-	/**
-	* Get name
-	*
-	* @return string name
-	* @access public
-	*/
-	public function get_name()
-	{
-		return (isset($this->data['name'])) ? (string) $this->data['name'] : '';
-	}
-
-	/**
-	* Set name
-	*
-	* @param string $name
-	* @return game_interface $this object for chaining calls; load()->set()->save()
-	* @access public
-	* @throws \tacitus89\gamesmod\exception\unexpected_value
-	*/
-	public function set_name($name)
-	{
-		// Enforce a string
-		$name = (string) $name;
-
-		// We limit the name length to 200 characters
-		if (truncate_string($name, 200) != $name)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('name', 'TOO_LONG'));
-		}
-
-		// Set the name on our data array
-		$this->data['name'] = $name;
 
 		return $this;
 	}
@@ -498,17 +311,6 @@ class game extends abstract_item
 	*/
 	public function get_parent()
 	{
-		return (isset($this->data['parent']->get_id)) ? (int) $this->data['parent'] : 0;
-	}
-
-	/**
-	* Get the parent: game_cat object
-	*
-	* @return object game_cat
-	* @access public
-	*/
-	public function get_parent2()
-	{
 		return $this->data['parent'];
 	}
 
@@ -531,88 +333,11 @@ class game extends abstract_item
 			throw new \tacitus89\gamesmod\exception\out_of_bounds($parent);
 		}
 
+		//Generated new games_cat object
 		$this->data['parent'] = new games_cat($this->db, $this->game_cat_table);
 
-		// Set the parent on our data array
+		//Load the data for new parent
 		$this->data['parent']->load($parent);
-
-		return $this;
-	}
-
-	/**
-	* Get the dir of image
-	*
-	* @return string dir
-	* @access public
-	*/
-	public function get_dir()
-	{
-		return (isset($this->dir)) ? (string) $this->dir.'/' : '';
-	}
-
-	/**
-	* Get route
-	*
-	* @return string route
-	* @access public
-	*/
-	public function get_route()
-	{
-		return (isset($this->data['route'])) ? (string) $this->data['route'] : '';
-	}
-
-	/**
-	* Set route
-	*
-	* @param string $route Route text
-	* @return page_interface $this object for chaining calls; load()->set()->save()
-	* @access public
-	* @throws \tacitus89\gamesmod\exception\unexpected_value
-	*/
-	public function set_route($route)
-	{
-		// Enforce a string
-		$route = (string) $route;
-
-		// Route is a empty field
-		if ($route == '')
-		{
-			// Set the route on our data array
-			$this->data['route'] = '';
-			return $this;
-		}
-
-		// Route should not contain any special characters
-		if (!preg_match('/^[^!"#$%&*\'()+,.\/\\\\:;<=>?@\[\]^`{|}~ ]*$/i', $route))
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('route', 'ILLEGAL_CHARACTERS'));
-		}
-
-		// We limit the route length to 100 characters
-		if (truncate_string($route, 100) != $route)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('route', 'TOO_LONG'));
-		}
-
-		// Routes must be unique
-		if (!$this->get_id() || ($this->get_id() && $this->get_route() != $route))
-		{
-			$sql = 'SELECT 1
-				FROM ' . $this->games_table . "
-				WHERE route = '" . $this->db->sql_escape($route) . "'
-					AND id <> " . $this->get_id();
-			$result = $this->db->sql_query_limit($sql, 1);
-			$row = $this->db->sql_fetchrow($result);
-			$this->db->sql_freeresult($result);
-
-			if ($row)
-			{
-				throw new \tacitus89\gamesmod\exception\unexpected_value(array('route', 'NOT_UNIQUE'));
-			}
-		}
-
-		// Set the route on our data array
-		$this->data['route'] = $route;
 
 		return $this;
 	}

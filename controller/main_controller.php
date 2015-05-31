@@ -103,9 +103,6 @@ class main_controller
 	*/
 	public function display($category = '', $game = '')
 	{
-		echo $category;
-		echo $game;
-
 		// When gamesmod are disabled, redirect users back to the forum index
 		if (empty($this->config['games_active']))
 		{

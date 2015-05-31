@@ -103,14 +103,19 @@ class games
 	*/
 	public function get_games_by_name($parent_name = '', $start = 0, $end = 0)
 	{
-		$sql= 'SELECT '. \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
+		$time_start = microtime(true);
+
+		$sql= 'SELECT g.id AS game_id, gc.id AS games_cat_id, gc.name AS games_cat_name, gc.dir AS games_cat_dir, gc.order_id AS games_cat_order_id, gc.number AS games_cat_number, gc.route AS games_cat_route, g.parent AS game_parent, g.name AS game_name, g.description AS game_description, g.image AS game_image, g.route AS game_route 
 			FROM ' . $this->game_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE ' . $this->db->sql_in_set('gc.route', $parent_name) .'
 			ORDER BY g.name ASC';
 
+		$time_end = microtime(true);
+		echo ($time_end - $time_start);
+
 		//echo \tacitus89\gamesmod\entity\game::get_sql(array('this' => g, 'parent' => gc));
-		echo \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc'));
+		//echo \tacitus89\gamesmod\entity\game::get_sql_fields(array('this' => 'g', 'parent' => 'gc'));
 
 		return $this->get_sql_result($sql, $start, $end);
 	}

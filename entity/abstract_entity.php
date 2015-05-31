@@ -11,9 +11,9 @@
 namespace tacitus89\gamesmod\entity;
 
 /**
-* Entity for a single games_cat
+* Abstract Entity for all Entities
 */
-abstract class abstract_item
+abstract class abstract_entity
 {
 	/**
 	* All of fields of this objects
@@ -26,30 +26,56 @@ abstract class abstract_item
 	**/
 	protected static $classes;
 
-	public static function get_sql_fields($table_prefix = array(), $prefix = '')
+	/**
+	* Some fields must be unsigned (>= 0)
+	**/
+	protected static $validate_unsigned;
+
+	/**
+	* Generated from entity attribute the sql column
+	* Only for entity in entity and not for entity in entity in entity...
+	*
+	* @param array $table_prefix declare the prefix of tables
+	* @return string The finished sql column
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\out_of_bounds
+	*/
+	public static function get_sql_fields($table_prefix = array())
 	{
 		//get fields data
 		$fields = static::$fields;
 
+		//declare new fields
 		$new_fields = array();
 
-		if($prefix != '' && !empty($table_prefix))
-		{
-			foreach ($fields as $key => $value)
-			{
-				$new_fields[] = $table_prefix .'.'. $key .' AS '. $prefix.$key;
-			}
-		}
 		if(!empty($table_prefix))
 		{
+			//Go through all fields and renamed it
+			foreach ($fields as $key => $value)
+			{
+				//If value a object
+				if($value === 'object')
+				{
+					//get class of object
+					$class = __NAMESPACE__. '\\' .static::$classes[$key];
+					//get the fields of the object
+					$new_fields[] = $class::get_sql_fields(array('this' => $table_prefix[$key]));
+				}
+				//set renamed fields
+				$new_fields[] = $table_prefix['this'] .'.'. $key .' AS '. basename(get_called_class()) .'_'. $key;
+			}
+		}
+		else
+		{
+			//Go through all fields and renamed it
 			foreach ($fields as $key => $value)
 			{
 				if($value === 'object')
 				{
-					$class = '\tacitus89\gamesmod\entity\\'.static::$classes[$key];
-					$new_fields[] = $class::get_sql_fields(array('this' => $table_prefix[$key]));
+					//if object have subobject, it must be set a table_prefix
+					throw new \tacitus89\gamesmod\exception\invalid_argument(array($key, 'FIELD_MISSING'));
 				}
-				$new_fields[] = $table_prefix['this'] .'.'. $key .' AS '. basename(get_called_class()) .'_'. $key;
+				$new_fields[] = $key .' AS '. basename(get_called_class()) .'_'. $key;
 			}
 		}
 
@@ -83,26 +109,15 @@ abstract class abstract_item
 		// Clear out any saved data
 		$this->data = array();
 
-		/*
-		if(isset($data['dir']))
-		{
-			$this->dir = (string) $data['dir'];
-			unset($data['dir']);
-		}*/
-
-		//$data = $this->set_parent($data);
+		//get class name
 		$class = (new \ReflectionClass($this))->getShortName() .'_';
-		print_r($data);
 
 		// Go through the basic fields and set them to our data array
 		foreach (static::$fields as $field => $type)
 		{
-			echo $class;
-			echo $field;
 			// If the data wasn't sent to us, throw an exception
 			if (!isset($data[$class.$field]))
 			{
-				echo 'oho!'. $class.$field;
 				throw new \tacitus89\gamesmod\exception\invalid_argument(array($field, 'FIELD_MISSING'));
 			}
 
@@ -111,18 +126,22 @@ abstract class abstract_item
 			{
 				$this->$type($data[$class.$field]);
 			}
+			//Special case: if type a object!
 			elseif($type === 'object')
 			{
-				echo 'huhu';
-				$subclass = '\tacitus89\gamesmod\entity\\'.static::$classes[$field];
+				//Get subclass
+				$subclass = __NAMESPACE__. '\\' .static::$classes[$field];
+
+				//Generating the subclass
 				$this->data[$field] = new $subclass($this->db, $this->game_cat_table);
+
+				//Import the data to subclass
 				$this->data[$field]->import($data);
 			}
 			else
 			{
 				// settype passes values by reference
 				$value = $data[$class.$field];
-				echo $value;
 
 				// We're using settype to enforce data types
 				settype($value, $type);
@@ -131,12 +150,7 @@ abstract class abstract_item
 			}
 		}
 
-		// Some fields must be unsigned (>= 0)
-		$validate_unsigned = array(
-			'id',
-		);
-
-		foreach ($validate_unsigned as $field)
+		foreach (static::$validate_unsigned as $field)
 		{
 			// If the data is less than 0, it's not unsigned and we'll throw an exception
 			if ($this->data[$field] < 0)
@@ -146,27 +160,6 @@ abstract class abstract_item
 		}
 
 		return $this;
-	}
-
-	public function set_data($data, $field)
-	{
-		$fields = static::$fields;
-
-		$field_data = array();
-
-		$class = (new \ReflectionClass($this))->getShortName() .'_';
-
-		foreach ($fields as $key => $value)
-		{
-			$field_data[$key] = $data[$class.$key];
-			echo $field_data[$key];
-			unset($data[$class.$key]);
-		}
-		//$data[$field] = $this->import($field_data);
-		$this->data = $field_data;
-		//$data[$field] = $this;
-
-		return $data;
 	}
 
 	/**

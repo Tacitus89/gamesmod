@@ -13,7 +13,7 @@ namespace tacitus89\gamesmod\entity;
 /**
 * Entity for a single games_cat
 */
-class games_cat extends abstract_item
+class games_cat extends abstract_entity
 {
 	/**
 	* Data for this entity
@@ -58,6 +58,15 @@ class games_cat extends abstract_item
 	protected static $classes = array();
 
 	/**
+	* Some fields must be unsigned (>= 0)
+	**/
+	protected static $validate_unsigned = array(
+		'id',
+		'order_id',
+		'number',
+	);
+
+	/**
 	* Constructor
 	*
 	* @param \phpbb\db\driver\driver_interface    $db              Database object
@@ -69,56 +78,6 @@ class games_cat extends abstract_item
 	{
 		$this->db = $db;
 		$this->games_cat_table = $games_cat_table;
-
-		parent::$fields = self::$fields;
-		parent::$classes = self::$classes;
-	}
-
-	/**
-	* get the fields of this object
-	*
-	* @param string $type Get the attribute as array or string; default = array
-	* @param string $prefix Set a prefix if it a string
-	* @return string or array Depent of type
-	* @access private
-	*/
-	private static function get_fields($type = 'array', $prefix = '')
-	{
-		// All of our fields
-		$fields = array(
-			// column				=> data type (see settype())
-			'id'					=> 'integer',
-			'name'					=> 'set_name',
-			'dir'					=> 'string',
-			'order_id'				=> 'integer',
-			'number'				=> 'integer',
-			'route'					=> 'string',
-		);
-
-		if($type == 'string')
-		{
-			if($prefix != '')
-			{
-				$new_fields = array();
-				foreach ($fields as $key => $value) {
-					$new_fields[] = $prefix.$key;
-				}
-				return implode(", ", $new_fields);
-			}
-			else {
-				return implode(", ", array_keys($fields));
-			}
-		}
-		else{
-			return $fields;
-		}
-	}
-
-	public static function get_sql_fields($table_prefix = array(), $prefix = '')
-	{
-		//parent::$fields = self::$fields;
-		//parent::$classes = self::$classes;
-		return parent::get_sql_fields($table_prefix);
 	}
 
 	/**
@@ -131,18 +90,21 @@ class games_cat extends abstract_item
 	*/
 	public function load($id)
 	{
-		$sql = 'SELECT gc.id, gc.name, gc.dir, gc.order_id, gc.number, gc.route
+		$sql = 'SELECT '. games_cat::get_sql_fields(array('this' => 'gc')) .'
 			FROM ' . $this->games_cat_table . ' gc
 			WHERE gc.id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
-		$this->data = $this->db->sql_fetchrow($result);
+		$data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		if ($this->data === false)
+		if ($data === false)
 		{
 			// A game does not exist
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
+
+		//Import data for this game
+		$this->import($data);
 
 		return $this;
 	}
@@ -157,95 +119,24 @@ class games_cat extends abstract_item
 	*/
 	public function load_by_name($seo_name)
 	{
-		$sql = 'SELECT gc.id, gc.name, gc.dir, gc.order_id, gc.number, gc.route
+		$sql = 'SELECT '. games_cat::get_sql_fields(array('this' => 'gc')) .'
 			FROM ' . $this->games_cat_table . ' gc
 			WHERE '. $this->db->sql_in_set('gc.route', $seo_name);
 		$result = $this->db->sql_query($sql);
-		$this->data = $this->db->sql_fetchrow($result);
+		$data = $this->db->sql_fetchrow($result);
 		$this->db->sql_freeresult($result);
 
-		if ($this->data === false)
+		if ($data === false)
 		{
 			// A game does not exist
 			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
 		}
 
+		//Import data for this game
+		$this->import($data);
+
 		return $this;
 	}
-
-	/**
-	* Import data for this game
-	*
-	* Used when the data is already loaded externally.
-	* Any existing data on this game is over-written.
-	* All data is validated and an exception is thrown if any data is invalid.
-	*
-	* @param array $data Data array, typically from the database
-	* @return game_interface $this object for chaining calls; load()->set()->save()
-	* @access public
-	* @throws \tacitus89\gamesmod\exception\base
-	*/
-	/**
-	public function import($data)
-	{
-		// Clear out any saved data
-		$this->data = array();
-
-		// All of our fields
-		$fields = array(
-			// column					=> data type (see settype())
-			'id'					=> 'integer',
-			'name'					=> 'set_name',
-			'dir'					=> 'string',
-			'order_id'				=> 'integer',
-			'number'				=> 'integer',
-			'route'					=> 'string',
-		);
-
-		// Go through the basic fields and set them to our data array
-		foreach ($fields as $field => $type)
-		{
-			// If the data wasn't sent to us, throw an exception
-			if (!isset($data[$field]))
-			{
-				throw new \tacitus89\gamesmod\exception\invalid_argument(array($field, 'FIELD_MISSING'));
-			}
-
-			// If the type is a method on this class, call it
-			if (method_exists($this, $type))
-			{
-				$this->$type($data[$field]);
-			}
-			else
-			{
-				// settype passes values by reference
-				$value = $data[$field];
-
-				// We're using settype to enforce data types
-				settype($value, $type);
-
-				$this->data[$field] = $value;
-			}
-		}
-
-		// Some fields must be unsigned (>= 0)
-		$validate_unsigned = array(
-			'id',
-			'order_id',
-			'number',
-		);
-
-		foreach ($validate_unsigned as $field)
-		{
-			// If the data is less than 0, it's not unsigned and we'll throw an exception
-			if ($this->data[$field] < 0)
-			{
-				throw new \tacitus89\gamesmod\exception\out_of_bounds($field);
-			}
-		}
-
-		return $this;
-	}**/
 
 	/**
 	* Insert the game for the first time
@@ -301,28 +192,6 @@ class games_cat extends abstract_item
 		$this->db->sql_query($sql);
 
 		return $this;
-	}
-
-	/**
-	* Get id
-	*
-	* @return int game identifier
-	* @access public
-	*/
-	public function get_id()
-	{
-		return (isset($this->data['id'])) ? (int) $this->data['id'] : 0;
-	}
-
-	/**
-	* Get name
-	*
-	* @return string name
-	* @access public
-	*/
-	public function get_name()
-	{
-		return (isset($this->data['name'])) ? (string) $this->data['name'] : '';
 	}
 
 	/**
@@ -431,72 +300,5 @@ class games_cat extends abstract_item
 	public function get_number()
 	{
 		return (isset($this->data['number'])) ? (int) $this->data['number'] : 0;
-	}
-
-	/**
-	* Get route
-	*
-	* @return string route
-	* @access public
-	*/
-	public function get_route()
-	{
-		return (isset($this->data['route'])) ? (string) $this->data['route'] : '';
-	}
-
-	/**
-	* Set route
-	*
-	* @param string $route Route text
-	* @return page_interface $this object for chaining calls; load()->set()->save()
-	* @access public
-	* @throws \tacitus89\gamesmod\exception\unexpected_value
-	*/
-	public function set_route($route)
-	{
-		// Enforce a string
-		$route = (string) $route;
-
-		// Route is a empty field
-		if ($route == '')
-		{
-			// Set the route on our data array
-			$this->data['route'] = '';
-			return $this;
-		}
-
-		// Route should not contain any special characters
-		if (!preg_match('/^[^!"#$%&*\'()+,.\/\\\\:;<=>?@\[\]^`{|}~ ]*$/i', $route))
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('route', 'ILLEGAL_CHARACTERS'));
-		}
-
-		// We limit the route length to 100 characters
-		if (truncate_string($route, 100) != $route)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('route', 'TOO_LONG'));
-		}
-
-		// Routes must be unique
-		if (!$this->get_id() || ($this->get_id() && $this->get_route() != $route))
-		{
-			$sql = 'SELECT 1
-				FROM ' . $this->games_cat_table . "
-				WHERE route = '" . $this->db->sql_escape($route) . "'
-					AND id <> " . $this->get_id();
-			$result = $this->db->sql_query_limit($sql, 1);
-			$row = $this->db->sql_fetchrow($result);
-			$this->db->sql_freeresult($result);
-
-			if ($row)
-			{
-				throw new \tacitus89\gamesmod\exception\unexpected_value(array('route', 'NOT_UNIQUE'));
-			}
-		}
-
-		// Set the route on our data array
-		$this->data['route'] = $route;
-
-		return $this;
 	}
 }
