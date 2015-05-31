@@ -275,17 +275,24 @@ class admin_controller
 		// Grab all the games
 		$entities = $this->games_operator->get_games($parent_id, $start, $this->config['games_pagination']);
 
-		//parent
-		$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
-		$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
+		if(isset($entities[0]))
+		{
+			$parent = $entities[0]->get_parent();
+		}
+		else {
+			$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
+		}
+
 		// Process each game entity for display
 		foreach ($entities as $entity)
 		{
+			$image = ($entity->get_parent()->get_dir() != '')? $this->dir.$entity->get_parent()->get_dir().'/'.$entity->get_image() : $this->dir.$entity->get_image();
+
 			// Set output block vars for display in the template
 			$this->template->assign_block_vars('games', array(
 				'GAME_NAME'		=> $entity->get_name(),
 
-				'U_IMAGE'			=> ($entity->get_image() != '')? '' . $this->dir . $dir . $entity->get_image() . '' : '',
+				'U_IMAGE'			=> ($entity->get_image() != '')? $image : '',
 				'U_DELETE'			=> "{$this->u_action}&amp;action=delete_game&amp;game_id=" . $entity->get_id(),
 				'U_EDIT'			=> "{$this->u_action}&amp;action=edit_game&amp;game_id=" . $entity->get_id(),
 				'U_GAME'			=> "{$this->u_action}&amp;parent_id=" . $entity->get_id(),
@@ -599,9 +606,6 @@ class admin_controller
 		// Create an array to collect errors that will be output to the user
 		$errors = array();
 
-		//get parent
-		$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($data['parent']);
-
 		// Grab the form's game data fields
 		$game_fields = array(
 			'name'			=> $data['name'],
@@ -648,9 +652,9 @@ class admin_controller
 				$upload = new \fileupload('GAME_', array('jpg', 'jpeg', 'gif', 'png'), 80000, 0, 0, 0, 0, explode('|', $this->config['mime_triggers']));
 				$file = $upload->form_upload('uploadfile');
 				$file->clean_filename('real', '', '');
-				if($parent->get_dir() != '')
+				if($entity->get_parent()->get_dir() != '')
 				{
-					$destination = 'ext/tacitus89/gamesmod/images/'.$parent->get_dir();
+					$destination = 'ext/tacitus89/gamesmod/images/'.$entity->get_parent()->get_dir();
 				}
 				else {
 					$destination = 'ext/tacitus89/gamesmod/images';
@@ -710,7 +714,7 @@ class admin_controller
 		}
 
 		//view existing images
-		$dir = $this->dir.$parent->get_dir();
+		$dir = $this->dir.$entity->get_parent()->get_dir();
 		$options = '<option value=""></option>';
 		if ($dh = opendir($dir))
 		{
@@ -723,7 +727,7 @@ class admin_controller
 			closedir($dh);
 		}
 
-		$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
+		$dir = ($entity->get_parent()->get_dir() != '') ? $entity->get_parent()->get_dir() . '/' : '';
 		// Set output vars for display in the template
 		$this->template->assign_vars(array(
 			'S_ERROR'			=> (sizeof($errors)) ? true : false,

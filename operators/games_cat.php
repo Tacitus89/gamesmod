@@ -72,7 +72,7 @@ class games_cat
 	{
 		$game_cat = array();
 
-		$sql = 'SELECT '. \tacitus89\gamesmod\entity\game_cat::get_sql_fields() .'
+		$sql = 'SELECT '. \tacitus89\gamesmod\entity\games_cat::get_sql_fields() .'
 			FROM ' . $this->game_cat_table . '
 			ORDER BY order_id ASC';
 		$result = $this->db->sql_query($sql);
@@ -263,7 +263,7 @@ class games_cat
 	*/
 	public function create_route()
 	{
-		$sql = 'SELECT '. \tacitus89\gamesmod\entity\game_cat::get_sql_fields() .'
+		$sql = 'SELECT '. \tacitus89\gamesmod\entity\games_cat::get_sql_fields() .'
 			FROM '. $this->game_cat_table ;
 
 		$result = $this->db->sql_query($sql);

@@ -211,16 +211,23 @@ class ucp_controller
 	*/
 	private function show_games($entities, $parent_id)
 	{
-		//parent
-		$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
-		$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
+		if(isset($entities[0]))
+		{
+			$parent = $entities[0]->get_parent();
+		}
+		else {
+			$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
+		}
+
 		// Process each game entity for display
 		foreach ($entities as $entity)
 		{
+			$image = ($entity->get_parent()->get_dir() != '')? $this->dir.$entity->get_parent()->get_dir().'/'.$entity->get_image() : $this->dir.$entity->get_image();
+
 			// Set output block vars for display in the template
 			$this->template->assign_block_vars('games', array(
 				'GAME_NAME'			=> $entity->get_name(),
-				'GAME_IMAGE'		=> $this->dir.$dir.$entity->get_image(),
+				'GAME_IMAGE'		=> ($entity->get_image() != '')? $image : '',
 				'GAME_ID'			=> $entity->get_id(),
 
 				'U_GAME'			=> "{$this->u_action}&amp;parent_id=" . $entity->get_id(),
@@ -251,12 +258,6 @@ class ucp_controller
 	*/
 	public function add_user_game($parent_id)
 	{
-		// Initiate a game entity
-		//$entity = $this->container->get('tacitus89.gamesmod.entity');
-
-		// Build game parent pull down menu
-		//$this->build_parent_select_menu($entity, $parent_id, $mode = 'add');
-
 		$game_ary = $this->request->variable('selected', array(0));
 
 		// Get form's POST actions (submit)
@@ -285,12 +286,6 @@ class ucp_controller
 	*/
 	public function remove_user_game($parent_id)
 	{
-		// Initiate a game entity
-		//$entity = $this->container->get('tacitus89.gamesmod.entity');
-
-		// Build game parent pull down menu
-		//$this->build_parent_select_menu($entity, $parent_id, $mode = 'add');
-
 		$game_ary = $this->request->variable('selected', array(0));
 
 		// Get form's POST actions (submit)
