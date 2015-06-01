@@ -37,7 +37,7 @@ class install_2_0_4 extends \phpbb\db\migration\migration
 					'genre'			=> array('VCHAR:255', ''),
 					'developer'		=> array('VCHAR:255', ''),
 					'publisher'		=> array('VCHAR:255', ''),
-					'release'		=> array('VCHAR:255', ''),
+					'release'		=> array('UINT:11', 0),
 					'platform'		=> array('VCHAR:255', ''),
 					'meta_desc'		=> array('VCHAR:255', ''),
 					'meta_keywords'	=> array('VCHAR:255', ''),

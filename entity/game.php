@@ -22,9 +22,19 @@ class game extends abstract_entity
 	*	id
 	*	name
 	*	description
+	*	description_bbcode_uid
+	*	description_bbcode_bitfield
+	*	description_bbcode_options
 	*	image
 	*	parent
 	*	route
+	*	genre
+	*	developer
+	*	publisher
+	*	game_release
+	*	platform
+	*	meta_desc
+	*	meta_keywords
 	* @access protected
 	*/
 	protected $data;
@@ -58,8 +68,18 @@ class game extends abstract_entity
 		'parent'			=> 'object',
 		'name'				=> 'set_name',
 		'description'		=> 'string',
+		'description_bbcode_uid'		=> 'string',
+		'description_bbcode_bitfield'	=> 'string',
+		'description_bbcode_options'	=> 'integer',
 		'image'				=> 'string',
 		'route'				=> 'string',
+		'genre'				=> 'string',
+		'developer'			=> 'string',
+		'publisher'			=> 'string',
+		'game_release'		=> 'integer',
+		'platform'			=> 'string',
+		'meta_desc'			=> 'string',
+		'meta_keywords'		=> 'string',
 	);
 
 	/**
@@ -74,6 +94,8 @@ class game extends abstract_entity
 	**/
 	protected static $validate_unsigned = array(
 		'id',
+		'game_release',
+		'description_bbcode_options',
 	);
 
 	/**
@@ -231,37 +253,182 @@ class game extends abstract_entity
 	}
 
 	/**
-	* Get description
+	* Get description for edit
 	*
-	* @return string description
+	* @return string
 	* @access public
 	*/
-	public function get_description()
+	public function get_description_for_edit()
 	{
-		return (isset($this->data['description'])) ? (string) $this->data['description'] : '';
+		// Use defaults if these haven't been set yet
+		$description = (isset($this->data['description'])) ? $this->data['description'] : '';
+		$uid = (isset($this->data['description_bbcode_uid'])) ? $this->data['description_bbcode_uid'] : '';
+		$options = (isset($this->data['description_bbcode_options'])) ? (int) $this->data['description_bbcode_options'] : 0;
+
+		// Generate for edit
+		$description_data = generate_text_for_edit($description, $uid, $options);
+
+		return $description_data['text'];
+	}
+
+	/**
+	* Get description for display
+	*
+	* @param bool $censor_text True to censor the text (Default: true)
+	* @return string
+	* @access public
+	*/
+	public function get_description_for_display($censor_text = true)
+	{
+		// If these haven't been set yet; use defaults
+		$description = (isset($this->data['description'])) ? $this->data['description'] : '';
+		$uid = (isset($this->data['description_bbcode_uid'])) ? $this->data['description_bbcode_uid'] : '';
+		$bitfield = (isset($this->data['description_bbcode_bitfield'])) ? $this->data['description_bbcode_bitfield'] : '';
+		$options = (isset($this->data['description_bbcode_options'])) ? (int) $this->data['description_bbcode_options'] : 0;
+
+		$route = $this->get_route();
+
+		// Generate for display
+		$description = generate_text_for_display($description, $uid, $bitfield, $options, $censor_text);
+
+		return $description;
 	}
 
 	/**
 	* Set description
 	*
 	* @param string $description
-	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @return page_interface $this object for chaining calls; load()->set()->save()
 	* @access public
-	* @throws \tacitus89\gamesmod\exception\unexpected_value
 	*/
 	public function set_description($description)
 	{
-		// Enforce a string
-		$description = (string) $description;
+		// Prepare the text for storage
+		$uid = $bitfield = $flags = '';
+		generate_text_for_storage($description, $uid, $bitfield, $flags, $this->description_bbcode_enabled(), $this->description_magic_url_enabled(), $this->description_smilies_enabled());
 
-		// We limit the description length to 255 characters
-		if (truncate_string($description, 255) != $description)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('description', 'TOO_LONG'));
-		}
-
-		// Set the description on our data array
+		// Set the description to our data array
 		$this->data['description'] = $description;
+		$this->data['description_bbcode_uid'] = $uid;
+		$this->data['description_bbcode_bitfield'] = $bitfield;
+		// Flags are already set
+
+		return $this;
+	}
+
+	/**
+	* Check if bbcode is enabled on the description
+	*
+	* @return bool
+	* @access public
+	*/
+	public function description_bbcode_enabled()
+	{
+		return ($this->data['description_bbcode_options'] & OPTION_FLAG_BBCODE);
+	}
+
+	/**
+	* Enable bbcode on the description
+	* This should be called before set_description(); description_enable_bbcode()->set_description()
+	*
+	* @return page_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	*/
+	public function description_enable_bbcode()
+	{
+		$this->set_description_option(OPTION_FLAG_BBCODE);
+
+		return $this;
+	}
+
+	/**
+	* Disable bbcode on the description
+	* This should be called before set_description(); description_disable_bbcode()->set_description()
+	*
+	* @return page_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	*/
+	public function description_disable_bbcode()
+	{
+		$this->set_description_option(OPTION_FLAG_BBCODE, true);
+
+		return $this;
+	}
+
+	/**
+	* Check if magic_url is enabled on the description
+	*
+	* @return bool
+	* @access public
+	*/
+	public function description_magic_url_enabled()
+	{
+		return ($this->data['description_bbcode_options'] & OPTION_FLAG_LINKS);
+	}
+
+	/**
+	* Enable magic url on the description
+	* This should be called before set_description(); description_enable_magic_url()->set_description()
+	*
+	* @return page_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	*/
+	public function description_enable_magic_url()
+	{
+		$this->set_description_option(OPTION_FLAG_LINKS);
+
+		return $this;
+	}
+
+	/**
+	* Disable magic url on the description
+	* This should be called before set_description(); description_disable_magic_url()->set_description()
+	*
+	* @return page_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	*/
+	public function description_disable_magic_url()
+	{
+		$this->set_description_option(OPTION_FLAG_LINKS, true);
+
+		return $this;
+	}
+
+	/**
+	* Check if smilies are enabled on the description
+	*
+	* @return bool
+	* @access public
+	*/
+	public function description_smilies_enabled()
+	{
+		return ($this->data['description_bbcode_options'] & OPTION_FLAG_SMILIES);
+	}
+
+	/**
+	* Enable smilies on the description
+	* This should be called before set_description(); description_enable_smilies()->set_description()
+	*
+	* @return page_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	*/
+	public function description_enable_smilies()
+	{
+		$this->set_description_option(OPTION_FLAG_SMILIES);
+
+		return $this;
+	}
+
+	/**
+	* Disable smilies on the description
+	* This should be called before set_description(); description_disable_smilies()->set_description()
+	*
+	* @return page_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	*/
+	public function description_disable_smilies()
+	{
+		$this->set_description_option(OPTION_FLAG_SMILIES, true);
 
 		return $this;
 	}
@@ -395,5 +562,295 @@ class game extends abstract_entity
 		$this->data['route'] = $route;
 
 		return $this;
+	}
+
+	/**
+	* Get genre
+	*
+	* @return string genre
+	* @access public
+	*/
+	public function get_genre()
+	{
+		return (isset($this->data['genre'])) ? (string) $this->data['genre'] : '';
+	}
+
+	/**
+	* Set genre
+	*
+	* @param string $genre
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_genre($genre)
+	{
+		// Enforce a string
+		$genre = (string) $genre;
+
+		// We limit the image length to 255 characters
+		if (truncate_string($genre, 255) != $genre)
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('genre', 'TOO_LONG'));
+		}
+
+		// Set the image on our data array
+		$this->data['genre'] = $genre;
+
+		return $this;
+	}
+
+	/**
+	* Get developer
+	*
+	* @return string developer
+	* @access public
+	*/
+	public function get_developer()
+	{
+		return (isset($this->data['developer'])) ? (string) $this->data['developer'] : '';
+	}
+
+	/**
+	* Set developer
+	*
+	* @param string $developer
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_developer($developer)
+	{
+		// Enforce a string
+		$developer = (string) $developer;
+
+		// We limit the image length to 255 characters
+		if (truncate_string($developer, 255) != $developer)
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('developer', 'TOO_LONG'));
+		}
+
+		// Set the image on our data array
+		$this->data['developer'] = $developer;
+
+		return $this;
+	}
+
+	/**
+	* Get publisher
+	*
+	* @return string publisher
+	* @access public
+	*/
+	public function get_publisher()
+	{
+		return (isset($this->data['publisher'])) ? (string) $this->data['publisher'] : '';
+	}
+
+	/**
+	* Set publisher
+	*
+	* @param string $publisher
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_publisher($publisher)
+	{
+		// Enforce a string
+		$publisher = (string) $publisher;
+
+		// We limit the image length to 255 characters
+		if (truncate_string($publisher, 255) != $publisher)
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('publisher', 'TOO_LONG'));
+		}
+
+		// Set the image on our data array
+		$this->data['publisher'] = $publisher;
+
+		return $this;
+	}
+
+	/**
+	* Get game_release
+	*
+	* @return int game_release
+	* @access public
+	*/
+	public function get_game_release()
+	{
+		return (isset($this->data['game_release'])) ? (int) $this->data['game_release'] : 0;
+	}
+
+	/**
+	* Set game_release
+	*
+	* @param int $game_release
+	* @return page_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \phpbb\pages\exception\out_of_bounds
+	*/
+	public function set_game_release($game_release)
+	{
+		// Enforce an integer
+		$game_release = (int) $game_release;
+
+		if ($game_release < 0)
+		{
+			throw new \phpbb\pages\exception\out_of_bounds('game_release');
+		}
+
+		// Set the route on our data array
+		$this->data['game_release'] = $game_release;
+
+		return $this;
+	}
+
+	/**
+	* Get platform
+	*
+	* @return string platform
+	* @access public
+	*/
+	public function get_platform()
+	{
+		return (isset($this->data['platform'])) ? (string) $this->data['platform'] : '';
+	}
+
+	/**
+	* Set platform
+	*
+	* @param string $platform
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_platform($platform)
+	{
+		// Enforce a string
+		$platform = (string) $platform;
+
+		// We limit the image length to 255 characters
+		if (truncate_string($platform, 255) != $platform)
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('platform', 'TOO_LONG'));
+		}
+
+		// Set the image on our data array
+		$this->data['platform'] = $platform;
+
+		return $this;
+	}
+
+	/**
+	* Get meta_desc
+	*
+	* @return string meta_desc
+	* @access public
+	*/
+	public function get_meta_desc()
+	{
+		return (isset($this->data['meta_desc'])) ? (string) $this->data['meta_desc'] : '';
+	}
+
+	/**
+	* Set meta_desc
+	*
+	* @param string $meta_desc
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_meta_desc($meta_desc)
+	{
+		// Enforce a string
+		$meta_desc = (string) $meta_desc;
+
+		// We limit the image length to 255 characters
+		if (truncate_string($meta_desc, 255) != $meta_desc)
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('meta_desc', 'TOO_LONG'));
+		}
+
+		// Set the image on our data array
+		$this->data['meta_desc'] = $meta_desc;
+
+		return $this;
+	}
+
+	/**
+	* Get meta_keywords
+	*
+	* @return string meta_keywords
+	* @access public
+	*/
+	public function get_meta_keywords()
+	{
+		return (isset($this->data['meta_keywords'])) ? (string) $this->data['meta_keywords'] : '';
+	}
+
+	/**
+	* Set meta_keywords
+	*
+	* @param string $meta_keywords
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_meta_keywords($meta_keywords)
+	{
+		// Enforce a string
+		$meta_keywords = (string) $meta_keywords;
+
+		// We limit the image length to 255 characters
+		if (truncate_string($meta_keywords, 255) != $meta_keywords)
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('meta_keywords', 'TOO_LONG'));
+		}
+
+		// Set the image on our data array
+		$this->data['meta_keywords'] = $meta_keywords;
+
+		return $this;
+	}
+
+	/**
+	* Set option helper
+	*
+	* @param int $option_value Value of the option
+	* @param bool $negate Negate (unset) option (Default: False)
+	* @param bool $reparse_description Reparse the description after setting option (Default: True)
+	* @return null
+	* @access protected
+	*/
+	protected function set_description_option($option_value, $negate = false, $reparse_description = true)
+	{
+		// Set description_bbcode_options to 0 if it does not yet exist
+		$this->data['description_bbcode_options'] = (isset($this->data['description_bbcode_options'])) ? $this->data['description_bbcode_options'] : 0;
+
+		// If we're setting the option and the option is not already set
+		if (!$negate && !($this->data['description_bbcode_options'] & $option_value))
+		{
+			// Add the option to the options
+			$this->data['description_bbcode_options'] += $option_value;
+		}
+
+		// If we're unsetting the option and the option is already set
+		if ($negate && $this->data['description_bbcode_options'] & $option_value)
+		{
+			// Subtract the option from the options
+			$this->data['description_bbcode_options'] -= $option_value;
+		}
+
+		// Reparse the description
+		if ($reparse_description && !empty($this->data['description']))
+		{
+			$description = $this->data['description'];
+
+			decode_message($description, $this->data['description_bbcode_uid']);
+
+			$this->set_description($description);
+		}
 	}
 }

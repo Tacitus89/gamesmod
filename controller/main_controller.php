@@ -187,7 +187,7 @@ class main_controller
 				$this->template->assign_block_vars('games', array(
 					'GAME_NAME'			=> $entity->get_name(),
 					'GAME_IMAGE'		=> ($entity->get_image() != '')? $image : '',
-					'GAME_DESCRIPTION'	=> $entity->get_description(),
+					'GAME_DESCRIPTION'	=> $entity->get_description_for_display(),
 					'GAME_ID'			=> $entity->get_id(),
 					'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
 
@@ -231,8 +231,13 @@ class main_controller
 			$this->template->assign_block_vars('games', array(
 				'GAME_NAME'			=> $entity->get_name(),
 				'GAME_IMAGE'		=> ($entity->get_image() != '')? $image : '',
-				'GAME_DESCRIPTION'	=> $entity->get_description(),
+				'GAME_DESCRIPTION'	=> $entity->get_description_for_display(),
 				'GAME_ID'			=> $entity->get_id(),
+				'GAME_GENRE'		=> $entity->get_genre(),
+				'GAME_DEVELOPER'	=> $entity->get_developer(),
+				'GAME_PUBLISHER'	=> $entity->get_publisher(),
+				'GAME_RELEASE'		=> $entity->get_game_release(),
+				'GAME_PLATFORM'		=> $entity->get_platform(),
 				'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
 
 				'U_GAME'			=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_parent()->get_route(), 'game' => $entity->get_route())):

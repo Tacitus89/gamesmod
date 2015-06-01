@@ -2,9 +2,11 @@
 
 <!-- IF S_ADD_GAME or S_EDIT_GAME -->
 
+	<!-- INCLUDEJS @phpbb_pages/scripts.js -->
+
 	<script>
 		var form_name = 'add_edit_game';
-		var text_name = 'game_message';
+		var text_name = 'game_description';
 		var load_draft = false;
 		var upload = false;
 		var imageTag = false;
@@ -84,13 +86,23 @@
 				<dt><label for="game_platform">{L_ACP_GAME_PLATFORM}{L_COLON}</label><br><span>{L_ACP_GAME_PLATFORM}</span></dt>
 				<dd><input class="text medium" type="text" id="game_platform" name="game_platform" value="{GAME_PLATFORM}" maxlength="255" /></dd>
 			</dl>
-			<dl>
+			<dl class="responsive-columns">
 				<dt><label for="game_description">{L_ACP_NAME_DESC}{L_COLON}</label></dt>
-				<dd><textarea id="game_description" name="game_description" rows="5" cols="45">{GAME_DESCRIPTION}</textarea></dd>
+				<dd>
+					<div id="color_palette_placeholder" data-orientation="h" data-height="12" data-width="15" data-bbcode="true"></div>
+					<!-- INCLUDE acp_posting_buttons.html -->
+					<textarea id="game_description" name="game_description" rows="12" cols="45" style="width: 95%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" data-bbcode="true">{GAME_DESCRIPTION}</textarea>
+					<div>
+						<label><input type="checkbox" class="radio html-off" name="parse_bbcode"<!-- IF S_PARSE_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
+						<label><input type="checkbox" class="radio html-off" name="parse_smilies"<!-- IF S_PARSE_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
+						<label><input type="checkbox" class="radio html-off" name="parse_magic_url"<!-- IF S_PARSE_MAGIC_URL_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label>
+					</div>
+					<div><strong>{L_OPTIONS}{L_COLON} </strong>{BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {URL_STATUS} :: {SMILIES_STATUS}</div>
+				</dd>
 			</dl>
 			<dl>
 				<dt><label for="game_meta_description">{L_ACP_GAME_META_DESC}{L_COLON}</label><br><span>{L_ACP_GAME_META_DESC}</span></dt>
-				<dd><input class="text medium" type="text" id="game_meta_description" name="game_meta_description" value="{GAME_META_DESC}" maxlength="255" /></dd>
+				<dd><textarea id="game_meta_description" name="game_meta_description" rows="2" cols="45" maxlength="255">{GAME_META_DESC}</textarea>
 			</dl>
 			<dl>
 				<dt><label for="game_meta_keywords">{L_ACP_GAME_META_KEYWORDS}{L_COLON}</label><br><span>{L_ACP_GAME_META_KEYWORDS}</span></dt>

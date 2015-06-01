@@ -468,6 +468,13 @@ class admin_controller
 			'description'	=> $this->request->variable('game_description', '', true),
 			'image'			=> $this->request->variable('game_image', '', true),
 			'route'			=> $this->request->variable('game_route', '', true),
+			'genre'			=> $this->request->variable('game_genre', '', true),
+			'developer'		=> $this->request->variable('game_developer', '', true),
+			'publisher'		=> $this->request->variable('game_publisher', '', true),
+			'game_release'	=> $this->request->variable('game_release', 0),
+			'platform'		=> $this->request->variable('game_platform', '', true),
+			'meta_desc'		=> $this->request->variable('game_meta_desc', '', true),
+			'meta_keywords'	=> $this->request->variable('game_meta_keywords', '', true),
 		);
 
 		// Process the new game
@@ -601,9 +608,16 @@ class admin_controller
 		$data = array(
 			'parent'		=> $this->request->variable('game_parent', $entity->get_parent()->get_id()),
 			'name'			=> $this->request->variable('game_name', $entity->get_name(), true),
-			'description'	=> $this->request->variable('game_description', $entity->get_description(), true),
+			'description'	=> $this->request->variable('game_description', $entity->get_description_for_edit(), true),
 			'image'			=> $this->request->variable('game_image', $entity->get_image(), true),
 			'route'			=> $this->request->variable('game_route', $entity->get_route(), true),
+			'genre'			=> $this->request->variable('game_genre', $entity->get_genre(), true),
+			'developer'		=> $this->request->variable('game_developer', $entity->get_developer(), true),
+			'publisher'		=> $this->request->variable('game_publisher', $entity->get_publisher(), true),
+			'game_release'	=> $this->request->variable('game_release', $entity->get_game_release()),
+			'platform'		=> $this->request->variable('game_platform', $entity->get_platform(), true),
+			'meta_desc'		=> $this->request->variable('game_meta_description', $entity->get_meta_desc(), true),
+			'meta_keywords'	=> $this->request->variable('game_meta_keywords', $entity->get_meta_keywords(), true),
 		);
 
 		// Process the edited game
@@ -631,6 +645,9 @@ class admin_controller
 		// Get form's POST actions (submit or preview)
 		$submit = $this->request->is_set_post('submit');
 
+		// Load posting language file for the BBCode editor
+		$this->user->add_lang('posting');
+
 		// Create an array to collect errors that will be output to the user
 		$errors = array();
 
@@ -641,7 +658,34 @@ class admin_controller
 			'image'			=> $data['image'],
 			'parent'		=> $data['parent'],
 			'route'			=> $data['route'],
+			'genre'			=> $data['genre'],
+			'developer'		=> $data['developer'],
+			'publisher'		=> $data['publisher'],
+			'game_release'	=> $data['game_release'],
+			'platform'		=> $data['platform'],
+			'meta_desc'		=> $data['meta_desc'],
+			'meta_keywords'	=> $data['meta_keywords'],
 		);
+
+		// Grab the form data's message parsing options (possible values: 1 or 0)
+		// If submit use the data from the form
+		// If game edit use data stored in the entity
+		// If game add use default values
+		$description_parse_options = array(
+			'bbcode'	=> ($submit) ? $this->request->variable('parse_bbcode', false) : (($entity->get_id()) ? $entity->description_bbcode_enabled() : 1),
+			'magic_url'	=> ($submit) ? $this->request->variable('parse_magic_url', false) : (($entity->get_id()) ? $entity->description_magic_url_enabled() : 1),
+			'smilies'	=> ($submit) ? $this->request->variable('parse_smilies', false) : (($entity->get_id()) ? $entity->description_smilies_enabled() : 1),
+
+		);
+
+		// Set the content parse options in the entity
+		foreach ($description_parse_options as $function => $enabled)
+		{
+			call_user_func(array($entity, ($enabled ? 'description_enable_' : 'description_disable_') . $function));
+		}
+
+		// Purge temporary variable
+		unset($content_parse_options);
 
 		// Set the game's data in the entity
 		foreach ($game_fields as $entity_function => $game_data)
@@ -763,9 +807,31 @@ class admin_controller
 
 			'GAME_NAME'			=> $entity->get_name(),
 			'GAME_ROUTE'		=> $entity->get_route(),
-			'GAME_DESCRIPTION'	=> $entity->get_description(),
+			'GAME_DESCRIPTION'	=> $entity->get_description_for_edit(),
+			'GAME_GENRE'		=> $entity->get_genre(),
+			'GAME_DEVELOPER'	=> $entity->get_developer(),
+			'GAME_PUBLISHER'	=> $entity->get_publisher(),
+			'GAME_RELEASE'		=> $entity->get_game_release(),
+			'GAME_PLATFORM'		=> $entity->get_platform(),
+			'GAME_META_DESC'	=> $entity->get_meta_desc(),
+			'GAME_META_KEYWORDS'=> $entity->get_meta_keywords(),
 			'IMAGE_OPTIONS'		=> $options,
 			'GAME_IMAGE'		=> ($entity->get_image() != '')? '' . $this->dir . $dir . $entity->get_image() . '' : '',
+
+			'S_PARSE_BBCODE_CHECKED'	=> $entity->description_bbcode_enabled(),
+			'S_PARSE_SMILIES_CHECKED'	=> $entity->description_smilies_enabled(),
+			'S_PARSE_MAGIC_URL_CHECKED'	=> $entity->description_magic_url_enabled(),
+			'BBCODE_STATUS'		=> $this->user->lang('BBCODE_IS_ON', '<a href="' . append_sid("{$this->root_path}faq.{$this->php_ext}", 'mode=bbcode') . '">', '</a>'),
+			'SMILIES_STATUS'	=> $this->user->lang('SMILIES_ARE_ON'),
+			'IMG_STATUS'		=> $this->user->lang('IMAGES_ARE_ON'),
+			'FLASH_STATUS'		=> $this->user->lang('FLASH_IS_ON'),
+			'URL_STATUS'		=> $this->user->lang('URL_IS_ON'),
+
+			'S_BBCODE_ALLOWED'	=> true,
+			'S_SMILIES_ALLOWED'	=> true,
+			'S_BBCODE_IMG'		=> true,
+			'S_BBCODE_FLASH'	=> true,
+			'S_LINKS_ALLOWED'	=> true,
 		));
 	}
 

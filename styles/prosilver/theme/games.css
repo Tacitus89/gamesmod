@@ -27,6 +27,11 @@ div.games {
 	width: 74%;
 }
 
+.game_image {
+	display: block;
+	margin: 5px auto;
+}
+
 dd.gamer75, dd.gamer35, dd.game_desc {
 	display: block;
 	position: absolute;
