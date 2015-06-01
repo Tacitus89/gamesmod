@@ -155,6 +155,9 @@ class main_controller
 
 				//number of games
 				$total_games = $this->games_operator->get_number_games($parent->get_id());
+
+				//Generation pagination
+				$this->pagination->generate_template_pagination($this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_route())), 'pagination', 'start', $total_games, $this->config['games_pagination'], $start);
 			}
 			else {
 				// Grab all the games
