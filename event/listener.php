@@ -173,11 +173,13 @@ class listener implements EventSubscriberInterface
 																				$this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $cats->get_id())),
 					));
 
-					foreach ($entities as $entity) {
+					foreach ($entities as $entity)
+					{
+						$image = ($entity->get_parent()->get_dir() != '')? $this->dir.$entity->get_parent()->get_dir().'/'.$entity->get_image() : $this->dir.$entity->get_image();
 						// Set output block vars for display in the template
 						$this->template->assign_block_vars('games_cat.games', array(
 							'NAME'			=> $entity->get_name(),
-							'IMAGE'			=> $this->dir.$entity->get_dir().$entity->get_image(),
+							'IMAGE'			=> ($entity->get_image() != '')? $image : '',
 							'ID'			=> $entity->get_id(),
 							'URL'			=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_parent()->get_route(), 'game' => $entity->get_route())):
 																				$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
@@ -206,10 +208,11 @@ class listener implements EventSubscriberInterface
 			// Process each game entity for display
 			foreach ($entities as $entity)
 			{
+				$image = ($entity->get_parent()->get_dir() != '')? $this->dir.$entity->get_parent()->get_dir().'/'.$entity->get_image() : $this->dir.$entity->get_image();
 				// Set output block vars for display in the template
 				$this->template->assign_block_vars('games', array(
 					'GAME_NAME'			=> $entity->get_name(),
-					'GAME_IMAGE'		=> $this->dir.$entity->get_dir().$entity->get_image(),
+					'GAME_IMAGE'		=> ($entity->get_image() != '')? $image : '',
 					'GAME_ID'			=> $entity->get_id(),
 
 					'U_GAME'			=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_parent()->get_route(), 'game' => $entity->get_route())):
