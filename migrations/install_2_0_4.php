@@ -34,6 +34,21 @@ class install_2_0_4 extends \phpbb\db\migration\migration
 				),
 				$this->table_prefix . 'games'			=> array(
 					'route'			=> array('VCHAR:100', ''),
+					'genre'			=> array('VCHAR:255', ''),
+					'developer'		=> array('VCHAR:255', ''),
+					'publisher'		=> array('VCHAR:255', ''),
+					'release'		=> array('VCHAR:255', ''),
+					'platform'		=> array('VCHAR:255', ''),
+					'meta_desc'		=> array('VCHAR:255', ''),
+					'meta_keywords'	=> array('VCHAR:255', ''),
+					'description_bbcode_uid'		=> array('VCHAR:8', ''),
+					'description_bbcode_bitfield'	=> array('VCHAR:255', ''),
+					'description_bbcode_options'	=> array('UINT:11', 7),
+				),
+			),
+			'change_columns'	=> array(
+				$this->table_prefix . 'games'			=> array(
+					'description'	=> array('MTEXT_UNI', ''),
 				),
 			),
 		);

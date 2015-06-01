@@ -70,9 +70,42 @@
                 <!-- ENDIF -->
             </div>
     	<!-- ENDIF -->
-
     </div>
 
+    <!-- IF S_GAME_VIEW and .games -->
+        <!-- BEGIN games -->
+        <div class="panel bg1">
+    	    <div class="inner">
+                <div class="column_game_image">
+                    <img style="display: block;margin: 5px auto;"src="{games.GAME_IMAGE}" />
+            	</div>
+
+                <div class="column_game_info">
+                    <h3>Game</h3>
+
+                    <dl class="details">
+    				    <dt>Genre:</dt><dd>blubb</dd>
+    			        <dt>Entwickler:</dt> <dd>blubb</dd>
+                        <dt>Publisher:</dt> <dd>blubb</dd>
+                        <dt>Release:</dt> <dd>blubb</dd>
+                        <dt>Plattform:</dt> <dd>blubb</dd>
+    				</dl>
+                </div>
+            </div>
+        </div>
+        <div class="panel bg2">
+            <div class="inner">
+                <h3>Description</h3>
+            </div>
+        </div>
+        <div class="panel bg1">
+            <div class="inner">
+                <h3>Owners</h3>
+            </div>
+        </div>
+        <!-- END games -->
+
+    <!-- ELSE -->
     <div class="forumbg">
     	<div class="inner">
 
@@ -113,7 +146,7 @@
     		</ul>
     	<!-- ENDIF -->
 
-    	<!-- IF S_GAMES or S_GAME_VIEW -->
+    	<!-- IF S_GAMES -->
     		<ul class="topiclist missing-column">
     			<li class="header">
     				<dl>
@@ -155,6 +188,7 @@
     	<!-- ENDIF -->
     	</div>
     </div>
+    <!-- ENDIF -->
 </div>
 
 <!-- INCLUDE overall_footer.html -->

@@ -15,6 +15,18 @@ div.games {
 	padding: 10px 0 0 5px;
 }
 
+.column_game_image {
+	float: left;
+	clear: left;
+	width: 24%;
+}
+
+.column_game_info {
+	float: right;
+	clear: right;
+	width: 74%;
+}
+
 dd.gamer75, dd.gamer35, dd.game_desc {
 	display: block;
 	position: absolute;

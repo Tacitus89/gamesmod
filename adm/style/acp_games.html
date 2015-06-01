@@ -47,8 +47,12 @@
 				<dd><input class="text medium" type="text" id="game_route" name="game_route" value="{GAME_ROUTE}" maxlength="100" /></dd>
 			</dl>
 			<dl>
-				<dt><label for="game_description">{L_ACP_NAME_DESC}{L_COLON}</label></dt>
-				<dd><textarea id="game_description" name="game_description" rows="5" cols="45">{GAME_DESCRIPTION}</textarea></dd>
+				<dt><label for="game_parent">{L_ACP_PARENT_TITLE}{L_COLON}</label><br><span>{L_ACP_PARENT_EXPLAIN}</span></dt>
+				<dd><select id="game_parent" name="game_parent">
+					<!-- BEGIN gamemenu -->
+						<option value="{gamemenu.GAME_ID}"<!-- IF gamemenu.S_GAME_PARENT --> selected="selected"<!-- ENDIF -->>{gamemenu.GAME_TITLE}</option>
+					<!-- END gamemenu -->
+				</select></dd>
 			</dl>
 			<dl>
 				<dt><label for="game_image">{L_ACP_IMAGE_TITLE}{L_COLON}</label></dt>
@@ -61,12 +65,36 @@
 				<dd><input type="hidden" name="MAX_FILE_SIZE" value="{GAME_SIZE}" /><input type="file" name="uploadfile" id="uploadfile" class="inputbox autowidth" /></dd>
 			</dl>
 			<dl>
-				<dt><label for="game_parent">{L_ACP_PARENT_TITLE}{L_COLON}</label><br><span>{L_ACP_PARENT_EXPLAIN}</span></dt>
-				<dd><select id="game_parent" name="game_parent">
-					<!-- BEGIN gamemenu -->
-						<option value="{gamemenu.GAME_ID}"<!-- IF gamemenu.S_GAME_PARENT --> selected="selected"<!-- ENDIF -->>{gamemenu.GAME_TITLE}</option>
-					<!-- END gamemenu -->
-				</select></dd>
+				<dt><label for="game_genre">{L_ACP_GAME_GENRE}{L_COLON}</label><br><span>{L_ACP_GAME_GENRE}</span></dt>
+				<dd><input class="text medium" type="text" id="game_genre" name="game_genre" value="{GAME_GENRE}" maxlength="255" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_developer">{L_ACP_GAME_DEVELOPER}{L_COLON}</label><br><span>{L_ACP_GAME_DEVELOPER}</span></dt>
+				<dd><input class="text medium" type="text" id="game_developer" name="game_developer" value="{GAME_DEVELOPER}" maxlength="255" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_publisher">{L_ACP_GAME_PUBLISHER}{L_COLON}</label><br><span>{L_ACP_GAME_PUBLISHER}</span></dt>
+				<dd><input class="text medium" type="text" id="game_publisher" name="game_publisher" value="{GAME_PUBLISHER}" maxlength="255" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_release">{L_ACP_GAME_RELEASE}{L_COLON}</label><br><span>{L_ACP_GAME_RELEASE}</span></dt>
+				<dd><input class="text medium" type="text" id="game_release" name="game_release" value="{GAME_RELEASE}" maxlength="255" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_platform">{L_ACP_GAME_PLATFORM}{L_COLON}</label><br><span>{L_ACP_GAME_PLATFORM}</span></dt>
+				<dd><input class="text medium" type="text" id="game_platform" name="game_platform" value="{GAME_PLATFORM}" maxlength="255" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_description">{L_ACP_NAME_DESC}{L_COLON}</label></dt>
+				<dd><textarea id="game_description" name="game_description" rows="5" cols="45">{GAME_DESCRIPTION}</textarea></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_meta_description">{L_ACP_GAME_META_DESC}{L_COLON}</label><br><span>{L_ACP_GAME_META_DESC}</span></dt>
+				<dd><input class="text medium" type="text" id="game_meta_description" name="game_meta_description" value="{GAME_META_DESC}" maxlength="255" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_meta_keywords">{L_ACP_GAME_META_KEYWORDS}{L_COLON}</label><br><span>{L_ACP_GAME_META_KEYWORDS}</span></dt>
+				<dd><input class="text medium" type="text" id="game_meta_keywords" name="game_meta_keywords" value="{GAME_META_KEYWORDS}" maxlength="255" /></dd>
 			</dl>
 		</fieldset>
 
