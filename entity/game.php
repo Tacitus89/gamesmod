@@ -33,6 +33,8 @@ class game extends abstract_entity
 	*	publisher
 	*	game_release
 	*	platform
+	*	forum_url
+	*	topic_url
 	*	meta_desc
 	*	meta_keywords
 	* @access protected
@@ -78,6 +80,8 @@ class game extends abstract_entity
 		'publisher'			=> 'string',
 		'game_release'		=> 'integer',
 		'platform'			=> 'string',
+		'forum_url'			=> 'string',
+		'topic_url'			=> 'string',
 		'meta_desc'			=> 'string',
 		'meta_keywords'		=> 'string',
 	);
@@ -739,6 +743,81 @@ class game extends abstract_entity
 
 		// Set the image on our data array
 		$this->data['platform'] = $platform;
+
+		return $this;
+	}
+
+	/**
+	* Get forum_url
+	*
+	* @return string forum_url
+	* @access public
+	*/
+	public function get_forum_url()
+	{
+		return (isset($this->data['forum_url'])) ? (string) $this->data['forum_url'] : '';
+	}
+
+	/**
+	* Set forum_url
+	*
+	* @param string $forum_url
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_forum_url($forum_url)
+	{
+		// Enforce a string
+		$forum_url = (string) $forum_url;
+
+		preg_match('@(viewforum\\.php\\?f=)\\d@', "http://localhost/phpbb3.1/viewforum.php?f=2", $treffer);
+		echo $treffer[0];
+
+		// We limit the image length to 255 characters
+		if (truncate_string($forum_url, 255) != $forum_url)
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('forum_url', 'TOO_LONG'));
+		}
+
+		// Set the image on our data array
+		$this->data['forum_url'] = $forum_url;
+
+		return $this;
+	}
+
+	/**
+	* Get topic_url
+	*
+	* @return string topic_url
+	* @access public
+	*/
+	public function get_topic_url()
+	{
+		return (isset($this->data['topic_url'])) ? (string) $this->data['topic_url'] : '';
+	}
+
+	/**
+	* Set topic_url
+	*
+	* @param string $topic_url
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_topic_url($topic_url)
+	{
+		// Enforce a string
+		$topic_url = (string) $topic_url;
+
+		// We limit the image length to 255 characters
+		if (truncate_string($topic_url, 255) != $topic_url)
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('topic_url', 'TOO_LONG'));
+		}
+
+		// Set the image on our data array
+		$this->data['topic_url'] = $topic_url;
 
 		return $this;
 	}

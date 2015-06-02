@@ -228,7 +228,7 @@ class main_controller
 			$image = ($entity->get_parent()->get_dir() != '')? $this->dir.$entity->get_parent()->get_dir().'/'.$entity->get_image() : $this->dir.$entity->get_image();
 
 			// Set output block vars for display in the template
-			$this->template->assign_block_vars('games', array(
+			$this->template->assign_vars(array(
 				'GAME_NAME'			=> $entity->get_name(),
 				'GAME_IMAGE'		=> ($entity->get_image() != '')? $image : '',
 				'GAME_DESCRIPTION'	=> $entity->get_description_for_display(),
@@ -238,6 +238,8 @@ class main_controller
 				'GAME_PUBLISHER'	=> $entity->get_publisher(),
 				'GAME_RELEASE'		=> $entity->get_game_release(),
 				'GAME_PLATFORM'		=> $entity->get_platform(),
+				'GAME_META_DESC'	=> $entity->get_meta_desc(),
+				'GAME_META_KEYWORDS'=> $entity->get_meta_keywords(),
 				'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
 
 				'U_GAME'			=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_parent()->get_route(), 'game' => $entity->get_route())):

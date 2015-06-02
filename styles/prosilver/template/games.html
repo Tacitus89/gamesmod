@@ -72,44 +72,42 @@
     	<!-- ENDIF -->
     </div>
 
-    <!-- IF S_GAME_VIEW and .games -->
-        <!-- BEGIN games -->
+    <!-- IF S_GAME_VIEW -->
         <div class="panel bg1">
     	    <div class="inner">
                 <div class="column_game_image">
-                    <img class="game_image" src="{games.GAME_IMAGE}" alt="{games.GAME_NAME}" />
+                    <img class="game_image" src="{GAME_IMAGE}" alt="{GAME_NAME}" />
             	</div>
 
                 <div class="column_game_info">
                     <h3>{L_GAME_INFO}</h3>
 
                     <dl class="details">
-    				    <!-- IF games.GAME_GENRE --><dt>{L_GAME_GENRE}{L_COLON}</dt><dd>{games.GAME_GENRE}</dd><!-- ENDIF -->
-                        <!-- IF games.GAME_DEVELOPER --><dt>{L_GAME_DEVELOPER}{L_COLON}</dt> <dd>{games.GAME_DEVELOPER}</dd><!-- ENDIF -->
-                        <!-- IF games.GAME_PUBLISHER --><dt>{L_GAME_PUBLISHER}{L_COLON}</dt> <dd>{games.GAME_PUBLISHER}</dd><!-- ENDIF -->
-                        <!-- IF games.GAME_RELEASE --><dt>{L_GAME_RELEASE}{L_COLON}</dt> <dd>{games.GAME_RELEASE}</dd><!-- ENDIF -->
-                        <!-- IF games.GAME_PLATFORM --><dt>{L_GAME_PLATFORM}{L_COLON}</dt> <dd>{games.GAME_PLATFORM}</dd><!-- ENDIF -->
+    				    <!-- IF GAME_GENRE --><dt>{L_GAME_GENRE}{L_COLON}</dt><dd>{GAME_GENRE}</dd><!-- ENDIF -->
+                        <!-- IF GAME_DEVELOPER --><dt>{L_GAME_DEVELOPER}{L_COLON}</dt> <dd>{GAME_DEVELOPER}</dd><!-- ENDIF -->
+                        <!-- IF GAME_PUBLISHER --><dt>{L_GAME_PUBLISHER}{L_COLON}</dt> <dd>{GAME_PUBLISHER}</dd><!-- ENDIF -->
+                        <!-- IF GAME_RELEASE --><dt>{L_GAME_RELEASE}{L_COLON}</dt> <dd>{GAME_RELEASE}</dd><!-- ENDIF -->
+                        <!-- IF GAME_PLATFORM --><dt>{L_GAME_PLATFORM}{L_COLON}</dt> <dd>{GAME_PLATFORM}</dd><!-- ENDIF -->
     				</dl>
                 </div>
             </div>
         </div>
-        <!-- IF games.GAME_DESCRIPTION -->
+        <!-- IF GAME_DESCRIPTION -->
         <div class="panel bg2">
             <div class="inner">
                 <h3>{L_GAME_DESCRIPTION}</h3>
-                {games.GAME_DESCRIPTION}
+                {GAME_DESCRIPTION}
             </div>
         </div>
         <!-- ENDIF -->
-        <!-- IF games.GAMERS -->
+        <!-- IF GAMERS -->
         <div class="panel bg1">
             <div class="inner">
                 <h3>{L_GAME_OWNERS}</h3>
-                {games.GAMERS}
+                {GAMERS}
             </div>
         </div>
         <!-- ENDIF -->
-        <!-- END games -->
 
     <!-- ELSE -->
     <div class="forumbg">

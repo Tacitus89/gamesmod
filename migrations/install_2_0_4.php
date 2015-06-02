@@ -39,6 +39,8 @@ class install_2_0_4 extends \phpbb\db\migration\migration
 					'publisher'		=> array('VCHAR:255', ''),
 					'release'		=> array('UINT:11', 0),
 					'platform'		=> array('VCHAR:255', ''),
+					'forum_url'		=> array('VCHAR:255', ''),
+					'topic_url'		=> array('VCHAR:255', ''),
 					'meta_desc'		=> array('VCHAR:255', ''),
 					'meta_keywords'	=> array('VCHAR:255', ''),
 					'description_bbcode_uid'		=> array('VCHAR:8', ''),

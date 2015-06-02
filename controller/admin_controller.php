@@ -473,6 +473,8 @@ class admin_controller
 			'publisher'		=> $this->request->variable('game_publisher', '', true),
 			'game_release'	=> $this->request->variable('game_release', 0),
 			'platform'		=> $this->request->variable('game_platform', '', true),
+			'forum_url'		=> $this->request->variable('game_forum_url', '', true),
+			'topic_url'		=> $this->request->variable('game_topic_url', '', true),
 			'meta_desc'		=> $this->request->variable('game_meta_desc', '', true),
 			'meta_keywords'	=> $this->request->variable('game_meta_keywords', '', true),
 		);
@@ -616,6 +618,8 @@ class admin_controller
 			'publisher'		=> $this->request->variable('game_publisher', $entity->get_publisher(), true),
 			'game_release'	=> $this->request->variable('game_release', $entity->get_game_release()),
 			'platform'		=> $this->request->variable('game_platform', $entity->get_platform(), true),
+			'forum_url'		=> $this->request->variable('game_forum_url', $entity->get_forum_url(), true),
+			'topic_url'		=> $this->request->variable('game_topic_url', $entity->get_topic_url(), true),
 			'meta_desc'		=> $this->request->variable('game_meta_description', $entity->get_meta_desc(), true),
 			'meta_keywords'	=> $this->request->variable('game_meta_keywords', $entity->get_meta_keywords(), true),
 		);
@@ -663,6 +667,8 @@ class admin_controller
 			'publisher'		=> $data['publisher'],
 			'game_release'	=> $data['game_release'],
 			'platform'		=> $data['platform'],
+			'forum_url'		=> $data['forum_url'],
+			'topic_url'		=> $data['topic_url'],
 			'meta_desc'		=> $data['meta_desc'],
 			'meta_keywords'	=> $data['meta_keywords'],
 		);
@@ -813,6 +819,8 @@ class admin_controller
 			'GAME_PUBLISHER'	=> $entity->get_publisher(),
 			'GAME_RELEASE'		=> $entity->get_game_release(),
 			'GAME_PLATFORM'		=> $entity->get_platform(),
+			'GAME_FORUM_URL'	=> $entity->get_forum_url(),
+			'GAME_TOPIC_URL'	=> $entity->get_topic_url(),
 			'GAME_META_DESC'	=> $entity->get_meta_desc(),
 			'GAME_META_KEYWORDS'=> $entity->get_meta_keywords(),
 			'IMAGE_OPTIONS'		=> $options,
