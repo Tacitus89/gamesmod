@@ -44,9 +44,6 @@ class game extends abstract_entity
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
-	/** @var ContainerInterface */
-	protected $container;
-
 	/**
 	* The database table the games are stored in
 	*
@@ -679,34 +676,44 @@ class game extends abstract_entity
 	/**
 	* Get game_release
 	*
-	* @return int game_release
+	* @return string game_release
 	* @access public
 	*/
 	public function get_game_release()
 	{
-		return (isset($this->data['game_release'])) ? (int) $this->data['game_release'] : 0;
+		return (isset($this->data['game_release']) && $this->data['game_release'] > 0) ? (string) date('d.m.Y',$this->data['game_release']) : '';
 	}
 
 	/**
 	* Set game_release
 	*
-	* @param int $game_release
+	* @param string $game_release
 	* @return page_interface $this object for chaining calls; load()->set()->save()
 	* @access public
 	* @throws \phpbb\pages\exception\out_of_bounds
 	*/
 	public function set_game_release($game_release)
 	{
-		// Enforce an integer
-		$game_release = (int) $game_release;
+		$game_release = (string) $game_release;
 
-		if ($game_release < 0)
+		if($game_release === '')
 		{
-			throw new \phpbb\pages\exception\out_of_bounds('game_release');
+			$date = 0;
+		}
+		else
+		{
+			//string to time
+			$date = strtotime($game_release);
+
+			//conversion not successful
+			if(empty($date))
+			{
+				throw new \tacitus89\gamesmod\exception\unexpected_value(array('game_release', 'ILLEGAL_CHARACTERS'));
+			}
 		}
 
 		// Set the route on our data array
-		$this->data['game_release'] = $game_release;
+		$this->data['game_release'] = $date;
 
 		return $this;
 	}
