@@ -771,8 +771,12 @@ class game extends abstract_entity
 		// Enforce a string
 		$forum_url = (string) $forum_url;
 
-		preg_match('@(viewforum\\.php\\?f=)\\d@', "http://localhost/phpbb3.1/viewforum.php?f=2", $treffer);
-		echo $treffer[0];
+		preg_match('@(viewforum\\.php\\?).*(f=\\d*)@', $forum_url, $hit);
+
+		if(empty($hit))
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('forum_url', 'ILLEGAL_CHARACTERS'));
+		}
 
 		// We limit the image length to 255 characters
 		if (truncate_string($forum_url, 255) != $forum_url)
@@ -781,7 +785,7 @@ class game extends abstract_entity
 		}
 
 		// Set the image on our data array
-		$this->data['forum_url'] = $forum_url;
+		$this->data['forum_url'] = $hit[0];
 
 		return $this;
 	}
@@ -810,6 +814,13 @@ class game extends abstract_entity
 		// Enforce a string
 		$topic_url = (string) $topic_url;
 
+		preg_match('@(viewtopic\\.php\\?).*(f=\\d*)?.*(t=\\d*)@', $topic_url, $hit);
+
+		if(empty($hit))
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('topic_url', 'ILLEGAL_CHARACTERS'));
+		}
+
 		// We limit the image length to 255 characters
 		if (truncate_string($topic_url, 255) != $topic_url)
 		{
@@ -817,7 +828,7 @@ class game extends abstract_entity
 		}
 
 		// Set the image on our data array
-		$this->data['topic_url'] = $topic_url;
+		$this->data['topic_url'] = $hit[0];
 
 		return $this;
 	}
