@@ -97,9 +97,9 @@ $lang = array_merge($lang, array(
 	'ACP_GAME_TOPIC_URL'				=> 'Topic URL',
 	'ACP_GAME_TOPIC_URL_EXPLAIN'		=> 'Leave empty to disable.',
 	'ACP_GAME_META_DESC'				=> 'META-Description',
-	'ACP_GAME_META_DESC_EXPLAIN'		=> 'Leave empty to disable.',
+	'ACP_GAME_META_DESC_EXPLAIN'		=> 'Leave empty to disable. Maximum of 255 characters.',
 	'ACP_GAME_META_KEYWORDS'			=> 'META-Keywords',
-	'ACP_GAME_META_KEYWORDS_EXPLAIN'	=> 'Leave empty to disable.',
+	'ACP_GAME_META_KEYWORDS_EXPLAIN'	=> 'Leave empty to disable. Maximum of 255 characters.',
 // Upload errors
 	'GAME_GENERAL_UPLOAD_ERROR'			=> 'Could not upload game image to %s.',
 	'GAME_DISALLOWED_CONTENT'			=> 'The upload was rejected because the uploaded file was identified as a possible attack vector.',
