@@ -124,11 +124,12 @@
     			<li class="header">
     				<dl>
     					<dt>{L_CATPAGES}</dt>
+                        <dd class="posts">{L_NUMBER_GAMES}</dd>
     				</dl>
     			</li>
     		</ul>
 
-    		<ul class="topiclist cplist pmlist responsive-show-all">
+    		<ul class="topiclist">
             <!-- IF .games_cat -->
     			<!-- BEGIN games_cat -->
     			<li class="row<!-- IF games_cat.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
@@ -136,9 +137,10 @@
     					<dt>
     						<div class="list-inner">
     							<a href="{games_cat.U_GAME}" class="forumtitle">{games_cat.GAME_NAME}</a>
-                                <br />{L_NUMBER_GAMES}{L_COLON} {games_cat.NUMBER}
+                                <br />{games_cat.GAME_DESC}
     						</div>
     					</dt>
+                        <dd class="posts">{games_cat.NUMBER} <dfn>{L_NUMBER_GAMES}</dfn></dd>
     				</dl>
     			</li>
     			<!-- END games_cat -->
@@ -157,11 +159,11 @@
     	<!-- ENDIF -->
 
     	<!-- IF S_GAMES -->
-    		<ul class="topiclist game-column responsive-show-all">
+    		<ul class="topiclist game-column">
     			<li class="header">
     				<dl>
     					<dt><div class="list-inner">{L_GAMES_VIEW}</div></dt>
-                        <!-- IF S_DESC --><dd class="game_info">{L_GAME_INFO}</dd><!-- ENDIF -->
+                        <dd class="game_info">{L_GAME_INFO}</dd>
                         <dd class="game_desc">{L_GAME_DESC}</dd>
     				</dl>
     			</li>

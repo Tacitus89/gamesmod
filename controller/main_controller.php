@@ -206,11 +206,13 @@ class main_controller
 			// Set output vars for display in the template
 			$this->template->assign_vars(array(
 				'S_GAMES'		=> true,
-				'S_DESC'		=> ($this->config['games_description'])? true:false,
 				'TOTAL_GAMES'	=> $total_games . ' ' . $this->user->lang('GAMES'),
 				'U_PAGE_TITLE'	=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $parent->get_route())):
 																	$this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $parent_id)),
+
 				'L_PAGE_TITLE'	=> $this->user->lang($parent->get_name()),
+				'GAME_META_DESC'	=> $parent->get_meta_desc(),
+				'GAME_META_KEYWORDS'=> $parent->get_meta_keywords(),
 			));
 		}
 		//show a game
@@ -253,7 +255,6 @@ class main_controller
 				'GAME_TOPIC_URL'	=> append_sid($this->root_path.$entity->get_topic_url()),
 
 				'S_GAME_VIEW'	=> true,
-				'S_DESC'		=> ($this->config['games_description'])? true:false,
 				'U_PAGE_TITLE'	=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_parent()->get_route(), 'game' => $entity->get_route())):
 																	$this->helper->route('tacitus89_gamesmod_main_controller', array('gid' => $entity->get_id())),
 				'L_PAGE_TITLE'	=> $this->user->lang($entity->get_name()),
@@ -273,6 +274,7 @@ class main_controller
 					'GAME_NAME'		=> $entity->get_name(),
 					'GAME_ID'		=> $entity->get_id(),
 					'NUMBER'		=> $entity->get_number(),
+					'GAME_DESC' 	=> $entity->get_meta_desc(),
 
 					'U_GAME'		=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_route())):
 																		$this->helper->route('tacitus89_gamesmod_main_controller', array('parent_id' => $entity->get_id())),
