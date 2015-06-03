@@ -146,12 +146,13 @@ class games_cat
 		$new_cat = (int) $new_cat;
 
 		//Get the order_id of games_cat
-		$sql = "SELECT order_id
+		$sql = "SELECT order_id, number
 				FROM " . $this->game_cat_table . "
 				WHERE " . $this->db->sql_in_set('id', $games_cat_id);
 		$result = $this->db->sql_query($sql);
 		$row = $this->db->sql_fetchrow($result);
 		$order_id = $row['order_id'];
+		$number = $row['number'];
 		$this->db->sql_freeresult($result);
 
 		if($new_cat > 0)
@@ -160,6 +161,12 @@ class games_cat
 			$sql = 'UPDATE ' . $this->game_table . '
 			SET parent = '. $new_cat .'
 			WHERE parent = ' . $games_cat_id;
+			$this->db->sql_query($sql);
+
+			//updating the number of the new cat
+			$sql = 'UPDATE ' . $this->game_cat_table . '
+			SET number = '. $number .' + number
+			WHERE id = ' . $new_cat;
 			$this->db->sql_query($sql);
 		}
 		else
