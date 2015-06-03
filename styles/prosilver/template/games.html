@@ -157,17 +157,17 @@
     	<!-- ENDIF -->
 
     	<!-- IF S_GAMES -->
-    		<ul class="topiclist missing-column">
+    		<ul class="topiclist game-column responsive-show-all">
     			<li class="header">
     				<dl>
     					<dt><div class="list-inner">{L_GAMES_VIEW}</div></dt>
-                        <!-- IF S_DESC --><dd class="game_desc">{L_GAME_DESC}</dd><!-- ENDIF -->
-                        <dd class="<!-- IF S_DESC -->gamer35<!-- ELSE -->gamer75<!-- ENDIF -->">{L_GAME_AWARDED}</dd>
+                        <!-- IF S_DESC --><dd class="game_info">{L_GAME_INFO}</dd><!-- ENDIF -->
+                        <dd class="game_desc">{L_GAME_DESC}</dd>
     				</dl>
     			</li>
     		</ul>
 
-    		<ul class="topiclist two-columns responsive-show-columns">
+    		<ul class="topiclist game-column">
             <!-- IF .games -->
     			<!-- BEGIN games -->
     			<li class="row<!-- IF games.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
@@ -175,11 +175,23 @@
     					<dt>
     						<div class="list-inner">
     							<strong>{games.GAME_NAME}</strong><br />
+
                                 <!-- IF S_GAME_VIEW --><img src="{games.GAME_IMAGE}" /><!-- ELSE --><a href="{games.U_GAME}"><img src="{games.GAME_IMAGE}" /></a><!-- ENDIF -->
+                                <div class="responsive-show" style="display:none;"></div>
     						</div>
     					</dt>
-                        <!-- IF S_DESC --><dd class="game_desc"><span>{games.GAME_DESCRIPTION}</span></dd><!-- ENDIF -->
-    					<dd class="<!-- IF S_DESC -->gamer35<!-- ELSE -->gamer75<!-- ENDIF -->"><span>{games.GAMERS}</span></dd>
+                        <dd class="game_info">
+
+            				    <!-- IF games.GAME_GENRE --><span>{L_GAME_GENRE}{L_COLON} {games.GAME_GENRE}</span><!-- ENDIF -->
+                                <!-- IF games.GAME_DEVELOPER --><span>{L_GAME_DEVELOPER}{L_COLON} {games.GAME_DEVELOPER}</span><!-- ENDIF -->
+                                <!-- IF games.GAME_PUBLISHER --><span>{L_GAME_PUBLISHER}{L_COLON} {games.GAME_PUBLISHER}</span><!-- ENDIF -->
+                                <!-- IF games.GAME_RELEASE --><span>{L_GAME_RELEASE}{L_COLON} {games.GAME_RELEASE}</span><!-- ENDIF -->
+                                <!-- IF games.GAME_PLATFORM --><span>{L_GAME_PLATFORM}{L_COLON} {games.GAME_PLATFORM}</span><!-- ENDIF -->
+                        </dd>
+                        <dd class="game_desc">
+                            <span>{games.GAME_DESCRIPTION}</span>
+                        </dd>
+
     				</dl>
     			</li>
     			<!-- END games -->

@@ -97,7 +97,7 @@ $lang = array_merge($lang, array(
 	'ACP_GAME_TOPIC_URL'				=> 'Topic URL',
 	'ACP_GAME_TOPIC_URL_EXPLAIN'		=> 'Leave empty to disable.',
 	'ACP_GAME_META_DESC'				=> 'META-Description',
-	'ACP_GAME_META_DESC_EXPLAIN'		=> 'Leave empty to disable. Maximum of 255 characters.',
+	'ACP_GAME_META_DESC_EXPLAIN'		=> 'Leave empty to disable.<br />It also used for the description in the game list.<br />Maximum of 255 characters.',
 	'ACP_GAME_META_KEYWORDS'			=> 'META-Keywords',
 	'ACP_GAME_META_KEYWORDS_EXPLAIN'	=> 'Leave empty to disable. Maximum of 255 characters.',
 // Upload errors
