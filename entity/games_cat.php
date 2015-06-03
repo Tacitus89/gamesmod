@@ -25,6 +25,8 @@ class games_cat extends abstract_entity
 	*	order_id
 	*	number
 	*	route
+	*	meta_desc
+	*	meta_keywords
 	* @access protected
 	*/
 	protected $data;
@@ -50,6 +52,8 @@ class games_cat extends abstract_entity
 		'order_id'				=> 'integer',
 		'number'				=> 'integer',
 		'route'					=> 'string',
+		'meta_desc'				=> 'string',
+		'meta_keywords'			=> 'string',
 	);
 
 	/**
@@ -354,6 +358,78 @@ class games_cat extends abstract_entity
 
 		// Set the route on our data array
 		$this->data['route'] = $route;
+
+		return $this;
+	}
+
+	/**
+	* Get meta_desc
+	*
+	* @return string meta_desc
+	* @access public
+	*/
+	public function get_meta_desc()
+	{
+		return (isset($this->data['meta_desc'])) ? (string) $this->data['meta_desc'] : '';
+	}
+
+	/**
+	* Set meta_desc
+	*
+	* @param string $meta_desc
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_meta_desc($meta_desc)
+	{
+		// Enforce a string
+		$meta_desc = (string) $meta_desc;
+
+		// We limit the image length to 255 characters
+		if (truncate_string($meta_desc, 255) != $meta_desc)
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('meta_desc', 'TOO_LONG'));
+		}
+
+		// Set the image on our data array
+		$this->data['meta_desc'] = $meta_desc;
+
+		return $this;
+	}
+
+	/**
+	* Get meta_keywords
+	*
+	* @return string meta_keywords
+	* @access public
+	*/
+	public function get_meta_keywords()
+	{
+		return (isset($this->data['meta_keywords'])) ? (string) $this->data['meta_keywords'] : '';
+	}
+
+	/**
+	* Set meta_keywords
+	*
+	* @param string $meta_keywords
+	* @return game_interface $this object for chaining calls; load()->set()->save()
+	* @access public
+	* @throws \tacitus89\gamesmod\exception\unexpected_value
+	*/
+	public function set_meta_keywords($meta_keywords)
+	{
+		// Enforce a string
+		$meta_keywords = (string) $meta_keywords;
+
+		// We limit the image length to 255 characters
+		if (truncate_string($meta_keywords, 255) != $meta_keywords)
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array('meta_keywords', 'TOO_LONG'));
+		}
+
+		// Set the image on our data array
+		$this->data['meta_keywords'] = $meta_keywords;
 
 		return $this;
 	}

@@ -31,6 +31,8 @@ class install_2_0_4 extends \phpbb\db\migration\migration
 			'add_columns'	=> array(
 				$this->table_prefix . 'games_cats'		=> array(
 					'route'			=> array('VCHAR:100', ''),
+					'meta_desc'		=> array('VCHAR:255', ''),
+					'meta_keywords'	=> array('VCHAR:255', ''),
 				),
 				$this->table_prefix . 'games'			=> array(
 					'route'			=> array('VCHAR:100', ''),

@@ -378,6 +378,8 @@ class admin_controller
 			$entity->set_name($this->request->variable('game_cat_name', '', true));
 			$entity->set_dir($this->request->variable('game_cat_dir', '', true));
 			$entity->set_route($this->request->variable('game_cat_route', '', true));
+			$entity->set_meta_desc($this->request->variable('game_cat_meta_description', '', true));
+			$entity->set_meta_keywords($this->request->variable('game_cat_meta_keywords', '', true));
 		}
 		catch (\tacitus89\gamesmod\exception\base $e)
 		{
@@ -512,7 +514,10 @@ class admin_controller
 		$data = array(
 			'game_cat_name'	=> $this->request->variable('game_cat_name', $entity->get_name(), true),
 			'game_cat_dir'	=> $this->request->variable('game_cat_dir', $entity->get_dir(), true),
-			'game_cat_route'=> $this->request->variable('game_cat_route', $entity->get_dir(), true),		);
+			'game_cat_route'=> $this->request->variable('game_cat_route', $entity->get_route(), true),
+			'game_cat_meta_desc'=> $this->request->variable('game_cat_meta_description', $entity->get_meta_desc(), true),
+			'game_cat_meta_keywords'=> $this->request->variable('game_cat_meta_keywords', $entity->get_meta_keywords(), true),
+		);
 
 		// Create an array to collect errors that will be output to the user
 		$errors = array();
@@ -520,7 +525,9 @@ class admin_controller
 		{
 			$entity->set_name($data['game_cat_name']);
 			$entity->set_dir($data['game_cat_dir']);
-			$entity->set_route($this->request->variable('game_cat_route', '', true));
+			$entity->set_route($data['game_cat_route']);
+			$entity->set_meta_desc($data['game_cat_meta_desc']);
+			$entity->set_meta_keywords($data['game_cat_meta_keywords']);
 		}
 		catch (\tacitus89\gamesmod\exception\base $e)
 		{
@@ -582,6 +589,9 @@ class admin_controller
 			'S_EDIT_GAME_CAT'	=> true,
 			'DIR_OPTIONS'		=> $dir_options,
 			'GAME_CAT_NAME'		=> $entity->get_name(),
+			'GAME_CAT_ROUTE'			=> $entity->get_route(),
+			'GAME_CAT_META_DESC'		=> $entity->get_meta_desc(),
+			'GAME_CAT_META_KEYWORDS'	=> $entity->get_meta_keywords(),
 
 			'U_ACTION'			=> "{$this->u_action}&amp;parent_id={$parent_id}&amp;action=edit_cat",
 			'U_BACK'			=> "{$this->u_action}",
