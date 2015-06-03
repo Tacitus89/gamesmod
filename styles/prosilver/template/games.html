@@ -181,7 +181,6 @@
     						</div>
     					</dt>
                         <dd class="game_info">
-
             				    <!-- IF games.GAME_GENRE --><span>{L_GAME_GENRE}{L_COLON} {games.GAME_GENRE}</span><!-- ENDIF -->
                                 <!-- IF games.GAME_DEVELOPER --><span>{L_GAME_DEVELOPER}{L_COLON} {games.GAME_DEVELOPER}</span><!-- ENDIF -->
                                 <!-- IF games.GAME_PUBLISHER --><span>{L_GAME_PUBLISHER}{L_COLON} {games.GAME_PUBLISHER}</span><!-- ENDIF -->
@@ -189,7 +188,7 @@
                                 <!-- IF games.GAME_PLATFORM --><span>{L_GAME_PLATFORM}{L_COLON} {games.GAME_PLATFORM}</span><!-- ENDIF -->
                         </dd>
                         <dd class="game_desc">
-                            <span>{games.GAME_DESCRIPTION}</span>
+                            <!-- IF games.GAME_DESCRIPTION --><span>{games.GAME_DESCRIPTION}</span><!-- ENDIF -->
                         </dd>
 
     				</dl>
