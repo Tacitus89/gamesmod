@@ -11,9 +11,9 @@
 
 namespace tacitus89\gamesmod\migrations;
 
-class install_2_0_4 extends \phpbb\db\migration\migration
+class install_2_1_0 extends \phpbb\db\migration\migration
 {
-	var $games_version = '2.0.4';
+	var $games_version = '2.1.0';
 
 	public function effectively_installed()
 	{
