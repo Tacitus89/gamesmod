@@ -2,8 +2,6 @@
 
 <!-- IF S_ADD_GAME or S_EDIT_GAME -->
 
-	<!-- INCLUDEJS @phpbb_pages/scripts.js -->
-
 	<script>
 		var form_name = 'add_edit_game';
 		var text_name = 'game_description';
@@ -14,7 +12,7 @@
 	<script>
 		function ipreview(element)
 		{
-			$("#imagepreview").html('<img src="{ROOT_PATH}images/games/'+element.value+'" alt="" style="max-width: 60px; max-height: 60px;" />');
+			$("#imagepreview").html('<img src="{ROOT_PATH}ext/tacitus89/gamesmod/images/{GAME_DIR}'+element.value+'" alt="" style="max-width: 60px;" />');
 		}
 	</script>
 

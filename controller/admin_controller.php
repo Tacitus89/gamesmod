@@ -840,6 +840,7 @@ class admin_controller
 			'GAME_TOPIC_URL'	=> $entity->get_topic_url(),
 			'GAME_META_DESC'	=> $entity->get_meta_desc(),
 			'GAME_META_KEYWORDS'=> $entity->get_meta_keywords(),
+			'GAME_DIR'			=> ($entity->get_parent()->get_dir() != '')? $entity->get_parent()->get_dir(). '/' : '',
 			'IMAGE_OPTIONS'		=> $options,
 			'GAME_IMAGE'		=> ($entity->get_image() != '')? '' . $this->dir . $dir . $entity->get_image() . '' : '',
 
