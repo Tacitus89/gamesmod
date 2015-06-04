@@ -1,4 +1,6 @@
 <!-- INCLUDECSS @tacitus89_gamesmod/../theme/games.css -->
+<!-- INCLUDEJS @tacitus89_gamesmod/jquery.hoverpulse.js -->
+<!-- INCLUDEJS @tacitus89_gamesmod/sly.min.js -->
 <!-- INCLUDE overall_header.html -->
 <script src="{T_TEMPLATE_PATH}/games.js"></script>
 
@@ -16,16 +18,24 @@
     				</dl>
     			</li>
     		</ul>
-            <ul class="topiclist cplist pmlist responsive-show-all">
+            <ul class="topiclist">
     			<li class="row bg1">
     				<dl>
-    					<dt>
-    						<div align="center">
+                        <dt>
+                            <div class="games">
+                    			<ul class="slidee">
                                 <!-- BEGIN popular_games -->
-    							<a href="{popular_games.U_GAME}"><img src="{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a>
+                                    <li style="float: left;"><a href="{popular_games.U_GAME}" title="{popular_games.NAME}"><img class="games_img" src="{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a></li>
                                 <!-- END popular_games -->
-    						</div>
-    					</dt>
+                                </ul>
+                            </div>
+                            <div class="game_scrollbar">
+                    			<div class="handle">
+                    				<div class="mousearea"></div>
+                    			</div>
+                    		</div>
+                    		<ul class="game_navpages"></ul>
+                        </dt>
     				</dl>
     			</li>
     		</ul>
@@ -42,16 +52,24 @@
     				</dl>
     			</li>
     		</ul>
-            <ul class="topiclist cplist pmlist responsive-show-all">
+            <ul class="topiclist">
     			<li class="row bg1">
     				<dl>
-    					<dt>
-    						<div align="center">
-                                <!-- BEGIN recent_games -->
-    							<a href="{recent_games.U_GAME}"><img src="{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a>
-                                <!-- END recent_games -->
-    						</div>
-    					</dt>
+                        <dt>
+                            <div class="games">
+                    			<ul class="slidee">
+                                    <!-- BEGIN recent_games -->
+                                    <li style="float: left;"><a href="{recent_games.U_GAME}"><img class="games_img" src="{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a>
+                                    <!-- END recent_games -->
+                                </ul>
+                            </div>
+                            <div class="game_scrollbar">
+                    			<div class="handle">
+                    				<div class="mousearea"></div>
+                    			</div>
+                    		</div>
+                    		<ul class="game_navpages"></ul>
+                        </dt>
     				</dl>
     			</li>
     		</ul>
