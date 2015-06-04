@@ -144,7 +144,7 @@ class base extends \Exception
 		}
 
 		// Add our language file
-		$user->add_lang_ext('tacitus89\gamesmod', 'exceptions');
+		$user->add_lang_ext('tacitus89/gamesmod', 'exceptions');
 
 		// So the language file is only loaded once
 		$is_loaded = true;

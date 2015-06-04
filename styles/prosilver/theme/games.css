@@ -12,33 +12,132 @@
 }
 
 div.games {
-	padding: 10px 0 0 5px;
+	padding: 30px 20px 10px 20px;
 }
 
-dd.gamer75, dd.gamer35, dd.game_desc {
+.column_game_image {
+	float: left;
+	clear: left;
+	width: 24%;
+}
+
+.column_game_info {
+	float: right;
+	clear: right;
+	width: 74%;
+}
+
+.game_image {
 	display: block;
-	position: absolute;
-	right: 5px;
-	top: 0;
-	margin: 0;
-	width: auto;
-	min-width: 0;
-	text-align: left;
+	margin: 5px auto;
 }
 
-dd.gamer75 > span, dd.gamer35 > span, dd.game_desc > span {
+a.forward_button {
+	border: 1px solid transparent;
+	border-radius: 5px;
+	display: block;
+	font-size: 2em;
+	font-weight: normal;
+	line-height: 2em;
+	min-width: 10px;
+	padding: 3px 10px;
+	margin: 10px 0;
+	text-align: left;
+	text-decoration: none;
+	background-color: #ECEDEE;
+	border-color: #B4BAC0;
+	color: #5C758C;
+}
+
+a.forward_button:hover {
+	background-color: #368AD2;
+	border-color: #368AD2;
+	color: #FFFFFF;
+}
+
+ul.topiclist.game-column dt {
+	margin-right: -75%;
+}
+
+ul.topiclist.game-column dt .list-inner {
+	margin-right: 75%;
+}
+
+dd.game_desc, dd.game_info {
+	width: 24%;
+	text-align: center;
+	line-height: 2.2em;
+	font-size: 1.2em;
+}
+
+dd.game_desc {
+	text-align: left;
+	width: 49%;
+}
+
+.header dd.game_desc {
+	text-align: center;
+	width: 49%;
+}
+
+dd.game_desc > span, dd.game_info > span {
 	display: block;
 	padding-left: 5px;
 }
 
-dd.gamer75 {
-	width: 75%;
+
+/* Scrollbar */
+.game_scrollbar {
+	margin: 0;
+	border-radius: 2px;
+	height: 5px;
+	background: #ccc;
+	line-height: 0;
+}
+.game_scrollbar .handle {
+	width: 100px;
+	height: 100%;
+	border-radius: 2px;
+	background: #368AD2;
+	cursor: pointer;
+}
+.game_scrollbar .handle .mousearea {
+	position: absolute;
+	top: -9px;
+	left: 0;
+	width: 100%;
+	height: 20px;
 }
 
-dd.gamer35 {
-	width: 35%;
+/* Pages */
+.game_navpages {
+	list-style: none;
+	clear: both;
+	margin: 10px 0;
+	padding: 0;
+	text-align: center;
+}
+ul.game_navpages li {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	margin: 0 4px;
+	text-indent: -999px;
+	border-radius: 10px;
+	cursor: pointer;
+	overflow: hidden;
+	background: #fff;
+	box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
+}
+.game_navpages li:hover {
+	display: inline-block;
+	background: #aaa;
+}
+.game_navpages li.active {
+	display: inline-block;
+	background: #368AD2;
 }
 
-dd.game_desc {
-	width: 75%;
+.slidee {
+	list-style: none;
 }

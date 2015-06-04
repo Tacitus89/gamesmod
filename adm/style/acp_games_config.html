@@ -20,28 +20,21 @@
 			</dd>
 		</dl>
 		<dl>
-			<dt><label for="games_description">{L_ACP_GAMES_DESCRIPTION}</label></dt>
-			<dd>
-				<label><input type="radio" class="radio" id="games_description" name="games_description" value="1"<!-- IF S_GAMES_DESCRIPTION --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-				<label><input type="radio" class="radio" name="games_description" value="0"<!-- IF not S_GAMES_DESCRIPTION --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
-			</dd>
-		</dl>
-		<dl>
 			<dt><label for="games_pagination">{L_ACP_GAMES_PAGINATION}</label><br /><span>{L_ACP_GAMES_PAGINATION_EXPLAIN}</span></dt>
 			<dd>
-				<label><input type="text" name="games_pagination" size="3" maxlength="3" value="{S_GAMES_PAGINATION}"</label>
+				<label><input type="text" name="games_pagination" size="3" maxlength="3" value="{S_GAMES_PAGINATION}" /></label>
 			</dd>
 		</dl>
 		<dl>
 			<dt><label for="game_small_img_width">{L_ACP_GAMES_SM_IMG_WIDTH}</label><br /><span>{L_ACP_GAMES_SM_IMG_WIDTH_EXPLAIN}</span></dt>
 			<dd>
-				<label><input type="text" name="game_small_img_width" size="3" maxlength="3" value="{S_GAME_SMALL_IMG_WIDTH}"</label>
+				<label><input type="text" name="game_small_img_width" size="3" maxlength="3" value="{S_GAME_SMALL_IMG_WIDTH}" /></label>
 			</dd>
 		</dl>
 		<dl>
 			<dt><label for="game_small_img_ht">{L_ACP_GAMES_SM_IMG_HT}</label><br /><span>{L_ACP_GAMES_SM_IMG_HT_EXPLAIN}</span></dt>
 			<dd>
-				<label><input type="text" name="game_small_img_ht" size="3" maxlength="3" value="{S_GAME_SMALL_IMG_HT}"</label>
+				<label><input type="text" name="game_small_img_ht" size="3" maxlength="3" value="{S_GAME_SMALL_IMG_HT}" /></label>
 			</dd>
 		</dl>
 	</fieldset>
@@ -51,13 +44,22 @@
 		<dl>
 			<dt><label for="game_recent">{L_ACP_GAMES_RECENT}</label><br /><span>{L_ACP_GAMES_RECENT_EXPLAIN}</span></dt>
 			<dd>
-				<label><input type="text" name="game_recent" size="3" maxlength="3" value="{S_GAME_RECENT}"</label>
+				<label><input type="text" name="game_recent" size="3" maxlength="3" value="{S_GAME_RECENT}" /></label>
 			</dd>
 		</dl>
 		<dl>
 			<dt><label for="game_popular">{L_ACP_GAMES_POPULAR}</label><br /><span>{L_ACP_GAMES_POPULAR_EXPLAIN}</span></dt>
 			<dd>
-				<label><input type="text" name="game_popular" size="3" maxlength="3" value="{S_GAME_POPULAR}"</label>
+				<label><input type="text" name="game_popular" size="3" maxlength="3" value="{S_GAME_POPULAR}" /></label>
+			</dd>
+		</dl>
+		<dl>
+			<dt><label for="game_seo_url">{L_ACP_GAMES_USE_SEO_URL}</label><br /><span>{L_ACP_GAMES_USE_SEO_URL_EXPLAIN}</span></dt>
+			<dd>
+				<label><input type="radio" class="radio" id="game_seo_url" name="game_seo_url" value="1"<!-- IF S_GAMES_SEO_URL --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" class="radio" name="game_seo_url" value="0"<!-- IF not S_GAMES_SEO_URL --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+				<input class="button2" type="submit" id="clear_seo_url" name="clear_seo_url" value="{L_CLEAR_SEO_URL}" />
+				<input class="button2" type="submit" id="create_seo_url" name="create_seo_url" value="{L_CREATE_SEO_URL}" />
 			</dd>
 		</dl>
 	</fieldset>
@@ -85,13 +87,13 @@
 		<dl>
 			<dt><label for="game_recent_index">{L_ACP_GAMES_RECENT_INDEX}</label><br /><span>{L_ACP_GAMES_RECENT_INDEX_EXPLAIN}</span></dt>
 			<dd>
-				<label><input type="text" name="game_recent_index" size="3" maxlength="3" value="{S_GAME_RECENT_INDEX}"</label>
+				<label><input type="text" name="game_recent_index" size="3" maxlength="3" value="{S_GAME_RECENT_INDEX}" /></label>
 			</dd>
 		</dl>
 		<dl>
 			<dt><label for="game_popular_index">{L_ACP_GAMES_POPULAR_INDEX}</label><br /><span>{L_ACP_GAMES_POPULAR_INDEX_EXPLAIN}</span></dt>
 			<dd>
-				<label><input type="text" name="game_popular_index" size="3" maxlength="3" value="{S_GAME_POPULAR_INDEX}"</label>
+				<label><input type="text" name="game_popular_index" size="3" maxlength="3" value="{S_GAME_POPULAR_INDEX}" /></label>
 			</dd>
 		</dl>
 		<dl>
@@ -122,7 +124,7 @@
 		<dl>
 			<dt><label for="game_topic_limit">{L_ACP_GAMES_TOPIC_LIMIT}</label><br /><span>{L_ACP_GAMES_TOPIC_LIMIT_EXPLAIN}</span></dt>
 			<dd>
-				<label><input type="text" name="game_topic_limit" size="3" maxlength="3" value="{S_GAME_TOPIC_LIMIT}"</label>
+				<label><input type="text" name="game_topic_limit" size="3" maxlength="3" value="{S_GAME_TOPIC_LIMIT}" /></label>
 			</dd>
 		</dl>
 	</fieldset>

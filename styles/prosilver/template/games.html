@@ -1,4 +1,6 @@
 <!-- INCLUDECSS @tacitus89_gamesmod/../theme/games.css -->
+<!-- INCLUDEJS @tacitus89_gamesmod/jquery.hoverpulse.js -->
+<!-- INCLUDEJS @tacitus89_gamesmod/sly.min.js -->
 <!-- INCLUDE overall_header.html -->
 <script src="{T_TEMPLATE_PATH}/games.js"></script>
 
@@ -16,16 +18,24 @@
     				</dl>
     			</li>
     		</ul>
-            <ul class="topiclist cplist pmlist responsive-show-all">
+            <ul class="topiclist">
     			<li class="row bg1">
     				<dl>
-    					<dt>
-    						<div align="center">
+                        <dt>
+                            <div class="games">
+                    			<ul class="slidee">
                                 <!-- BEGIN popular_games -->
-    							<a href="{popular_games.U_GAME}"><img src="{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
+                                    <li style="float: left;"><a href="{popular_games.U_GAME}" title="{popular_games.NAME}"><img class="games_img" src="{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a></li>
                                 <!-- END popular_games -->
-    						</div>
-    					</dt>
+                                </ul>
+                            </div>
+                            <div class="game_scrollbar">
+                    			<div class="handle">
+                    				<div class="mousearea"></div>
+                    			</div>
+                    		</div>
+                    		<ul class="game_navpages"></ul>
+                        </dt>
     				</dl>
     			</li>
     		</ul>
@@ -42,16 +52,24 @@
     				</dl>
     			</li>
     		</ul>
-            <ul class="topiclist cplist pmlist responsive-show-all">
+            <ul class="topiclist">
     			<li class="row bg1">
     				<dl>
-    					<dt>
-    						<div align="center">
-                                <!-- BEGIN recent_games -->
-    							<a href="{recent_games.U_GAME}"><img src="{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
-                                <!-- END recent_games -->
-    						</div>
-    					</dt>
+                        <dt>
+                            <div class="games">
+                    			<ul class="slidee">
+                                    <!-- BEGIN recent_games -->
+                                    <li style="float: left;"><a href="{recent_games.U_GAME}"><img class="games_img" src="{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a>
+                                    <!-- END recent_games -->
+                                </ul>
+                            </div>
+                            <div class="game_scrollbar">
+                    			<div class="handle">
+                    				<div class="mousearea"></div>
+                    			</div>
+                    		</div>
+                    		<ul class="game_navpages"></ul>
+                        </dt>
     				</dl>
     			</li>
     		</ul>
@@ -70,9 +88,52 @@
                 <!-- ENDIF -->
             </div>
     	<!-- ENDIF -->
-
     </div>
 
+    <!-- IF S_GAME_VIEW -->
+        <div class="panel bg1">
+    	    <div class="inner">
+                <div class="column_game_image">
+                    <img class="game_image" src="{GAME_IMAGE}" alt="{GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} />
+            	</div>
+
+                <div class="column_game_info">
+                    <h3>{L_GAME_INFO}</h3>
+
+                    <dl class="details">
+    				    <!-- IF GAME_GENRE --><dt>{L_GAME_GENRE}{L_COLON}</dt><dd>{GAME_GENRE}</dd><!-- ENDIF -->
+                        <!-- IF GAME_DEVELOPER --><dt>{L_GAME_DEVELOPER}{L_COLON}</dt> <dd>{GAME_DEVELOPER}</dd><!-- ENDIF -->
+                        <!-- IF GAME_PUBLISHER --><dt>{L_GAME_PUBLISHER}{L_COLON}</dt> <dd>{GAME_PUBLISHER}</dd><!-- ENDIF -->
+                        <!-- IF GAME_RELEASE --><dt>{L_GAME_RELEASE}{L_COLON}</dt> <dd>{GAME_RELEASE}</dd><!-- ENDIF -->
+                        <!-- IF GAME_PLATFORM --><dt>{L_GAME_PLATFORM}{L_COLON}</dt> <dd>{GAME_PLATFORM}</dd><!-- ENDIF -->
+    				</dl>
+                </div>
+            </div>
+        </div>
+        <!-- IF GAME_DESCRIPTION -->
+        <div class="panel bg2">
+            <div class="inner">
+                <h3>{L_GAME_DESCRIPTION}</h3>
+                {GAME_DESCRIPTION}
+            </div>
+        </div>
+        <!-- ENDIF -->
+        <!-- IF GAMERS -->
+        <div class="panel bg1">
+            <div class="inner">
+                <h3>{L_GAME_OWNERS}</h3>
+                {GAMERS}
+            </div>
+        </div>
+        <!-- ENDIF -->
+        <!-- IF GAME_FORUM_URL -->
+            <a class="forward_button" href="{GAME_FORUM_URL}">{L_GAME_FORUM}</a>
+        <!-- ENDIF -->
+        <!-- IF GAME_TOPIC_URL -->
+            <a class="forward_button" href="{GAME_TOPIC_URL}">{L_GAME_TOPIC}</a>
+        <!-- ENDIF -->
+
+    <!-- ELSE -->
     <div class="forumbg">
     	<div class="inner">
 
@@ -81,11 +142,12 @@
     			<li class="header">
     				<dl>
     					<dt>{L_CATPAGES}</dt>
+                        <dd class="posts">{L_NUMBER_GAMES}</dd>
     				</dl>
     			</li>
     		</ul>
 
-    		<ul class="topiclist cplist pmlist responsive-show-all">
+    		<ul class="topiclist">
             <!-- IF .games_cat -->
     			<!-- BEGIN games_cat -->
     			<li class="row<!-- IF games_cat.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
@@ -93,9 +155,10 @@
     					<dt>
     						<div class="list-inner">
     							<a href="{games_cat.U_GAME}" class="forumtitle">{games_cat.GAME_NAME}</a>
-                                <br />{L_NUMBER_GAMES}{L_COLON} {games_cat.NUMBER}
+                                <br />{games_cat.GAME_DESC}
     						</div>
     					</dt>
+                        <dd class="posts">{games_cat.NUMBER} <dfn>{L_NUMBER_GAMES}</dfn></dd>
     				</dl>
     			</li>
     			<!-- END games_cat -->
@@ -113,18 +176,18 @@
     		</ul>
     	<!-- ENDIF -->
 
-    	<!-- IF S_GAMES or S_GAME_VIEW -->
-    		<ul class="topiclist missing-column">
+    	<!-- IF S_GAMES -->
+    		<ul class="topiclist game-column">
     			<li class="header">
     				<dl>
     					<dt><div class="list-inner">{L_GAMES_VIEW}</div></dt>
-                        <!-- IF S_DESC --><dd class="game_desc">{L_GAME_DESC}</dd><!-- ENDIF -->
-                        <dd class="<!-- IF S_DESC -->gamer35<!-- ELSE -->gamer75<!-- ENDIF -->">{L_GAME_AWARDED}</dd>
+                        <dd class="game_info">{L_GAME_INFO}</dd>
+                        <dd class="game_desc">{L_GAME_DESC}</dd>
     				</dl>
     			</li>
     		</ul>
 
-    		<ul class="topiclist two-columns responsive-show-columns">
+    		<ul class="topiclist game-column">
             <!-- IF .games -->
     			<!-- BEGIN games -->
     			<li class="row<!-- IF games.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
@@ -132,11 +195,23 @@
     					<dt>
     						<div class="list-inner">
     							<strong>{games.GAME_NAME}</strong><br />
-                                <!-- IF S_GAME_VIEW --><img src="{games.GAME_IMAGE}" /><!-- ELSE --><a href="{games.U_GAME}"><img src="{games.GAME_IMAGE}" /></a><!-- ENDIF -->
+
+                                <!-- IF S_GAME_VIEW --><img src="{games.GAME_IMAGE}" title="{games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} />
+                                <!-- ELSE --><a href="{games.U_GAME}"><img src="{games.GAME_IMAGE}" title="{games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a><!-- ENDIF -->
+                                <div class="responsive-show" style="display:none;"></div>
     						</div>
     					</dt>
-                        <!-- IF S_DESC --><dd class="game_desc"><span>{games.GAME_DESCRIPTION}</span></dd><!-- ENDIF -->
-    					<dd class="<!-- IF S_DESC -->gamer35<!-- ELSE -->gamer75<!-- ENDIF -->"><span>{games.GAMERS}</span></dd>
+                        <dd class="game_info">
+            				    <!-- IF games.GAME_GENRE --><span>{L_GAME_GENRE}{L_COLON} {games.GAME_GENRE}</span><!-- ENDIF -->
+                                <!-- IF games.GAME_DEVELOPER --><span>{L_GAME_DEVELOPER}{L_COLON} {games.GAME_DEVELOPER}</span><!-- ENDIF -->
+                                <!-- IF games.GAME_PUBLISHER --><span>{L_GAME_PUBLISHER}{L_COLON} {games.GAME_PUBLISHER}</span><!-- ENDIF -->
+                                <!-- IF games.GAME_RELEASE --><span>{L_GAME_RELEASE}{L_COLON} {games.GAME_RELEASE}</span><!-- ENDIF -->
+                                <!-- IF games.GAME_PLATFORM --><span>{L_GAME_PLATFORM}{L_COLON} {games.GAME_PLATFORM}</span><!-- ENDIF -->
+                        </dd>
+                        <dd class="game_desc">
+                            <!-- IF games.GAME_DESCRIPTION --><span>{games.GAME_DESCRIPTION}</span><!-- ENDIF -->
+                        </dd>
+
     				</dl>
     			</li>
     			<!-- END games -->
@@ -155,6 +230,7 @@
     	<!-- ENDIF -->
     	</div>
     </div>
+    <!-- ENDIF -->
 </div>
 
 <!-- INCLUDE overall_footer.html -->

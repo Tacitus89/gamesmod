@@ -65,5 +65,3 @@ $lang = array_merge($lang, array(
 	'NO_GAMES'									=> 'No Games',
 	'CATPAGES'									=> 'Categories',
 ));
-
-?>

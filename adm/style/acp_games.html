@@ -4,7 +4,7 @@
 
 	<script>
 		var form_name = 'add_edit_game';
-		var text_name = 'game_message';
+		var text_name = 'game_description';
 		var load_draft = false;
 		var upload = false;
 		var imageTag = false;
@@ -12,7 +12,7 @@
 	<script>
 		function ipreview(element)
 		{
-			$("#imagepreview").html('<img src="{ROOT_PATH}images/games/'+element.value+'" alt="" style="max-width: 60px; max-height: 60px;" />');
+			$("#imagepreview").html('<img src="{ROOT_PATH}ext/tacitus89/gamesmod/images/{GAME_DIR}'+element.value+'" alt="" style="max-width: 60px;" />');
 		}
 	</script>
 
@@ -43,8 +43,16 @@
 				<dd><input class="text medium" type="text" id="game_name" name="game_name" value="{GAME_NAME}" maxlength="200" /></dd>
 			</dl>
 			<dl>
-				<dt><label for="game_description">{L_ACP_NAME_DESC}{L_COLON}</label></dt>
-				<dd><textarea id="game_description" name="game_description" rows="5" cols="45">{GAME_DESCRIPTION}</textarea></dd>
+				<dt><label for="game_route">{L_ACP_ROUTE_TITLE}{L_COLON}</label><br><span>{L_ACP_ROUTE_EXPLAIN}</span></dt>
+				<dd><input class="text medium" type="text" id="game_route" name="game_route" value="{GAME_ROUTE}" maxlength="100" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_parent">{L_ACP_PARENT_TITLE}{L_COLON}</label><br><span>{L_ACP_PARENT_EXPLAIN}</span></dt>
+				<dd><select id="game_parent" name="game_parent">
+					<!-- BEGIN gamemenu -->
+						<option value="{gamemenu.GAME_ID}"<!-- IF gamemenu.S_GAME_PARENT --> selected="selected"<!-- ENDIF -->>{gamemenu.GAME_TITLE}</option>
+					<!-- END gamemenu -->
+				</select></dd>
 			</dl>
 			<dl>
 				<dt><label for="game_image">{L_ACP_IMAGE_TITLE}{L_COLON}</label></dt>
@@ -57,12 +65,54 @@
 				<dd><input type="hidden" name="MAX_FILE_SIZE" value="{GAME_SIZE}" /><input type="file" name="uploadfile" id="uploadfile" class="inputbox autowidth" /></dd>
 			</dl>
 			<dl>
-				<dt><label for="game_parent">{L_ACP_PARENT_TITLE}{L_COLON}</label><br><span>{L_ACP_PARENT_EXPLAIN}</span></dt>
-				<dd><select id="game_parent" name="game_parent">
-					<!-- BEGIN gamemenu -->
-						<option value="{gamemenu.GAME_ID}"<!-- IF gamemenu.S_GAME_PARENT --> selected="selected"<!-- ENDIF -->>{gamemenu.GAME_TITLE}</option>
-					<!-- END gamemenu -->
-				</select></dd>
+				<dt><label for="game_genre">{L_ACP_GAME_GENRE}{L_COLON}</label><br><span>{L_ACP_GAME_GENRE_EXPLAIN}</span></dt>
+				<dd><input class="text medium" type="text" id="game_genre" name="game_genre" value="{GAME_GENRE}" maxlength="255" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_developer">{L_ACP_GAME_DEVELOPER}{L_COLON}</label><br><span>{L_ACP_GAME_DEVELOPER_EXPLAIN}</span></dt>
+				<dd><input class="text medium" type="text" id="game_developer" name="game_developer" value="{GAME_DEVELOPER}" maxlength="255" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_publisher">{L_ACP_GAME_PUBLISHER}{L_COLON}</label><br><span>{L_ACP_GAME_PUBLISHER_EXPLAIN}</span></dt>
+				<dd><input class="text medium" type="text" id="game_publisher" name="game_publisher" value="{GAME_PUBLISHER}" maxlength="255" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_release">{L_ACP_GAME_RELEASE}{L_COLON}</label><br><span>{L_ACP_GAME_RELEASE_EXPLAIN}</span></dt>
+				<dd><input class="text medium" type="text" id="game_release" name="game_release" value="{GAME_RELEASE}" maxlength="255" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_platform">{L_ACP_GAME_PLATFORM}{L_COLON}</label><br><span>{L_ACP_GAME_PLATFORM_EXPLAIN}</span></dt>
+				<dd><input class="text medium" type="text" id="game_platform" name="game_platform" value="{GAME_PLATFORM}" maxlength="255" /></dd>
+			</dl>
+			<dl class="responsive-columns">
+				<dt><label for="game_description">{L_ACP_NAME_DESC}{L_COLON}</label></dt>
+				<dd>
+					<div id="color_palette_placeholder" data-orientation="h" data-height="12" data-width="15" data-bbcode="true"></div>
+					<!-- INCLUDE acp_posting_buttons.html -->
+					<textarea id="game_description" name="game_description" rows="12" cols="45" style="width: 95%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();" data-bbcode="true">{GAME_DESCRIPTION}</textarea>
+					<div>
+						<label><input type="checkbox" class="radio html-off" name="parse_bbcode"<!-- IF S_PARSE_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
+						<label><input type="checkbox" class="radio html-off" name="parse_smilies"<!-- IF S_PARSE_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
+						<label><input type="checkbox" class="radio html-off" name="parse_magic_url"<!-- IF S_PARSE_MAGIC_URL_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label>
+					</div>
+					<div><strong>{L_OPTIONS}{L_COLON} </strong>{BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {URL_STATUS} :: {SMILIES_STATUS}</div>
+				</dd>
+			</dl>
+			<dl>
+				<dt><label for="game_forum_url">{L_ACP_GAME_FORUM_URL}{L_COLON}</label><br><span>{L_ACP_GAME_FORUM_URL_EXPLAIN}</span></dt>
+				<dd><input class="text medium" type="text" id="game_forum_url" name="game_forum_url" value="{GAME_FORUM_URL}" maxlength="255" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_topic_url">{L_ACP_GAME_TOPIC_URL}{L_COLON}</label><br><span>{L_ACP_GAME_TOPIC_URL_EXPLAIN}</span></dt>
+				<dd><input class="text medium" type="text" id="game_topic_url" name="game_topic_url" value="{GAME_TOPIC_URL}" maxlength="255" /></dd>
+			</dl>
+			<dl>
+				<dt><label for="game_meta_description">{L_ACP_GAME_META_DESC}{L_COLON}</label><br><span>{L_ACP_GAME_META_DESC_EXPLAIN}</span></dt>
+				<dd><textarea id="game_meta_description" name="game_meta_description" rows="2" cols="45" maxlength="255">{GAME_META_DESC}</textarea>
+			</dl>
+			<dl>
+				<dt><label for="game_meta_keywords">{L_ACP_GAME_META_KEYWORDS}{L_COLON}</label><br><span>{L_ACP_GAME_META_KEYWORDS_EXPLAIN}</span></dt>
+				<dd><input class="text medium" type="text" id="game_meta_keywords" name="game_meta_keywords" value="{GAME_META_KEYWORDS}" maxlength="255" /></dd>
 			</dl>
 		</fieldset>
 
@@ -113,7 +163,7 @@
 						</td>
 						<td class="forum-desc">
 							<strong>{games.GAME_NAME}</strong>
-							<!-- IF games.U_IMAGE --><br /><img src="{games.U_IMAGE}" title="{games.GAME_NAME}" style="max-width: 60px;"/><!-- ENDIF -->
+							<!-- IF games.U_IMAGE --><br /><img src="{games.U_IMAGE}" title="{games.GAME_NAME}" style="max-width: 60px;" /><!-- ENDIF -->
 						</td>
 						<td class="actions">
 							<a href="{games.U_EDIT}">{ICON_EDIT}</a>

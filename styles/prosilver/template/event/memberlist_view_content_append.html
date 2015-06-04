@@ -1,5 +1,6 @@
 <!-- IF S_GAMES -->
 <!-- INCLUDEJS @tacitus89_gamesmod/jquery.hoverpulse.js -->
+<!-- INCLUDEJS @tacitus89_gamesmod/sly.min.js -->
 
 <!-- IF S_GAMES_SEPERATED -->
 <!-- BEGIN games_cat -->
@@ -8,10 +9,18 @@
 
 		<h3><a href="{games_cat.URL}">{games_cat.NAME}</a>{L_COLON} <b>{games_cat.COUNT}</b></h3>
 		<div class="games">
-		<!-- BEGIN games -->
-			<div style="float: left;{GAME_STYLE}"><a href="{games.URL}" title="{games.NAME}"><img src="{games.IMAGE}" class="games_img" title="{games.NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a></div>
-		<!-- END games -->
+			<ul class="slidee">
+				<!-- BEGIN games -->
+					<li style="float: left;"><a href="{games.URL}" title="{games.NAME}"><img src="{games.IMAGE}" class="games_img" title="{games.NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a></li>
+				<!-- END games -->
+			</ul>
 		</div>
+		<div class="game_scrollbar">
+			<div class="handle">
+				<div class="mousearea"></div>
+			</div>
+		</div>
+		<ul class="game_navpages"></ul>
 	</div>
 </div>
 <!-- END games_cat -->

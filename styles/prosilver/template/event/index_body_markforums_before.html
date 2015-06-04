@@ -1,3 +1,8 @@
+<!-- IF .popular_games or .recent_games -->
+    <!-- INCLUDEJS @tacitus89_gamesmod/jquery.hoverpulse.js -->
+    <!-- INCLUDEJS @tacitus89_gamesmod/sly.min.js -->
+<!-- ENDIF -->
+
 <!-- IF .popular_games -->
 <div class="forumbg">
     <div class="inner">
@@ -8,15 +13,23 @@
                 </dl>
             </li>
         </ul>
-        <ul class="topiclist cplist pmlist responsive-show-all">
+        <ul class="topiclist">
             <li class="row bg1">
                 <dl>
                     <dt>
-                        <div align="center">
+                        <div class="games">
+                			<ul class="slidee">
                             <!-- BEGIN popular_games -->
-                            <a href="{popular_games.U_GAME}"><img src="{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
+                                <li style="float: left;"><a href="{popular_games.U_GAME}" title="{popular_games.NAME}"><img class="games_img" src="{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a></li>
                             <!-- END popular_games -->
+                            </ul>
                         </div>
+                        <div class="game_scrollbar">
+                			<div class="handle">
+                				<div class="mousearea"></div>
+                			</div>
+                		</div>
+                		<ul class="game_navpages"></ul>
                     </dt>
                 </dl>
             </li>
@@ -34,15 +47,23 @@
                 </dl>
             </li>
         </ul>
-        <ul class="topiclist cplis1 pmlist responsive-show-all">
+        <ul class="topiclist">
             <li class="row bg1">
                 <dl>
                     <dt>
-                        <div align="center">
-                            <!-- BEGIN recent_games -->
-                            <a href="{recent_games.U_GAME}"><img src="{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
-                            <!-- END recent_games -->
+                        <div class="games">
+                			<ul class="slidee">
+                                <!-- BEGIN recent_games -->
+                                <li style="float: left;"><a href="{recent_games.U_GAME}"><img class="games_img" src="{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a>
+                                <!-- END recent_games -->
+                            </ul>
                         </div>
+                        <div class="game_scrollbar">
+                			<div class="handle">
+                				<div class="mousearea"></div>
+                			</div>
+                		</div>
+                		<ul class="game_navpages"></ul>
                     </dt>
                 </dl>
             </li>

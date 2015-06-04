@@ -127,6 +127,68 @@ class admin_controller
 			}
 		}
 
+		//Clear the seo url
+		if($this->request->is_set_post('clear_seo_url'))
+		{
+			// Use a confirmation box routine when deleting a game
+			if (confirm_box(true))
+			{
+				// Delete the game route on confirmation
+				$this->games_operator->clear_route();
+				$this->games_cat_operator->clear_route();
+
+				// Add action to the admin log
+				$phpbb_log = $this->container->get('log');
+				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_CLEAR_SEO_URL_LOG');
+
+				// Show user confirmation of the deleted game and provide link back to the previous page
+				trigger_error($this->user->lang('ACP_CLEAR_SEO_URL_GOOD') . adm_back_link("{$this->u_action}"));
+			}
+			else
+			{
+				// Request confirmation from the user to delete the game
+				confirm_box(false, $this->user->lang('ACP_CONFIRM_CLEAR_SEO_URL'), build_hidden_fields(array(
+					'mode' 			=> 'config',
+					'clear_seo_url' => 'clear_seo_url',
+				)));
+
+				// Use a redirect to take the user back to the previous page
+				// if the user chose not delete the game from the confirmation page.
+				redirect("{$this->u_action}");
+			}
+		}
+
+		//Create the seo url
+		if($this->request->is_set_post('create_seo_url'))
+		{
+			// Use a confirmation box routine when deleting a game
+			if (confirm_box(true))
+			{
+				//Create the game route on confirmation
+				$this->games_operator->create_route();
+				$this->games_cat_operator->create_route();
+
+				// Add action to the admin log
+				$phpbb_log = $this->container->get('log');
+				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_CREATE_SEO_URL_LOG');
+
+				// Show user confirmation of the deleted game and provide link back to the previous page
+				trigger_error($this->user->lang('ACP_CREATE_SEO_URL_GOOD') . adm_back_link("{$this->u_action}"));
+			}
+			else
+			{
+				// Request confirmation from the user to delete the game
+				confirm_box(false, $this->user->lang('ACP_CONFIRM_CREATE_SEO_URL'), build_hidden_fields(array(
+					'mode' 			=> 'config',
+					'create_seo_url'=> 'create_seo_url',
+				)));
+
+				// Use a redirect to take the user back to the previous page
+				// if the user chose not delete the game from the confirmation page.
+				redirect("{$this->u_action}");
+			}
+		}
+
 		// Set output vars for display in the template
 		$this->template->assign_vars(array(
 			'S_ERROR'		=> (sizeof($errors)) ? true : false,
@@ -135,16 +197,16 @@ class admin_controller
 			'U_ACTION'		=> $this->u_action,
 
 			'S_GAMES_ACTIVE'					=> $this->config['games_active'] ? true : false,
-			'S_GAMES_DESCRIPTION'				=> $this->config['games_description'] ? true : false,
 			'S_GAMES_PAGINATION'				=> $this->config['games_pagination'],
 			'S_GAME_SMALL_IMG_WIDTH'			=> $this->config['game_small_img_width'],
 			'S_GAME_SMALL_IMG_HT'				=> $this->config['game_small_img_ht'],
 			//
-			'S_GAME_DISPLAY_PROFILE'			=> $this->config['game_display_profile'] ? true : false,
-			'S_GAME_PROFILE_SEP'				=> $this->config['game_profile_sep'] ? true : false,
-			//
 			'S_GAME_RECENT'						=> $this->config['game_recent'],
 			'S_GAME_POPULAR'					=> $this->config['game_popular'],
+			'S_GAMES_SEO_URL'					=> $this->config['game_seo_url'] ? true : false,
+			//
+			'S_GAME_DISPLAY_PROFILE'			=> $this->config['game_display_profile'] ? true : false,
+			'S_GAME_PROFILE_SEP'				=> $this->config['game_profile_sep'] ? true : false,
 			//
 			'S_GAME_RECENT_INDEX'				=> $this->config['game_recent_index'],
 			'S_GAME_POPULAR_INDEX'				=> $this->config['game_popular_index'],
@@ -165,16 +227,16 @@ class admin_controller
 	protected function set_options()
 	{
 		$this->config->set('games_active', $this->request->variable('games_active', 0));
-		$this->config->set('games_description', $this->request->variable('games_description', 0));
 		$this->config->set('games_pagination', $this->request->variable('games_pagination', 0));
 		$this->config->set('game_small_img_width', $this->request->variable('game_small_img_width', 0));
 		$this->config->set('game_small_img_ht', $this->request->variable('game_small_img_ht', 0));
 		//
-		$this->config->set('game_display_profile', $this->request->variable('game_display_profile', 0));
-		$this->config->set('game_profile_sep', $this->request->variable('game_profile_sep', 0));
-		//
 		$this->config->set('game_recent', $this->request->variable('game_recent', 0));
 		$this->config->set('game_popular', $this->request->variable('game_popular', 0));
+		$this->config->set('game_seo_url', $this->request->variable('game_seo_url', 0));
+		//
+		$this->config->set('game_display_profile', $this->request->variable('game_display_profile', 0));
+		$this->config->set('game_profile_sep', $this->request->variable('game_profile_sep', 0));
 		//
 		$this->config->set('game_recent_index', $this->request->variable('game_recent_index', 0));
 		$this->config->set('game_popular_index', $this->request->variable('game_popular_index', 0));
@@ -239,17 +301,24 @@ class admin_controller
 		// Grab all the games
 		$entities = $this->games_operator->get_games($parent_id, $start, $this->config['games_pagination']);
 
-		//parent
-		$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
-		$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
+		if(isset($entities[0]))
+		{
+			$parent = $entities[0]->get_parent();
+		}
+		else {
+			$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($parent_id);
+		}
+
 		// Process each game entity for display
 		foreach ($entities as $entity)
 		{
+			$image = ($entity->get_parent()->get_dir() != '')? $this->dir.$entity->get_parent()->get_dir().'/'.$entity->get_image() : $this->dir.$entity->get_image();
+
 			// Set output block vars for display in the template
 			$this->template->assign_block_vars('games', array(
 				'GAME_NAME'		=> $entity->get_name(),
 
-				'U_IMAGE'			=> ($entity->get_image() != '')? '' . $this->dir . $dir . $entity->get_image() . '' : '',
+				'U_IMAGE'			=> ($entity->get_image() != '')? $image : '',
 				'U_DELETE'			=> "{$this->u_action}&amp;action=delete_game&amp;game_id=" . $entity->get_id(),
 				'U_EDIT'			=> "{$this->u_action}&amp;action=edit_game&amp;game_id=" . $entity->get_id(),
 				'U_GAME'			=> "{$this->u_action}&amp;parent_id=" . $entity->get_id(),
@@ -299,11 +368,22 @@ class admin_controller
 
 		// Initiate a game entity
 		$entity = $this->container->get('tacitus89.gamesmod.entity.games_cat');
-		$entity->set_name($this->request->variable('game_cat_name', '', true));
-		$entity->set_dir($this->request->variable('game_cat_dir', '', true));
 
 		// Create an array to collect errors that will be output to the user
 		$errors = array();
+		try
+		{
+			$entity->set_name($this->request->variable('game_cat_name', '', true));
+			$entity->set_dir($this->request->variable('game_cat_dir', '', true));
+			$entity->set_route($this->request->variable('game_cat_route', '', true));
+			$entity->set_meta_desc($this->request->variable('game_cat_meta_description', '', true));
+			$entity->set_meta_keywords($this->request->variable('game_cat_meta_keywords', '', true));
+		}
+		catch (\tacitus89\gamesmod\exception\base $e)
+		{
+			// Catch exceptions and add them to errors array
+			$errors[] = $e->get_message($this->user);
+		}
 
 		// If the form has been submitted
 		if ($submit)
@@ -387,6 +467,16 @@ class admin_controller
 			'name'			=> $this->request->variable('game_name', '', true),
 			'description'	=> $this->request->variable('game_description', '', true),
 			'image'			=> $this->request->variable('game_image', '', true),
+			'route'			=> $this->request->variable('game_route', '', true),
+			'genre'			=> $this->request->variable('game_genre', '', true),
+			'developer'		=> $this->request->variable('game_developer', '', true),
+			'publisher'		=> $this->request->variable('game_publisher', '', true),
+			'game_release'	=> $this->request->variable('game_release', '', true),
+			'platform'		=> $this->request->variable('game_platform', '', true),
+			'forum_url'		=> $this->request->variable('game_forum_url', '', true),
+			'topic_url'		=> $this->request->variable('game_topic_url', '', true),
+			'meta_desc'		=> $this->request->variable('game_meta_desc', '', true),
+			'meta_keywords'	=> $this->request->variable('game_meta_keywords', '', true),
 		);
 
 		// Process the new game
@@ -422,13 +512,26 @@ class admin_controller
 		$data = array(
 			'game_cat_name'	=> $this->request->variable('game_cat_name', $entity->get_name(), true),
 			'game_cat_dir'	=> $this->request->variable('game_cat_dir', $entity->get_dir(), true),
+			'game_cat_route'=> $this->request->variable('game_cat_route', $entity->get_route(), true),
+			'game_cat_meta_desc'=> $this->request->variable('game_cat_meta_description', $entity->get_meta_desc(), true),
+			'game_cat_meta_keywords'=> $this->request->variable('game_cat_meta_keywords', $entity->get_meta_keywords(), true),
 		);
-
-		$entity->set_name($data['game_cat_name']);
-		$entity->set_dir($data['game_cat_dir']);
 
 		// Create an array to collect errors that will be output to the user
 		$errors = array();
+		try
+		{
+			$entity->set_name($data['game_cat_name']);
+			$entity->set_dir($data['game_cat_dir']);
+			$entity->set_route($data['game_cat_route']);
+			$entity->set_meta_desc($data['game_cat_meta_desc']);
+			$entity->set_meta_keywords($data['game_cat_meta_keywords']);
+		}
+		catch (\tacitus89\gamesmod\exception\base $e)
+		{
+			// Catch exceptions and add them to errors array
+			$errors[] = $e->get_message($this->user);
+		}
 
 		// If the form has been submitted
 		if ($submit)
@@ -479,9 +582,14 @@ class admin_controller
 
 		// Set output vars for display in the template
 		$this->template->assign_vars(array(
+			'S_ERROR'			=> (sizeof($errors)) ? true : false,
+			'ERROR_MSG'			=> (sizeof($errors)) ? implode('<br />', $errors) : '',
 			'S_EDIT_GAME_CAT'	=> true,
 			'DIR_OPTIONS'		=> $dir_options,
 			'GAME_CAT_NAME'		=> $entity->get_name(),
+			'GAME_CAT_ROUTE'			=> $entity->get_route(),
+			'GAME_CAT_META_DESC'		=> $entity->get_meta_desc(),
+			'GAME_CAT_META_KEYWORDS'	=> $entity->get_meta_keywords(),
 
 			'U_ACTION'			=> "{$this->u_action}&amp;parent_id={$parent_id}&amp;action=edit_cat",
 			'U_BACK'			=> "{$this->u_action}",
@@ -508,10 +616,20 @@ class admin_controller
 
 		// Collect the form data
 		$data = array(
-			'parent'		=> $this->request->variable('game_parent', $entity->get_parent()),
+			'parent'		=> $this->request->variable('game_parent', $entity->get_parent()->get_id()),
 			'name'			=> $this->request->variable('game_name', $entity->get_name(), true),
-			'description'	=> $this->request->variable('game_description', $entity->get_description(), true),
+			'description'	=> $this->request->variable('game_description', $entity->get_description_for_edit(), true),
 			'image'			=> $this->request->variable('game_image', $entity->get_image(), true),
+			'route'			=> $this->request->variable('game_route', $entity->get_route(), true),
+			'genre'			=> $this->request->variable('game_genre', $entity->get_genre(), true),
+			'developer'		=> $this->request->variable('game_developer', $entity->get_developer(), true),
+			'publisher'		=> $this->request->variable('game_publisher', $entity->get_publisher(), true),
+			'game_release'	=> $this->request->variable('game_release', $entity->get_game_release(), true),
+			'platform'		=> $this->request->variable('game_platform', $entity->get_platform(), true),
+			'forum_url'		=> $this->request->variable('game_forum_url', $entity->get_forum_url(), true),
+			'topic_url'		=> $this->request->variable('game_topic_url', $entity->get_topic_url(), true),
+			'meta_desc'		=> $this->request->variable('game_meta_description', $entity->get_meta_desc(), true),
+			'meta_keywords'	=> $this->request->variable('game_meta_keywords', $entity->get_meta_keywords(), true),
 		);
 
 		// Process the edited game
@@ -522,7 +640,7 @@ class admin_controller
 			'S_EDIT_GAME'		=> true,
 
 			'U_EDIT_ACTION'		=> "{$this->u_action}&amp;game_id={$game_id}&amp;action=edit_game",
-			'U_BACK'			=> "{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}",
+			'U_BACK'			=> "{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()->get_id()}",
 		));
 	}
 
@@ -539,11 +657,11 @@ class admin_controller
 		// Get form's POST actions (submit or preview)
 		$submit = $this->request->is_set_post('submit');
 
+		// Load posting language file for the BBCode editor
+		$this->user->add_lang('posting');
+
 		// Create an array to collect errors that will be output to the user
 		$errors = array();
-
-		//get parent
-		$parent = $this->container->get('tacitus89.gamesmod.entity.games_cat')->load($data['parent']);
 
 		// Grab the form's game data fields
 		$game_fields = array(
@@ -551,7 +669,37 @@ class admin_controller
 			'description'	=> $data['description'],
 			'image'			=> $data['image'],
 			'parent'		=> $data['parent'],
+			'route'			=> $data['route'],
+			'genre'			=> $data['genre'],
+			'developer'		=> $data['developer'],
+			'publisher'		=> $data['publisher'],
+			'game_release'	=> $data['game_release'],
+			'platform'		=> $data['platform'],
+			'forum_url'		=> $data['forum_url'],
+			'topic_url'		=> $data['topic_url'],
+			'meta_desc'		=> $data['meta_desc'],
+			'meta_keywords'	=> $data['meta_keywords'],
 		);
+
+		// Grab the form data's message parsing options (possible values: 1 or 0)
+		// If submit use the data from the form
+		// If game edit use data stored in the entity
+		// If game add use default values
+		$description_parse_options = array(
+			'bbcode'	=> ($submit) ? $this->request->variable('parse_bbcode', false) : (($entity->get_id()) ? $entity->description_bbcode_enabled() : 1),
+			'magic_url'	=> ($submit) ? $this->request->variable('parse_magic_url', false) : (($entity->get_id()) ? $entity->description_magic_url_enabled() : 1),
+			'smilies'	=> ($submit) ? $this->request->variable('parse_smilies', false) : (($entity->get_id()) ? $entity->description_smilies_enabled() : 1),
+
+		);
+
+		// Set the content parse options in the entity
+		foreach ($description_parse_options as $function => $enabled)
+		{
+			call_user_func(array($entity, ($enabled ? 'description_enable_' : 'description_disable_') . $function));
+		}
+
+		// Purge temporary variable
+		unset($content_parse_options);
 
 		// Set the game's data in the entity
 		foreach ($game_fields as $entity_function => $game_data)
@@ -587,31 +735,40 @@ class admin_controller
 				{
 					include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
 				}
-				$upload = new \fileupload('GAME_', array('jpg', 'jpeg', 'gif', 'png'), 80000, 0, 0, 0, 0, explode('|', $this->config['mime_triggers']));
-				$file = $upload->form_upload('uploadfile');
-				$file->clean_filename('real', '', '');
-				if($parent->get_dir() != '')
+
+				//get destination
+				if($entity->get_parent()->get_dir() != '')
 				{
-					$destination = 'ext/tacitus89/gamesmod/images/'.$parent->get_dir();
+					$destination = 'ext/tacitus89/gamesmod/images/'.$entity->get_parent()->get_dir();
 				}
 				else {
 					$destination = 'ext/tacitus89/gamesmod/images';
 				}
+				//if dir writable?
+				if(is_writable($this->root_path.$destination)){
+					$upload = new \fileupload('GAME_', array('jpg', 'jpeg', 'gif', 'png'), 120000, 0, 0, 0, 0, explode('|', $this->config['mime_triggers']));
+					$file = $upload->form_upload('uploadfile');
+					$file->clean_filename('real', '', '');
 
-				$data['image'] = $file->realname;
 
-				// Move file and overwrite any existing image
-				$file->move_file($destination, true);
+					$data['image'] = $file->realname;
 
-				if (sizeof($file->error))
-				{
-					$file->remove();
-					trigger_error(implode('<br />', $file->error));
+					// Move file and overwrite any existing image
+					$file->move_file($destination, true);
+
+					if (sizeof($file->error))
+					{
+						$file->remove();
+						$errors[] = implode('<br />', $file->error);
+					}
+					else
+					{
+						chmod($this->root_path.$destination . '/' . $data['image'], 0644);
+						$entity->set_image($data['image']);
+					}
 				}
-				else
-				{
-					chmod($this->root_path.$destination . '/' . $data['image'], 0644);
-					$entity->set_image($data['image']);
+				else {
+					$errors[] = $this->user->lang('GAME_DIR_NOT_WRITABLE');
 				}
 			}
 
@@ -635,7 +792,7 @@ class admin_controller
 				$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_GAME_EDIT_LOG', time(), array($entity->get_name()));
 
 				// Show user confirmation of the saved game and provide link back to the previous page
-				trigger_error($this->user->lang('ACP_GAME_EDIT_GOOD') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}"));
+				trigger_error($this->user->lang('ACP_GAME_EDIT_GOOD') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()->get_id()}"));
 			}
 			else
 			{
@@ -652,7 +809,7 @@ class admin_controller
 		}
 
 		//view existing images
-		$dir = $this->dir.$parent->get_dir();
+		$dir = $this->dir.$entity->get_parent()->get_dir();
 		$options = '<option value=""></option>';
 		if ($dh = opendir($dir))
 		{
@@ -665,16 +822,42 @@ class admin_controller
 			closedir($dh);
 		}
 
-		$dir = ($parent->get_dir() != '') ? $parent->get_dir() . '/' : '';
+		$dir = ($entity->get_parent()->get_dir() != '') ? $entity->get_parent()->get_dir() . '/' : '';
 		// Set output vars for display in the template
 		$this->template->assign_vars(array(
 			'S_ERROR'			=> (sizeof($errors)) ? true : false,
 			'ERROR_MSG'			=> (sizeof($errors)) ? implode('<br />', $errors) : '',
 
 			'GAME_NAME'			=> $entity->get_name(),
-			'GAME_DESCRIPTION'	=> $entity->get_description(),
+			'GAME_ROUTE'		=> $entity->get_route(),
+			'GAME_DESCRIPTION'	=> $entity->get_description_for_edit(),
+			'GAME_GENRE'		=> $entity->get_genre(),
+			'GAME_DEVELOPER'	=> $entity->get_developer(),
+			'GAME_PUBLISHER'	=> $entity->get_publisher(),
+			'GAME_RELEASE'		=> $entity->get_game_release(),
+			'GAME_PLATFORM'		=> $entity->get_platform(),
+			'GAME_FORUM_URL'	=> $entity->get_forum_url(),
+			'GAME_TOPIC_URL'	=> $entity->get_topic_url(),
+			'GAME_META_DESC'	=> $entity->get_meta_desc(),
+			'GAME_META_KEYWORDS'=> $entity->get_meta_keywords(),
+			'GAME_DIR'			=> ($entity->get_parent()->get_dir() != '')? $entity->get_parent()->get_dir(). '/' : '',
 			'IMAGE_OPTIONS'		=> $options,
 			'GAME_IMAGE'		=> ($entity->get_image() != '')? '' . $this->dir . $dir . $entity->get_image() . '' : '',
+
+			'S_PARSE_BBCODE_CHECKED'	=> $entity->description_bbcode_enabled(),
+			'S_PARSE_SMILIES_CHECKED'	=> $entity->description_smilies_enabled(),
+			'S_PARSE_MAGIC_URL_CHECKED'	=> $entity->description_magic_url_enabled(),
+			'BBCODE_STATUS'		=> $this->user->lang('BBCODE_IS_ON', '<a href="' . append_sid("{$this->root_path}faq.{$this->php_ext}", 'mode=bbcode') . '">', '</a>'),
+			'SMILIES_STATUS'	=> $this->user->lang('SMILIES_ARE_ON'),
+			'IMG_STATUS'		=> $this->user->lang('IMAGES_ARE_ON'),
+			'FLASH_STATUS'		=> $this->user->lang('FLASH_IS_ON'),
+			'URL_STATUS'		=> $this->user->lang('URL_IS_ON'),
+
+			'S_BBCODE_ALLOWED'	=> true,
+			'S_SMILIES_ALLOWED'	=> true,
+			'S_BBCODE_IMG'		=> true,
+			'S_BBCODE_FLASH'	=> true,
+			'S_LINKS_ALLOWED'	=> true,
 		));
 	}
 
@@ -782,7 +965,7 @@ class admin_controller
 			$phpbb_log->add('admin', $this->user->data['user_id'], $this->user->ip, 'ACP_GAMESMOD_GAME_DELETE_LOG', time(), array($entity->get_name()));
 
 			// Show user confirmation of the deleted game and provide link back to the previous page
-			trigger_error($this->user->lang('ACP_GAME_DELETE_GOOD') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}"));
+			trigger_error($this->user->lang('ACP_GAME_DELETE_GOOD') . adm_back_link("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()->get_id()}"));
 		}
 		else
 		{
@@ -795,7 +978,7 @@ class admin_controller
 
 			// Use a redirect to take the user back to the previous page
 			// if the user chose not delete the game from the confirmation page.
-			redirect("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()}");
+			redirect("{$this->u_action}&amp;action=view_games&amp;parent_id={$entity->get_parent()->get_id()}");
 		}
 	}
 
@@ -855,7 +1038,7 @@ class admin_controller
 	*/
 	protected function build_parent_select_menu($entity, $parent_id = 0, $mode = 'edit')
 	{
-		$parent_id = ($mode == 'edit') ? $entity->get_parent() : $parent_id;
+		$parent_id = ($mode == 'edit') ? $entity->get_parent()->get_id() : $parent_id;
 
 		// Prepare game pull-down field
 		$game_menu_items = $this->games_cat_operator->get_games_cat();

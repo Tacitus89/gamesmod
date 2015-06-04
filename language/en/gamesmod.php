@@ -62,6 +62,14 @@ $lang = array_merge($lang, array(
 	'ALL'							=> 'ALL',
 	'GAME_PLAYING'					=> 'user(s) want to play this game',
 	'GAME_PLAY'						=> 'Users are playing these games',
+	'GAME_GENRE'					=> 'Genre',
+	'GAME_DEVELOPER'				=> 'Developer',
+	'GAME_PUBLISHER'				=> 'Publisher',
+	'GAME_RELEASE'					=> 'Release',
+	'GAME_PLATFORM'					=> 'Platform',
+	'GAME_INFO'						=> 'Information',
+	'GAME_FORUM'					=> 'Go to game forum',
+	'GAME_TOPIC'					=> 'Go to game topic',
 
 // Error messages
 	'NO_CAT_ID'						=> 'No Category ID was specified.',
@@ -72,5 +80,3 @@ $lang = array_merge($lang, array(
 	'NO_USER_GAMES'					=> 'This user doesn\'t own any games',
 
 ));
-
-?>
