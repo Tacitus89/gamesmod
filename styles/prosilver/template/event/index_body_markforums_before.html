@@ -1,4 +1,5 @@
 <!-- IF .popular_games or .recent_games -->
+    <!-- INCLUDEJS @tacitus89_gamesmod/jquery.hoverpulse.js -->
     <!-- INCLUDEJS @tacitus89_gamesmod/sly.min.js -->
 <!-- ENDIF -->
 
@@ -20,7 +21,7 @@
                             <div class="games">
                     			<ul class="slidee">
                                 <!-- BEGIN popular_games -->
-                                    <li style="float: left;"><a href="{popular_games.U_GAME}" title="{popular_games.NAME}"><img src="{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a></li>
+                                    <li style="float: left;"><a href="{popular_games.U_GAME}" title="{popular_games.NAME}"><img class="games_img" src="{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a></li>
                                 <!-- END popular_games -->
                                 </ul>
                             </div>
@@ -55,7 +56,7 @@
                         <div class="games">
                 			<ul class="slidee">
                                 <!-- BEGIN recent_games -->
-                                <li style="float: left;"><a href="{recent_games.U_GAME}"><img src="{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
+                                <li style="float: left;"><a href="{recent_games.U_GAME}"><img class="games_img" src="{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a>
                                 <!-- END recent_games -->
                             </ul>
                         </div>

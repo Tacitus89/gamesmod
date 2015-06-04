@@ -581,4 +581,31 @@ class games
 		}
 		$this->db->sql_freeresult($result);
 	}
+
+	/**
+	* Set the small size of images in the template
+	*
+	* @param \phpbb\config\config Config Interface
+	* @param \phpbb\template\template Template Interface
+	* @return null
+	* @access public
+	*/
+	public function display_image_size($config, $template)
+	{
+		$width = $height = '';
+		if($config['game_small_img_width'])
+		{
+			$width = ' width="'. $config['game_small_img_width'] .'"';
+		}
+		if($config['game_small_img_ht'])
+		{
+			$height	= ' height="'. $config['game_small_img_ht'] .'"';
+		}
+
+		// Output gamesmod to the template
+		$template->assign_vars(array(
+			'GAME_SMALL_WIDTH'	=> $width,
+			'GAME_SMALL_HEIGHT'	=> $height,
+		));
+	}
 }

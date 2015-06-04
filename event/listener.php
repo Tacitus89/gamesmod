@@ -228,24 +228,12 @@ class listener implements EventSubscriberInterface
 		// Add gamesmod language file
 		$this->user->add_lang_ext('tacitus89/gamesmod', 'gamesmod');
 
-		$width = $height = $style = '';
-		if($this->config['game_small_img_width'])
-		{
-			$width = ' width="'. $this->config['game_small_img_width'] .'"';
-			$style .= 'width:'. $this->config['game_small_img_width'] .'px;';
-		}
-		if($this->config['game_small_img_ht'])
-		{
-			$height	= ' height="'. $this->config['game_small_img_ht'] .'"';
-			$style .= 'height:'. $this->config['game_small_img_ht'] .'px;';
-		}
+		//Add image size
+		$this->games_operator->display_image_size($this->config,$this->template);
 
 		// Output gamesmod to the template
 		$this->template->assign_vars(array(
 			'S_GAMES'			=> true,
-			'GAME_SMALL_WIDTH'	=> $width,
-			'GAME_SMALL_HEIGHT'	=> $height,
-			'GAME_STYLE'		=> $style,
 		));
 	}
 
@@ -311,6 +299,7 @@ class listener implements EventSubscriberInterface
 				}
 			}
 
+			//Add image size
 			$width = $height = '';
 			if($this->config['game_small_img_width'])
 			{
@@ -514,6 +503,9 @@ class listener implements EventSubscriberInterface
 				));
 			}
 		}
+
+		//Add image size
+		$this->games_operator->display_image_size($this->config,$this->template);
 
 		if($this->config['game_index_ext_stats'])
 		{

@@ -22,7 +22,7 @@
     					<dt>
     						<div align="center">
                                 <!-- BEGIN popular_games -->
-    							<a href="{popular_games.U_GAME}"><img src="{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
+    							<a href="{popular_games.U_GAME}"><img src="{popular_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a>
                                 <!-- END popular_games -->
     						</div>
     					</dt>
@@ -48,7 +48,7 @@
     					<dt>
     						<div align="center">
                                 <!-- BEGIN recent_games -->
-    							<a href="{recent_games.U_GAME}"><img src="{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" /></a>
+    							<a href="{recent_games.U_GAME}"><img src="{recent_games.GAME_IMAGE}" alt="{popular_games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a>
                                 <!-- END recent_games -->
     						</div>
     					</dt>
@@ -76,7 +76,7 @@
         <div class="panel bg1">
     	    <div class="inner">
                 <div class="column_game_image">
-                    <img class="game_image" src="{GAME_IMAGE}" alt="{GAME_NAME}" />
+                    <img class="game_image" src="{GAME_IMAGE}" alt="{GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} />
             	</div>
 
                 <div class="column_game_info">
@@ -178,7 +178,8 @@
     						<div class="list-inner">
     							<strong>{games.GAME_NAME}</strong><br />
 
-                                <!-- IF S_GAME_VIEW --><img src="{games.GAME_IMAGE}" /><!-- ELSE --><a href="{games.U_GAME}"><img src="{games.GAME_IMAGE}" /></a><!-- ENDIF -->
+                                <!-- IF S_GAME_VIEW --><img src="{games.GAME_IMAGE}" title="{games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} />
+                                <!-- ELSE --><a href="{games.U_GAME}"><img src="{games.GAME_IMAGE}" title="{games.GAME_NAME}" {GAME_SMALL_WIDTH} {GAME_SMALL_HEIGHT} /></a><!-- ENDIF -->
                                 <div class="responsive-show" style="display:none;"></div>
     						</div>
     					</dt>

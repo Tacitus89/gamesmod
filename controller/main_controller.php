@@ -312,6 +312,9 @@ class main_controller
 			}
 		}
 
+		//Add image size
+		$this->games_operator->display_image_size($this->config,$this->template);
+
 		//Show recent games
 		if($this->config['game_recent'] > 0 && ($game_id == 0 && $game == ''))
 		{

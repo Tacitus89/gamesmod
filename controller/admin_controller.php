@@ -197,7 +197,6 @@ class admin_controller
 			'U_ACTION'		=> $this->u_action,
 
 			'S_GAMES_ACTIVE'					=> $this->config['games_active'] ? true : false,
-			'S_GAMES_DESCRIPTION'				=> $this->config['games_description'] ? true : false,
 			'S_GAMES_PAGINATION'				=> $this->config['games_pagination'],
 			'S_GAME_SMALL_IMG_WIDTH'			=> $this->config['game_small_img_width'],
 			'S_GAME_SMALL_IMG_HT'				=> $this->config['game_small_img_ht'],
@@ -228,7 +227,6 @@ class admin_controller
 	protected function set_options()
 	{
 		$this->config->set('games_active', $this->request->variable('games_active', 0));
-		$this->config->set('games_description', $this->request->variable('games_description', 0));
 		$this->config->set('games_pagination', $this->request->variable('games_pagination', 0));
 		$this->config->set('game_small_img_width', $this->request->variable('game_small_img_width', 0));
 		$this->config->set('game_small_img_ht', $this->request->variable('game_small_img_ht', 0));
