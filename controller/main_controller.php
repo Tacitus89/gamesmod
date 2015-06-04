@@ -251,8 +251,8 @@ class main_controller
 				'GAME_META_DESC'	=> $entity->get_meta_desc(),
 				'GAME_META_KEYWORDS'=> $entity->get_meta_keywords(),
 				'GAMERS'			=> $this->games_operator->get_gamers($entity->get_id()),
-				'GAME_FORUM_URL'	=> append_sid($this->root_path.$entity->get_forum_url()),
-				'GAME_TOPIC_URL'	=> append_sid($this->root_path.$entity->get_topic_url()),
+				'GAME_FORUM_URL'	=> ($entity->get_forum_url() != '')? append_sid($this->root_path.$entity->get_forum_url()) : '',
+				'GAME_TOPIC_URL'	=> ($entity->get_topic_url() != '')?append_sid($this->root_path.$entity->get_topic_url()) : '',
 
 				'S_GAME_VIEW'	=> true,
 				'U_PAGE_TITLE'	=> ($this->config['game_seo_url'])? $this->helper->route('tacitus89_gamesmod_main_controller', array('category' => $entity->get_parent()->get_route(), 'game' => $entity->get_route())):
