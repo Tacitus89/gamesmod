@@ -116,6 +116,7 @@ $lang = array_merge($lang, array(
 	'GAME_URL_NOT_FOUND'				=> 'The file specified could not be found.',
 	'GAME_WRONG_FILESIZE'				=> 'The game image filesize must be between 0 and %1d %2s.',
 	'GAME_WRONG_SIZE'					=> 'The submitted game image is %5$d pixels wide and %6$d pixels high. Games must be at least %1$d pixels wide and %2$d pixels high, but no larger than %3$d pixels wide and %4$d pixels high.',
+	'GAME_DIR_NOT_WRITABLE'				=> 'The directory where the image should be uploaded is not writable. Change the permission of the directory.'
 // Games Configuration
 	'ACP_GAMES_CONFIG_TITLE'			=> 'Games Configuration',
 	'ACP_GAMES_CONFIG_DESC'				=> 'Here you can set options for the Games Mod',

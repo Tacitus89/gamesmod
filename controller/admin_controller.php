@@ -737,9 +737,8 @@ class admin_controller
 				{
 					include($this->root_path . 'includes/functions_upload.' . $this->php_ext);
 				}
-				$upload = new \fileupload('GAME_', array('jpg', 'jpeg', 'gif', 'png'), 80000, 0, 0, 0, 0, explode('|', $this->config['mime_triggers']));
-				$file = $upload->form_upload('uploadfile');
-				$file->clean_filename('real', '', '');
+
+				//get destination
 				if($entity->get_parent()->get_dir() != '')
 				{
 					$destination = 'ext/tacitus89/gamesmod/images/'.$entity->get_parent()->get_dir();
@@ -747,21 +746,31 @@ class admin_controller
 				else {
 					$destination = 'ext/tacitus89/gamesmod/images';
 				}
+				//if dir writable?
+				if(is_writable($this->root_path.$destination)){
+					$upload = new \fileupload('GAME_', array('jpg', 'jpeg', 'gif', 'png'), 120000, 0, 0, 0, 0, explode('|', $this->config['mime_triggers']));
+					$file = $upload->form_upload('uploadfile');
+					$file->clean_filename('real', '', '');
 
-				$data['image'] = $file->realname;
 
-				// Move file and overwrite any existing image
-				$file->move_file($destination, true);
+					$data['image'] = $file->realname;
 
-				if (sizeof($file->error))
-				{
-					$file->remove();
-					trigger_error(implode('<br />', $file->error));
+					// Move file and overwrite any existing image
+					$file->move_file($destination, true);
+
+					if (sizeof($file->error))
+					{
+						$file->remove();
+						$errors[] = implode('<br />', $file->error);
+					}
+					else
+					{
+						chmod($this->root_path.$destination . '/' . $data['image'], 0644);
+						$entity->set_image($data['image']);
+					}
 				}
-				else
-				{
-					chmod($this->root_path.$destination . '/' . $data['image'], 0644);
-					$entity->set_image($data['image']);
+				else {
+					$errors[] = $this->user->lang('GAME_DIR_NOT_WRITABLE');
 				}
 			}
 
