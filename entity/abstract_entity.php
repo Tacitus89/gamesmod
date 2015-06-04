@@ -48,6 +48,9 @@ abstract class abstract_entity
 		//declare new fields
 		$new_fields = array();
 
+		//get the called class
+		$called_class = substr(get_called_class(), strrpos(get_called_class(), '\\')+1);
+
 		if(!empty($table_prefix))
 		{
 			//Go through all fields and renamed it
@@ -62,7 +65,7 @@ abstract class abstract_entity
 					$new_fields[] = $class::get_sql_fields(array('this' => $table_prefix[$key]));
 				}
 				//set renamed fields
-				$new_fields[] = $table_prefix['this'] .'.'. $key .' AS '. basename(get_called_class()) .'_'. $key;
+				$new_fields[] = $table_prefix['this'] .'.'. $key .' AS '. $called_class .'_'. $key;
 			}
 		}
 		else
@@ -75,7 +78,7 @@ abstract class abstract_entity
 					//if object have subobject, it must be set a table_prefix
 					throw new \tacitus89\gamesmod\exception\invalid_argument(array($key, 'FIELD_MISSING'));
 				}
-				$new_fields[] = $key .' AS '. basename(get_called_class()) .'_'. $key;
+				$new_fields[] = $key .' AS '. $called_class .'_'. $key;
 			}
 		}
 
