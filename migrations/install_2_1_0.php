@@ -39,7 +39,7 @@ class install_2_1_0 extends \phpbb\db\migration\migration
 					'genre'			=> array('VCHAR:255', ''),
 					'developer'		=> array('VCHAR:255', ''),
 					'publisher'		=> array('VCHAR:255', ''),
-					'release'		=> array('UINT:11', 0),
+					'game_release'	=> array('UINT:11', 0),
 					'platform'		=> array('VCHAR:255', ''),
 					'forum_url'		=> array('VCHAR:255', ''),
 					'topic_url'		=> array('VCHAR:255', ''),
