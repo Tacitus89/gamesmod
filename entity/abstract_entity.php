@@ -113,7 +113,7 @@ abstract class abstract_entity
 		$this->data = array();
 
 		//get class name
-		$class = (new \ReflectionClass($this))->getShortName() .'_';
+		$class = substr(get_called_class(), strrpos(get_called_class(), '\\')+1);
 
 		// Go through the basic fields and set them to our data array
 		foreach (static::$fields as $field => $type)
