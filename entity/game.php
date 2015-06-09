@@ -16,42 +16,6 @@ namespace tacitus89\gamesmod\entity;
 class game extends abstract_entity
 {
 	/**
-	* Data for this entity
-	*
-	* @var array
-	*	id
-	*	name
-	*	description
-	*	description_bbcode_uid
-	*	description_bbcode_bitfield
-	*	description_bbcode_options
-	*	image
-	*	parent
-	*	route
-	*	genre
-	*	developer
-	*	publisher
-	*	game_release
-	*	platform
-	*	forum_url
-	*	topic_url
-	*	meta_desc
-	*	meta_keywords
-	* @access protected
-	*/
-	protected $data;
-
-	/** @var \phpbb\db\driver\driver_interface */
-	protected $db;
-
-	/**
-	* The database table the games are stored in
-	*
-	* @var string
-	*/
-	protected $games_table;
-
-	/**
 	* The database table the game_cat are stored in
 	*
 	* @var string
@@ -86,8 +50,9 @@ class game extends abstract_entity
 	/**
 	* All object must be assigned to a class
 	**/
-	protected static $classes = array(
-		'parent'			=> 'games_cat',
+	protected static $subClasses = array(
+		'parent'			=> array('name' => 'games_cat',
+									 'param' => array('db', 'game_cat_table')),
 	);
 
 	/**
@@ -112,9 +77,21 @@ class game extends abstract_entity
 	public function __construct(\phpbb\db\driver\driver_interface $db, $games_table, $game_cat_table)
 	{
 		$this->db = $db;
-		$this->games_table = $games_table;
+		$this->db_table = $games_table;
 		$this->game_cat_table = $game_cat_table;
-		$this->dir = '';
+	}
+
+	/**
+	* Generated a new Object
+	*
+	* @param \phpbb\db\driver\driver_interface    $db              Database object
+	* @param string                               $games_cat_table     Name of the table used to store game data
+	* @return \tacitus89\gamesmod\entity\game_cat
+	* @access protected
+	*/
+	public static function factory($db, $games_table, $game_cat_table)
+	{
+		return new self($db, $games_table, $game_cat_table);
 	}
 
 	/**
@@ -130,7 +107,7 @@ class game extends abstract_entity
 		$data = array();
 
 		$sql = 'SELECT '. game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
-			FROM ' . $this->games_table . ' g
+			FROM ' . $this->db_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE g.id = ' . (int) $id;
 		$result = $this->db->sql_query($sql);
@@ -177,78 +154,6 @@ class game extends abstract_entity
 
 		//Import data for this game
 		$this->import($data);
-
-		return $this;
-	}
-
-	/**
-	* Insert the game for the first time
-	*
-	* Will throw an exception if the game was already inserted (call save() instead)
-	*
-	* @return game_interface $this object for chaining calls; load()->set()->save()
-	* @access public
-	* @throws \tacitus89\gamesmod\exception\out_of_bounds
-	*/
-	public function insert()
-	{
-		if (!empty($this->data['id']))
-		{
-			// The game already exists
-			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
-		}
-
-		// Make extra sure there is no id set
-		unset($this->data['id']);
-
-		//save the parent object to parent
-		$parent = $this->data['parent'];
-		//set parent-id to parent
-		$this->data['parent'] = $parent->get_id();
-
-		// Insert the game data to the database
-		$sql = 'INSERT INTO ' . $this->games_table . ' ' . $this->db->sql_build_array('INSERT', $this->data);
-		$this->db->sql_query($sql);
-
-		// Set the game_id using the id created by the SQL insert
-		$this->data['id'] = (int) $this->db->sql_nextid();
-
-		//set parent object back
-		$this->data['parent'] = $parent;
-
-		return $this;
-	}
-
-	/**
-	* Save the current settings to the database
-	*
-	* This must be called before closing or any changes will not be saved!
-	* If adding a game (saving for the first time), you must call insert() or an exeception will be thrown
-	*
-	* @return game_interface $this object for chaining calls; load()->set()->save()
-	* @access public
-	* @throws \tacitus89\gamesmod\exception\out_of_bounds
-	*/
-	public function save()
-	{
-		if (empty($this->data['id']))
-		{
-			// The game does not exist
-			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
-		}
-
-		//save the parent object to parent
-		$parent = $this->data['parent'];
-		//set parent-id to parent
-		$this->data['parent'] = $parent->get_id();
-
-		$sql = 'UPDATE ' . $this->games_table . '
-			SET ' . $this->db->sql_build_array('UPDATE', $this->data) . '
-			WHERE id = ' . $this->get_id();
-		$this->db->sql_query($sql);
-
-		//set parent object back
-		$this->data['parent'] = $parent;
 
 		return $this;
 	}
@@ -442,7 +347,7 @@ class game extends abstract_entity
 	*/
 	public function get_image()
 	{
-		return (isset($this->data['image'])) ? (string) $this->data['image'] : '';
+		return $this->get_string($this->data['image']);
 	}
 
 	/**
@@ -455,19 +360,7 @@ class game extends abstract_entity
 	*/
 	public function set_image($image)
 	{
-		// Enforce a string
-		$image = (string) $image;
-
-		// We limit the image length to 200 characters
-		if (truncate_string($image, 200) != $image)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('image', 'TOO_LONG'));
-		}
-
-		// Set the image on our data array
-		$this->data['image'] = $image;
-
-		return $this;
+		return $this->set_string('image', $image, 200);
 	}
 
 	/**
@@ -573,7 +466,7 @@ class game extends abstract_entity
 	*/
 	public function get_genre()
 	{
-		return (isset($this->data['genre'])) ? (string) $this->data['genre'] : '';
+		return $this->get_string($this->data['genre']);
 	}
 
 	/**
@@ -586,19 +479,7 @@ class game extends abstract_entity
 	*/
 	public function set_genre($genre)
 	{
-		// Enforce a string
-		$genre = (string) $genre;
-
-		// We limit the image length to 255 characters
-		if (truncate_string($genre, 255) != $genre)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('genre', 'TOO_LONG'));
-		}
-
-		// Set the image on our data array
-		$this->data['genre'] = $genre;
-
-		return $this;
+		return $this->set_string('genre', $genre);
 	}
 
 	/**
@@ -609,7 +490,7 @@ class game extends abstract_entity
 	*/
 	public function get_developer()
 	{
-		return (isset($this->data['developer'])) ? (string) $this->data['developer'] : '';
+		return $this->get_string($this->data['developer']);
 	}
 
 	/**
@@ -622,19 +503,7 @@ class game extends abstract_entity
 	*/
 	public function set_developer($developer)
 	{
-		// Enforce a string
-		$developer = (string) $developer;
-
-		// We limit the image length to 255 characters
-		if (truncate_string($developer, 255) != $developer)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('developer', 'TOO_LONG'));
-		}
-
-		// Set the image on our data array
-		$this->data['developer'] = $developer;
-
-		return $this;
+		return $this->set_string('developer', $developer);
 	}
 
 	/**
@@ -645,7 +514,7 @@ class game extends abstract_entity
 	*/
 	public function get_publisher()
 	{
-		return (isset($this->data['publisher'])) ? (string) $this->data['publisher'] : '';
+		return $this->get_string($this->data['publisher']);
 	}
 
 	/**
@@ -658,19 +527,7 @@ class game extends abstract_entity
 	*/
 	public function set_publisher($publisher)
 	{
-		// Enforce a string
-		$publisher = (string) $publisher;
-
-		// We limit the image length to 255 characters
-		if (truncate_string($publisher, 255) != $publisher)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('publisher', 'TOO_LONG'));
-		}
-
-		// Set the image on our data array
-		$this->data['publisher'] = $publisher;
-
-		return $this;
+		return $this->set_string('publisher', $publisher);
 	}
 
 	/**
@@ -726,7 +583,7 @@ class game extends abstract_entity
 	*/
 	public function get_platform()
 	{
-		return (isset($this->data['platform'])) ? (string) $this->data['platform'] : '';
+		return $this->get_string($this->data['platform']);
 	}
 
 	/**
@@ -739,19 +596,7 @@ class game extends abstract_entity
 	*/
 	public function set_platform($platform)
 	{
-		// Enforce a string
-		$platform = (string) $platform;
-
-		// We limit the image length to 255 characters
-		if (truncate_string($platform, 255) != $platform)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('platform', 'TOO_LONG'));
-		}
-
-		// Set the image on our data array
-		$this->data['platform'] = $platform;
-
-		return $this;
+		return $this->set_string('platform', $platform);
 	}
 
 	/**
@@ -762,7 +607,7 @@ class game extends abstract_entity
 	*/
 	public function get_forum_url()
 	{
-		return (isset($this->data['forum_url'])) ? (string) $this->data['forum_url'] : '';
+		return $this->get_string($this->data['forum_url']);
 	}
 
 	/**
@@ -812,7 +657,7 @@ class game extends abstract_entity
 	*/
 	public function get_topic_url()
 	{
-		return (isset($this->data['topic_url'])) ? (string) $this->data['topic_url'] : '';
+		return $this->get_string($this->data['topic_url']);
 	}
 
 	/**
@@ -862,7 +707,7 @@ class game extends abstract_entity
 	*/
 	public function get_meta_desc()
 	{
-		return (isset($this->data['meta_desc'])) ? (string) $this->data['meta_desc'] : '';
+		return $this->get_string($this->data['meta_desc']);
 	}
 
 	/**
@@ -875,19 +720,7 @@ class game extends abstract_entity
 	*/
 	public function set_meta_desc($meta_desc)
 	{
-		// Enforce a string
-		$meta_desc = (string) $meta_desc;
-
-		// We limit the image length to 255 characters
-		if (truncate_string($meta_desc, 255) != $meta_desc)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('meta_desc', 'TOO_LONG'));
-		}
-
-		// Set the image on our data array
-		$this->data['meta_desc'] = $meta_desc;
-
-		return $this;
+		return $this->set_string('meta_desc', $meta_desc);
 	}
 
 	/**
@@ -898,7 +731,7 @@ class game extends abstract_entity
 	*/
 	public function get_meta_keywords()
 	{
-		return (isset($this->data['meta_keywords'])) ? (string) $this->data['meta_keywords'] : '';
+		return $this->get_string($this->data['meta_keywords']);
 	}
 
 	/**
@@ -911,19 +744,7 @@ class game extends abstract_entity
 	*/
 	public function set_meta_keywords($meta_keywords)
 	{
-		// Enforce a string
-		$meta_keywords = (string) $meta_keywords;
-
-		// We limit the image length to 255 characters
-		if (truncate_string($meta_keywords, 255) != $meta_keywords)
-		{
-			throw new \tacitus89\gamesmod\exception\unexpected_value(array('meta_keywords', 'TOO_LONG'));
-		}
-
-		// Set the image on our data array
-		$this->data['meta_keywords'] = $meta_keywords;
-
-		return $this;
+		return $this->set_string('meta_keywords', $meta_keywords);
 	}
 
 	/**

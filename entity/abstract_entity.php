@@ -16,6 +16,22 @@ namespace tacitus89\gamesmod\entity;
 abstract class abstract_entity
 {
 	/**
+	* Data for this entity
+	* @access protected
+	*/
+	protected $data;
+
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
+
+	/**
+	* The database table the data of this entity are stored in
+	*
+	* @var string
+	*/
+	protected $db_table;
+
+	/**
 	* All of fields of this objects
 	*
 	**/
@@ -24,7 +40,7 @@ abstract class abstract_entity
 	/**
 	* All object must be assigned to a class
 	**/
-	protected static $classes;
+	protected static $subClasses;
 
 	/**
 	* Some fields must be unsigned (>= 0)
@@ -60,7 +76,7 @@ abstract class abstract_entity
 				if($value === 'object')
 				{
 					//get class of object
-					$class = __NAMESPACE__. '\\' .static::$classes[$key];
+					$class = __NAMESPACE__. '\\' .static::$subClasses[$key]['name'];
 					//get the fields of the object
 					$new_fields[] = $class::get_sql_fields(array('this' => $table_prefix[$key]));
 				}
@@ -133,10 +149,16 @@ abstract class abstract_entity
 			elseif($type === 'object')
 			{
 				//Get subclass
-				$subclass = __NAMESPACE__. '\\' .static::$classes[$field];
+				$subclass = __NAMESPACE__. '\\' .static::$subClasses[$field]['name'];
+
+				//declare the param from var subClasses
+				$param = array();
+				foreach (static::$subClasses[$field]['param'] as $key => $value) {
+					$param[] = $this->{$value};
+				}
 
 				//Generating the subclass
-				$this->data[$field] = new $subclass($this->db, $this->game_cat_table);
+				$this->data[$field] = call_user_func_array($subclass.'::factory', $param);
 
 				//Import the data to subclass
 				$this->data[$field]->import($data);
@@ -174,7 +196,40 @@ abstract class abstract_entity
 	* @access public
 	* @throws \tacitus89\gamesmod\exception\out_of_bounds
 	*/
-	abstract public function insert();
+	public function insert()
+	{
+		if (!empty($this->data['id']))
+		{
+			// The game already exists
+			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
+		}
+
+		// Make extra sure there is no id set
+		unset($this->data['id']);
+
+		//Set the id from the subClasses
+		$subClassesArray = array();
+		foreach(static::$subClasses as $field => $value)
+		{
+			$subClassesArray[$field] = $this->data[$field];
+			$this->data[$field] = $subClassesArray[$field]->get_id();
+		}
+
+		// Insert the game data to the database
+		$sql = 'INSERT INTO ' . $this->db_table . ' ' . $this->db->sql_build_array('INSERT', $this->data);
+		$this->db->sql_query($sql);
+
+		// Set the game_id using the id created by the SQL insert
+		$this->data['id'] = (int) $this->db->sql_nextid();
+
+		//Set the objects back to data
+		foreach(static::$subClasses as $field => $value)
+		{
+			$this->data[$field] = $subClassesArray[$field];
+		}
+
+		return $this;
+	}
 
 	/**
 	* Save the current settings to the database
@@ -186,7 +241,35 @@ abstract class abstract_entity
 	* @access public
 	* @throws \tacitus89\gamesmod\exception\out_of_bounds
 	*/
-	abstract public function save();
+	public function save()
+	{
+		if (empty($this->data['id']))
+		{
+			// The game does not exist
+			throw new \tacitus89\gamesmod\exception\out_of_bounds('id');
+		}
+
+		//Set the id from the subClasses
+		$subClassesArray = array();
+		foreach(static::$subClasses as $field => $value)
+		{
+			$subClassesArray[$field] = $this->data[$field];
+			$this->data[$field] = $subClassesArray[$field]->get_id();
+		}
+
+		$sql = 'UPDATE ' . $this->db_table . '
+			SET ' . $this->db->sql_build_array('UPDATE', $this->data) . '
+			WHERE id = ' . $this->get_id();
+		$this->db->sql_query($sql);
+
+		//Set the objects back to data
+		foreach(static::$subClasses as $field => $value)
+		{
+			$this->data[$field] = $subClassesArray[$field];
+		}
+
+		return $this;
+	}
 
 	/**
 	* Get id
@@ -245,4 +328,84 @@ abstract class abstract_entity
 	{
 		return (isset($this->data['route'])) ? (string) $this->data['route'] : '';
 	}
+
+	/**
+	* Get String for output
+	*
+	* @param string $string Get the string for output
+	* @return string
+	* @access protected
+	*/
+	protected function get_string($string)
+	{
+		return (isset($string)) ? (string) $string : '';
+	}
+
+	/**
+	* Set a string to data
+	*
+	* @param string $varname Name of variable in data array
+	* @param string $string New value of $varname
+	* @param integer $characters Allowed number of characters; Default: 255
+	* @return page_interface $this object for chaining calls; load()->set()->save()
+	* @access protected
+	*/
+	protected function set_string($varname, $string, $characters = 255)
+	{
+		// Enforce a string
+		$string = (string) $string;
+		$varname = (string) $varname;
+
+		// We limit the name length to $characters characters
+		if (truncate_string($string, $characters) != $string)
+		{
+			throw new \tacitus89\gamesmod\exception\unexpected_value(array($varname, 'TOO_LONG'));
+		}
+
+		// Set the name on our data array
+		$this->data[$varname] = $string;
+
+		return $this;
+	}
+
+	/**
+	* Get Integer for output
+	*
+	* @param string $integer Get the Integer for output
+	* @return Integer
+	* @access protected
+	*/
+	protected function get_integer($integer)
+	{
+		return (isset($integer)) ? (int) $integer : 0;
+	}
+
+	/**
+	* Set a Integer to data
+	*
+	* @param string $varname Name of variable in data array
+	* @param integer $integer New value of $varname
+	* @param boolean $unsigned If must the integer unsigned?; Default: true
+	* @return page_interface $this object for chaining calls; load()->set()->save()
+	* @access protected
+	*/
+	protected function set_integer($varname, $integer, $unsigned = true)
+	{
+		// Enforce a integer
+		$integer = (integer) $integer;
+		// Enforce a string
+		$varname = (string) $varname;
+
+		// If the data is less than 0, it's not unsigned and we'll throw an exception
+		if ($unsigned && $integer < 0)
+		{
+			throw new \tacitus89\gamesmod\exception\out_of_bounds($integer);
+		}
+
+		// Set the order_id on our data array
+		$this->data[$integer] = $integer;
+
+		return $this;
+	}
+
 }
