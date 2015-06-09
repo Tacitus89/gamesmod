@@ -111,7 +111,7 @@ class games_cat extends abstract_entity
 	public function load_by_name($seo_name)
 	{
 		$sql = 'SELECT '. games_cat::get_sql_fields(array('this' => 'gc')) .'
-			FROM ' . $this->games_cat_table . ' gc
+			FROM ' . $this->db_table . ' gc
 			WHERE '. $this->db->sql_in_set('gc.route', $seo_name);
 		$result = $this->db->sql_query($sql);
 		$data = $this->db->sql_fetchrow($result);

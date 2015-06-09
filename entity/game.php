@@ -139,7 +139,7 @@ class game extends abstract_entity
 		$data = array();
 
 		$sql = 'SELECT '. game::get_sql_fields(array('this' => 'g', 'parent' => 'gc')) .'
-			FROM ' . $this->games_table . ' g
+			FROM ' . $this->db_table . ' g
 			LEFT JOIN '. $this->game_cat_table .' gc ON g.parent = gc.id
 			WHERE '. $this->db->sql_in_set('g.route', $seo_name);
 		$result = $this->db->sql_query($sql);
