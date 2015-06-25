@@ -7,7 +7,7 @@ This is the repository for the development of the Games Collection Extension for
 
 # Installation
 
-Download the contents of the repository to ext/tacits89/gamesmod/<br />
+Download the contents of the repository to ext/tacitus89/gamesmod/<br />
 Navigate in the ACP to Customise -> Extension Management.<br />
 Click Enable for Games Owned MOD.
 
